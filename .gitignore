@@ -1,0 +1,65 @@
+# ==============================
+# Operating system
+# ==============================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==============================
+# Editors and IDEs
+# ==============================
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ==============================
+# Node.js and pnpm
+# ==============================
+node_modules/
+**/node_modules/
+**/dist/
+**/coverage/
+.npm/
+.eslintcache
+
+# ==============================
+# Environment variables and secrets
+# ==============================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+secrets.*.json
+
+# ==============================
+# .NET / ASP.NET Core
+# ==============================
+**/bin/
+**/obj/
+TestResults/
+*.userprefs
+appsettings.Local.json
+
+# ==============================
+# Android / Gradle
+# ==============================
+.gradle/
+**/build/
+local.properties
+.externalNativeBuild/
+.cxx/
+captures/
+
+# ==============================
+# Logs and temporary files
+# ==============================
+*.log
+*.tmp
+*.temp
+*.bak
