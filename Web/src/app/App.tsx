@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+﻿import { useEffect, useState, type ReactNode } from "react";
 import {
   Coffee, Menu, X, Search, ShoppingCart, Bell, User, Star, MapPin,
   Clock, Calendar, ChevronRight, Plus, Minus, Trash2, CreditCard,
@@ -14,7 +14,7 @@ import {
   Tooltip, ResponsiveContainer, PieChart as RechartsPie, Pie, Cell, Area, AreaChart
 } from "recharts";
 
-// ─── Brand Tokens ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Brand Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const BROWN = "#4E342E";
 const BEIGE = "#D7CCC8";
 const ORANGE = "#FF9800";
@@ -25,8 +25,23 @@ const CARD = "#FFFFFF";
 const MUTED = "#8D6E63";
 const DARK_BROWN = "#3E2723";
 
-// ─── Realistic Data ───────────────────────────────────────────────────────────
-const menuItems = [
+// â”€â”€â”€ Realistic Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+type MenuItem = {
+  id: number;
+  name: string;
+  cat: string;
+  price: number;
+  available: boolean;
+  img: string;
+  variantId?: number;
+  variants?: {
+    variantId: number;
+    variantName: string;
+    price: number;
+  }[];
+};
+
+const menuItems: MenuItem[] = [
   { id: 1, name: "Espresso", cat: "Hot Coffee", price: 35, available: true, img: "photo-1510707577719-ae7c14805e3a" },
   { id: 2, name: "Cappuccino", cat: "Hot Coffee", price: 45, available: true, img: "photo-1572442388796-11668a67e53d" },
   { id: 3, name: "Flat White", cat: "Hot Coffee", price: 48, available: true, img: "photo-1461023058943-07fcbe16d735" },
@@ -38,6 +53,91 @@ const menuItems = [
   { id: 9, name: "Granola Bowl", cat: "Light Meals", price: 85, available: true, img: "photo-1511690743698-d9d85f2fbf38" },
   { id: 10, name: "Rooibos Latte", cat: "Hot Beverages", price: 42, available: true, img: "photo-1526160932832-d5e62e4ae24c" },
 ];
+
+type ApiMenuProduct = {
+  productId: number;
+  productName: string;
+  description: string | null;
+  category: string;
+  variants: {
+    variantId: number;
+    variantName: string;
+    price: number;
+  }[];
+};
+
+const menuImageByCategory: Record<string, string> = {
+  Bakery: "photo-1530648672449-81f6c723e2f1",
+  Breakfast: "photo-1603046891744-1f9c1b7c9ef3",
+  Coffee: "photo-1461023058943-07fcbe16d735",
+  Freezos: "photo-1461023058943-07fcbe16d735",
+  "Iced Lattes": "photo-1572442388796-11668a67e53d",
+  "Soft Drinks": "photo-1526160932832-d5e62e4ae24c",
+  "Sweet Treats": "photo-1511690743698-d9d85f2fbf38",
+  Tea: "photo-1526160932832-d5e62e4ae24c",
+};
+
+function useMenuItems() {
+  const [items, setItems] = useState<MenuItem[]>(menuItems);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMenu() {
+      try {
+        const response = await fetch(
+          "http://localhost:5043/api/Menu/products"
+        );
+
+        if (!response.ok) {
+          throw new Error(`Menu API returned status ${response.status}`);
+        }
+
+        const products: ApiMenuProduct[] = await response.json();
+
+        const apiItems: MenuItem[] = products.flatMap((product) => {
+          const firstVariant = product.variants?.[0];
+
+          if (!firstVariant) {
+            return [];
+          }
+
+          return [
+            {
+              id: product.productId,
+              name: product.productName,
+              cat: product.category,
+              price: firstVariant.price,
+              available: true,
+              img:
+                menuImageByCategory[product.category] ??
+                "photo-1461023058943-07fcbe16d735",
+              variantId: firstVariant.variantId,
+              variants: product.variants,
+            },
+          ];
+        });
+
+        if (!cancelled && apiItems.length > 0) {
+          setItems(apiItems);
+        }
+      } catch (error) {
+        console.error(
+          "Could not load the Skinner Cafe menu from the API. Using fallback menu data.",
+          error
+        );
+      }
+    }
+
+    loadMenu();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return items;
+}
 
 const events = [
   { id: 1, title: "Jazz Night with Sipho Mabuse", date: "Fri 27 Jun", time: "20:00", price: "R120", spots: 12, img: "photo-1514320291840-2e0a9bf2a9ae" },
@@ -55,11 +155,11 @@ const orders = [
 ];
 
 const staff = [
-  { id: 1, name: "Thabo Nkosi", role: "Barista", shift: "07:00–15:00", status: "Active", joined: "Jan 2024" },
-  { id: 2, name: "Lerato Dlamini", role: "Cashier", shift: "08:00–16:00", status: "Active", joined: "Mar 2024" },
-  { id: 3, name: "Sipho Mokoena", role: "Supervisor", shift: "07:00–15:00", status: "Active", joined: "Nov 2023" },
-  { id: 4, name: "Zanele Khumalo", role: "Barista", shift: "14:00–22:00", status: "Off-duty", joined: "Feb 2024" },
-  { id: 5, name: "Amahle Cele", role: "Kitchen", shift: "09:00–17:00", status: "Active", joined: "Apr 2024" },
+  { id: 1, name: "Thabo Nkosi", role: "Barista", shift: "07:00â€“15:00", status: "Active", joined: "Jan 2024" },
+  { id: 2, name: "Lerato Dlamini", role: "Cashier", shift: "08:00â€“16:00", status: "Active", joined: "Mar 2024" },
+  { id: 3, name: "Sipho Mokoena", role: "Supervisor", shift: "07:00â€“15:00", status: "Active", joined: "Nov 2023" },
+  { id: 4, name: "Zanele Khumalo", role: "Barista", shift: "14:00â€“22:00", status: "Off-duty", joined: "Feb 2024" },
+  { id: 5, name: "Amahle Cele", role: "Kitchen", shift: "09:00â€“17:00", status: "Active", joined: "Apr 2024" },
 ];
 
 const inventory = [
@@ -114,7 +214,7 @@ const suppliers = [
   { name: "Fresh Direct", contact: "fresh@direct.co.za", phone: "010 223 4567", items: 6, status: "Inactive" },
 ];
 
-// ─── Shared UI Components ─────────────────────────────────────────────────────
+// â”€â”€â”€ Shared UI Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Badge = ({ children, color = "orange" }: { children: ReactNode; color?: string }) => {
   const colors: Record<string, string> = {
     orange: `bg-[${ORANGE}]/10 text-[${ORANGE}]`,
@@ -215,13 +315,13 @@ const OutlineBtn = ({ children, className = "", small = false }: any) => (
   </button>
 );
 
-// ─── SECTION: DESIGN SYSTEM ───────────────────────────────────────────────────
+// â”€â”€â”€ SECTION: DESIGN SYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function DesignSystemScreen() {
   return (
     <div className="p-8 space-y-10 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold text-[#1A1210] font-[Poppins]">Skinner Cafe — Design System</h1>
-        <p className="text-[#8D6E63] mt-1">Visual language for Braamfontein's most loved café</p>
+        <h1 className="text-3xl font-bold text-[#1A1210] font-[Poppins]">Skinner Cafe â€” Design System</h1>
+        <p className="text-[#8D6E63] mt-1">Visual language for Braamfontein's most loved cafÃ©</p>
       </div>
 
       {/* Logo */}
@@ -268,9 +368,9 @@ function DesignSystemScreen() {
       <section>
         <h2 className="text-sm font-semibold text-[#8D6E63] uppercase tracking-wider mb-4">Typography</h2>
         <Card className="p-6 space-y-4">
-          <div><p className="text-4xl font-bold text-[#1A1210] font-[Poppins]">Display Heading — Poppins 700</p></div>
-          <div><p className="text-2xl font-semibold text-[#1A1210] font-[Poppins]">Section Title — Poppins 600</p></div>
-          <div><p className="text-xl font-medium text-[#1A1210] font-[Poppins]">Card Heading — Poppins 500</p></div>
+          <div><p className="text-4xl font-bold text-[#1A1210] font-[Poppins]">Display Heading â€” Poppins 700</p></div>
+          <div><p className="text-2xl font-semibold text-[#1A1210] font-[Poppins]">Section Title â€” Poppins 600</p></div>
+          <div><p className="text-xl font-medium text-[#1A1210] font-[Poppins]">Card Heading â€” Poppins 500</p></div>
           <div><p className="text-base text-[#1A1210] font-[Inter]">Body copy for descriptions, table rows and general content. Inter Regular 16px with comfortable leading.</p></div>
           <div><p className="text-sm text-[#8D6E63] font-[Inter]">Supporting text and labels. Inter Regular 14px, muted colour.</p></div>
           <div><p className="text-xs font-semibold text-[#8D6E63] uppercase tracking-widest font-[Inter]">Overline / Section Label</p></div>
@@ -347,8 +447,8 @@ function DesignSystemScreen() {
               </div>
               <div>
                 <p className="font-semibold text-[#1A1210] text-sm">Low Stock Alert</p>
-                <p className="text-xs text-[#8D6E63] mt-0.5">Oat Milk is running low — 2L remaining (min 4L)</p>
-                <button className="text-xs font-semibold mt-2" style={{ color: ORANGE }}>Reorder Now →</button>
+                <p className="text-xs text-[#8D6E63] mt-0.5">Oat Milk is running low â€” 2L remaining (min 4L)</p>
+                <button className="text-xs font-semibold mt-2" style={{ color: ORANGE }}>Reorder Now â†’</button>
               </div>
             </div>
           </Card>
@@ -389,7 +489,7 @@ function DesignSystemScreen() {
           {[
             { msg: "Order SK-1042 is ready for pickup!", color: "bg-green-50 border-green-200", icon: CheckCircle, ic: "text-green-500" },
             { msg: "Oat Milk stock is critically low.", color: "bg-orange-50 border-orange-200", icon: AlertTriangle, ic: "text-orange-500" },
-            { msg: "Payment failed — please retry.", color: "bg-red-50 border-red-200", icon: XCircle, ic: "text-red-500" },
+            { msg: "Payment failed â€” please retry.", color: "bg-red-50 border-red-200", icon: XCircle, ic: "text-red-500" },
           ].map((t, i) => (
             <div key={i} className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm ${t.color}`}>
               <t.icon size={16} className={t.ic} />
@@ -403,7 +503,7 @@ function DesignSystemScreen() {
   );
 }
 
-// ─── SECTION: WEBSITE SCREENS ─────────────────────────────────────────────────
+// â”€â”€â”€ SECTION: WEBSITE SCREENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function WebNavbar() {
   return (
@@ -419,7 +519,7 @@ function WebNavbar() {
       </div>
       <div className="flex items-center gap-2">
         <div className="relative">
-          <input placeholder="Search…" className="w-40 rounded-full border border-[rgba(78,52,46,0.15)] bg-[#F3EDE9] px-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9800]/40 pr-8" />
+          <input placeholder="Searchâ€¦" className="w-40 rounded-full border border-[rgba(78,52,46,0.15)] bg-[#F3EDE9] px-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9800]/40 pr-8" />
           <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8D6E63]" />
         </div>
         <button className="p-2 rounded-full hover:bg-[#F3EDE9]"><ShoppingCart size={18} style={{ color: BROWN }} /></button>
@@ -431,6 +531,8 @@ function WebNavbar() {
 }
 
 function HomeScreen() {
+  const items = useMenuItems();
+
   return (
     <div className="bg-[#FAFAFA]">
       <WebNavbar />
@@ -459,7 +561,7 @@ function HomeScreen() {
           <OutlineBtn small>View Full Menu</OutlineBtn>
         </div>
         <div className="grid grid-cols-4 gap-5">
-          {menuItems.slice(0, 4).map(item => (
+          {items.slice(0, 4).map(item => (
             <Card key={item.id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
               <div className="h-40 bg-amber-50 overflow-hidden">
                 <img src={`https://images.unsplash.com/photo-${item.img}?w=400&h=200&fit=crop&auto=format`} alt={item.name} className="w-full h-full object-cover" />
@@ -516,7 +618,7 @@ function HomeScreen() {
         <h2 className="text-2xl font-bold text-[#1A1210] font-[Poppins] mb-8">What People Say</h2>
         <div className="grid grid-cols-3 gap-5">
           {[
-            { name: "Ntombi M.", review: "Best cappuccino in Joburg, hands down. The vibe is unmatched — perfect for deep work sessions or catching up with friends.", stars: 5 },
+            { name: "Ntombi M.", review: "Best cappuccino in Joburg, hands down. The vibe is unmatched â€” perfect for deep work sessions or catching up with friends.", stars: 5 },
             { name: "Kagiso T.", review: "I've discovered so many amazing artists at Skinner's events. The poetry nights are genuinely moving. A cultural institution.", stars: 5 },
             { name: "Priya N.", review: "The loyalty programme is a game-changer. I've redeemed enough points for a free coffee every week. Love this place!", stars: 4 },
           ].map((t, i) => (
@@ -555,9 +657,9 @@ function HomeScreen() {
           <div>
             <p className="font-semibold mb-3 text-sm uppercase tracking-wider text-[#D7CCC8]">Hours</p>
             <div className="text-sm text-[#D7CCC8] space-y-1">
-              <p>Mon – Thu: 07:00 – 21:00</p>
-              <p>Fri: 07:00 – 23:00</p>
-              <p>Sat – Sun: 08:00 – 23:00</p>
+              <p>Mon â€“ Thu: 07:00 â€“ 21:00</p>
+              <p>Fri: 07:00 â€“ 23:00</p>
+              <p>Sat â€“ Sun: 08:00 â€“ 23:00</p>
             </div>
           </div>
           <div>
@@ -568,18 +670,50 @@ function HomeScreen() {
           </div>
         </div>
         <div className="border-t border-white/10 pt-6 text-xs text-[#D7CCC8] flex justify-between">
-          <span>© 2025 Skinner Cafe. All rights reserved.</span>
-          <span>Made with ♥ in Johannesburg</span>
+          <span>Â© 2025 Skinner Cafe. All rights reserved.</span>
+          <span>Made with â™¥ in Johannesburg</span>
         </div>
       </footer>
     </div>
   );
 }
 
+
 function MenuScreen() {
+  const items = useMenuItems();
   const [active, setActive] = useState("All");
-  const cats = ["All", "Hot Coffee", "Cold Coffee", "Pastries", "Light Meals", "Hot Beverages"];
-  const filtered = active === "All" ? menuItems : menuItems.filter(i => i.cat === active);
+  const [selectedVariants, setSelectedVariants] = useState<
+    Record<number, number>
+  >({});
+
+  const cats = [
+    "All",
+    "Bakery",
+    "Breakfast",
+    "Coffee",
+    "Freezos",
+    "Iced Lattes",
+    "Soft Drinks",
+    "Sweet Treats",
+    "Tea",
+  ];
+  const filtered =
+    active === "All"
+      ? items
+      : items.filter((item) => item.cat === active);
+
+  const getSelectedVariant = (item: MenuItem) => {
+    if (!item.variants?.length) {
+      return undefined;
+    }
+
+    const selectedId = selectedVariants[item.id];
+
+    return (
+      item.variants.find((variant) => variant.variantId === selectedId) ??
+      item.variants[0]
+    );
+  };
   return (
     <div className="bg-[#FAFAFA]">
       <WebNavbar />
@@ -589,7 +723,7 @@ function MenuScreen() {
         <div className="flex items-center gap-3 mt-6 mb-6">
           <div className="relative flex-1 max-w-sm">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8D6E63]" />
-            <input placeholder="Search menu…" className="w-full pl-10 pr-4 py-2.5 rounded-full border border-[rgba(78,52,46,0.15)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9800]/40" />
+            <input placeholder="Search menuâ€¦" className="w-full pl-10 pr-4 py-2.5 rounded-full border border-[rgba(78,52,46,0.15)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9800]/40" />
           </div>
           <div className="flex gap-2">
             {cats.map(c => (
@@ -670,7 +804,7 @@ function CartScreen() {
               <h3 className="font-semibold text-[#1A1210] font-[Poppins]">Order Summary</h3>
               {cartItems.map((item, i) => (
                 <div key={i} className="flex justify-between text-sm text-[#8D6E63]">
-                  <span>{item.name} ×{item.qty}</span>
+                  <span>{item.name} Ã—{item.qty}</span>
                   <span>R{item.price * item.qty}</span>
                 </div>
               ))}
@@ -702,7 +836,7 @@ function LoginScreen() {
             <span className="text-white font-bold text-2xl font-[Poppins]">Skinner Cafe</span>
           </div>
           <p className="text-white text-xl font-[Poppins] font-medium">"The best coffee in Braamfontein, paired with the best community in Joburg."</p>
-          <p className="text-[#D7CCC8] mt-2">— Ntombi M., Regular Customer</p>
+          <p className="text-[#D7CCC8] mt-2">â€” Ntombi M., Regular Customer</p>
         </div>
       </div>
       <div className="flex-1 flex items-center justify-center p-12">
@@ -713,7 +847,7 @@ function LoginScreen() {
           </div>
           <div className="space-y-4">
             <Input label="Email Address" type="email" placeholder="hello@example.co.za" icon={Mail} />
-            <Input label="Password" type="password" placeholder="••••••••" />
+            <Input label="Password" type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
             <div className="flex justify-between items-center">
               <label className="flex items-center gap-2 text-sm text-[#8D6E63]">
                 <input type="checkbox" className="rounded" /> Remember me
@@ -779,7 +913,7 @@ function CustomerDashboard() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[#1A1210] font-[Poppins]">Lerato Dlamini</h1>
-            <p className="text-[#8D6E63]">lerato@example.co.za · Member since Jan 2024</p>
+            <p className="text-[#8D6E63]">lerato@example.co.za Â· Member since Jan 2024</p>
           </div>
           <div className="ml-auto">
             <Badge color="orange">Gold Member</Badge>
@@ -787,7 +921,7 @@ function CustomerDashboard() {
         </div>
         <div className="grid grid-cols-4 gap-4 mb-8">
           <StatCard icon={ShoppingBag} label="Orders" value="47" sub="Lifetime" />
-          <StatCard icon={Gift} label="Loyalty Points" value="1,240 pts" sub="≈ R62 value" />
+          <StatCard icon={Gift} label="Loyalty Points" value="1,240 pts" sub="â‰ˆ R62 value" />
           <StatCard icon={DollarSign} label="Total Spent" value="R4,820" sub="This year" />
           <StatCard icon={Calendar} label="Events RSVP'd" value="6" sub="Upcoming: 2" />
         </div>
@@ -851,7 +985,7 @@ function EventsScreen() {
       <WebNavbar />
       <div className="px-12 py-8">
         <h1 className="text-3xl font-bold text-[#1A1210] font-[Poppins]">Events</h1>
-        <p className="text-[#8D6E63] mt-1">Live music, poetry, workshops and more — always something happening at Skinner.</p>
+        <p className="text-[#8D6E63] mt-1">Live music, poetry, workshops and more â€” always something happening at Skinner.</p>
         <div className="grid grid-cols-2 gap-6 mt-8">
           {events.map(e => (
             <Card key={e.id} className="overflow-hidden hover:shadow-md transition-shadow">
@@ -881,7 +1015,7 @@ function EventsScreen() {
   );
 }
 
-// ─── SECTION: STAFF PORTAL ────────────────────────────────────────────────────
+// â”€â”€â”€ SECTION: STAFF PORTAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function StaffSidebar({ active, setActive }: any) {
   const links = [
     { id: "ops", label: "Dashboard", icon: Home },
@@ -931,7 +1065,7 @@ function OpsTopbar() {
     <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-[rgba(78,52,46,0.10)]">
       <div>
         <p className="text-sm font-semibold text-[#1A1210]">Tuesday, 24 June 2025</p>
-        <p className="text-xs text-[#8D6E63]">Shift: 07:00 – 15:00</p>
+        <p className="text-xs text-[#8D6E63]">Shift: 07:00 â€“ 15:00</p>
       </div>
       <div className="flex items-center gap-3">
         <button className="relative p-2 rounded-full hover:bg-[#F3EDE9]">
@@ -1014,7 +1148,7 @@ function POSScreen() {
           <h2 className="font-bold text-[#1A1210] font-[Poppins]">Product Catalogue</h2>
           <div className="relative w-60">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8D6E63]" />
-            <input placeholder="Search products…" className="w-full pl-9 pr-3 py-2 rounded-lg border border-[rgba(78,52,46,0.15)] bg-[#F3EDE9] text-sm focus:outline-none" />
+            <input placeholder="Search productsâ€¦" className="w-full pl-9 pr-3 py-2 rounded-lg border border-[rgba(78,52,46,0.15)] bg-[#F3EDE9] text-sm focus:outline-none" />
           </div>
         </div>
         <div className="grid grid-cols-3 gap-3">
@@ -1112,7 +1246,7 @@ function InventoryScreen() {
         <div className="p-4 border-b border-[rgba(78,52,46,0.08)] flex items-center gap-3">
           <div className="relative flex-1 max-w-xs">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8D6E63]" />
-            <input placeholder="Search inventory…" className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#F3EDE9] border-0 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9800]/40" />
+            <input placeholder="Search inventoryâ€¦" className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#F3EDE9] border-0 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9800]/40" />
           </div>
         </div>
         <table className="w-full text-sm">
@@ -1186,9 +1320,9 @@ function AttendanceScreen() {
                   <tr key={s.id} className="border-b border-[rgba(78,52,46,0.06)]">
                     <td className="py-3 px-4 font-medium text-[#1A1210]">{s.name}</td>
                     <td className="py-3 px-4 text-[#8D6E63]">{s.role}</td>
-                    <td className="py-3 px-4 text-[#1A1210]">{s.status === "Active" ? "07:02" : "—"}</td>
-                    <td className="py-3 px-4 text-[#8D6E63]">{s.status === "Off-duty" ? "15:01" : "—"}</td>
-                    <td className="py-3 px-4">{s.status === "Off-duty" ? "7h 59m" : s.status === "Active" ? "Ongoing" : "—"}</td>
+                    <td className="py-3 px-4 text-[#1A1210]">{s.status === "Active" ? "07:02" : "â€”"}</td>
+                    <td className="py-3 px-4 text-[#8D6E63]">{s.status === "Off-duty" ? "15:01" : "â€”"}</td>
+                    <td className="py-3 px-4">{s.status === "Off-duty" ? "7h 59m" : s.status === "Active" ? "Ongoing" : "â€”"}</td>
                     <td className="py-3 px-4"><Badge color={s.status === "Active" ? "green" : "gray"}>{s.status}</Badge></td>
                   </tr>
                 ))}
@@ -1213,7 +1347,7 @@ function ScheduleScreen() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-bold text-[#1A1210] font-[Poppins]">Schedule — Week of 23 Jun 2025</h2>
+        <h2 className="font-bold text-[#1A1210] font-[Poppins]">Schedule â€” Week of 23 Jun 2025</h2>
         <AccentBtn small>Edit Schedule</AccentBtn>
       </div>
       <Card className="overflow-hidden">
@@ -1234,7 +1368,7 @@ function ScheduleScreen() {
                 {s.slots.map((on, j) => (
                   <td key={j} className="py-3 px-3 text-center">
                     {on ? (
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${s.color}`}>07:00–15:00</span>
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${s.color}`}>07:00â€“15:00</span>
                     ) : (
                       <span className="text-xs text-[#8D6E63]">Off</span>
                     )}
@@ -1249,7 +1383,7 @@ function ScheduleScreen() {
   );
 }
 
-// ─── SECTION: MANAGER DASHBOARD ───────────────────────────────────────────────
+// â”€â”€â”€ SECTION: MANAGER DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ManagerSidebar({ active, setActive }: any) {
   const links = [
     { id: "mgrdash", label: "Dashboard", icon: BarChart2 },
@@ -1483,7 +1617,7 @@ function EventMgmtScreen() {
                 </div>
                 <div>
                   <p className="text-xs text-[#8D6E63]">Revenue</p>
-                  <p className="font-bold text-[#4E342E]">{e.price === "Free" ? "—" : `R${(40 - e.spots) * parseInt(e.price.replace("R", ""))}`}</p>
+                  <p className="font-bold text-[#4E342E]">{e.price === "Free" ? "â€”" : `R${(40 - e.spots) * parseInt(e.price.replace("R", ""))}`}</p>
                 </div>
                 <div className="flex gap-2">
                   <OutlineBtn small>Edit</OutlineBtn>
@@ -1509,10 +1643,10 @@ function ReportsScreen() {
       </div>
       <div className="grid grid-cols-2 gap-5">
         {[
-          { title: "Sales Report", icon: DollarSign, sub: "R49,420 this week · +15% vs last week", color: "bg-orange-50 border-orange-100" },
-          { title: "Inventory Report", icon: Package, sub: "3 low-stock alerts · Last updated today", color: "bg-amber-50 border-amber-100" },
+          { title: "Sales Report", icon: DollarSign, sub: "R49,420 this week Â· +15% vs last week", color: "bg-orange-50 border-orange-100" },
+          { title: "Inventory Report", icon: Package, sub: "3 low-stock alerts Â· Last updated today", color: "bg-amber-50 border-amber-100" },
           { title: "Attendance Report", icon: UserCheck, sub: "96% attendance rate this week", color: "bg-green-50 border-green-100" },
-          { title: "Events Report", icon: Calendar, sub: "4 events this month · R12,360 revenue", color: "bg-blue-50 border-blue-100" },
+          { title: "Events Report", icon: Calendar, sub: "4 events this month Â· R12,360 revenue", color: "bg-blue-50 border-blue-100" },
         ].map((r, i) => (
           <Card key={i} className={`p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all border ${r.color}`}>
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${ORANGE}20` }}>
@@ -1608,7 +1742,7 @@ function AnalyticsScreen() {
   );
 }
 
-// ─── SECTION: MOBILE MOCKUPS ──────────────────────────────────────────────────
+// â”€â”€â”€ SECTION: MOBILE MOCKUPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PhoneFrame({ children, label }: { children: ReactNode; label: string }) {
   return (
     <div className="flex flex-col items-center gap-2">
@@ -1697,7 +1831,7 @@ function MobileLogin() {
           </div>
           <div>
             <label className="text-xs font-medium text-[#1A1210]">Password</label>
-            <input type="password" className="w-full mt-1 px-3 py-2 rounded-lg bg-[#F3EDE9] border-0 text-xs focus:outline-none" placeholder="••••••••" />
+            <input type="password" className="w-full mt-1 px-3 py-2 rounded-lg bg-[#F3EDE9] border-0 text-xs focus:outline-none" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
           </div>
           <button className="text-xs font-semibold" style={{ color: ORANGE }}>Forgot password?</button>
           <button className="w-full py-2.5 rounded-xl text-white text-xs font-semibold" style={{ background: BROWN }}>Sign In</button>
@@ -1717,7 +1851,7 @@ function MobileHome() {
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-[#D7CCC8] text-[10px]">Good morning,</p>
-              <p className="text-white font-bold text-base font-[Poppins]">Lerato 👋</p>
+              <p className="text-white font-bold text-base font-[Poppins]">Lerato ðŸ‘‹</p>
             </div>
             <div className="relative">
               <ShoppingCart size={20} color="white" />
@@ -1726,7 +1860,7 @@ function MobileHome() {
           </div>
           <div className="relative">
             <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8D6E63]" />
-            <input placeholder="Search menu, events…" className="w-full pl-8 pr-3 py-2 rounded-xl bg-white text-[10px] focus:outline-none" />
+            <input placeholder="Search menu, eventsâ€¦" className="w-full pl-8 pr-3 py-2 rounded-xl bg-white text-[10px] focus:outline-none" />
           </div>
         </div>
       </div>
@@ -1735,8 +1869,8 @@ function MobileHome() {
         <div className="relative h-28 rounded-2xl overflow-hidden">
           <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=200&fit=crop&auto=format" alt="Cafe" className="w-full h-full object-cover" />
           <div className="absolute inset-0 flex flex-col justify-end p-3" style={{ background: "linear-gradient(to top, rgba(62,39,35,0.85), transparent)" }}>
-            <p className="text-white font-bold text-xs font-[Poppins]">Jazz Night — Fri 27 Jun</p>
-            <p className="text-[#D7CCC8] text-[9px]">20:00 · R120</p>
+            <p className="text-white font-bold text-xs font-[Poppins]">Jazz Night â€” Fri 27 Jun</p>
+            <p className="text-[#D7CCC8] text-[9px]">20:00 Â· R120</p>
           </div>
         </div>
         {/* Loyalty */}
@@ -1777,7 +1911,7 @@ function MobileMenu() {
         <p className="font-bold text-sm text-[#1A1210] font-[Poppins]">Menu</p>
         <div className="relative mt-2">
           <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8D6E63]" />
-          <input placeholder="Search…" className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#F3EDE9] text-[10px] focus:outline-none" />
+          <input placeholder="Searchâ€¦" className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#F3EDE9] text-[10px] focus:outline-none" />
         </div>
         <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
           {["All", "Hot Coffee", "Cold", "Pastries"].map((c, i) => (
@@ -1981,7 +2115,7 @@ function MobileScreensSection() {
     <div className="p-8 space-y-12" style={{ background: "#F3EDE9", minHeight: "100vh" }}>
       <div>
         <h1 className="text-2xl font-bold text-[#1A1210] font-[Poppins]">Mobile App Mockups</h1>
-        <p className="text-[#8D6E63] mt-1">Customer, Staff & Manager apps — 375px phone frames</p>
+        <p className="text-[#8D6E63] mt-1">Customer, Staff & Manager apps â€” 375px phone frames</p>
       </div>
 
       <div>
@@ -2011,7 +2145,7 @@ function MobileScreensSection() {
                       <p className="text-[10px] font-semibold text-[#1A1210]">{item.item}</p>
                       {item.stock < item.min && <AlertTriangle size={10} className="text-red-500" />}
                     </div>
-                    <p className="text-[9px] text-[#8D6E63] mt-0.5">{item.stock} {item.unit} · min {item.min}{item.unit}</p>
+                    <p className="text-[9px] text-[#8D6E63] mt-0.5">{item.stock} {item.unit} Â· min {item.min}{item.unit}</p>
                   </div>
                 ))}
               </div>
@@ -2026,7 +2160,7 @@ function MobileScreensSection() {
                 </div>
                 <p className="text-white text-3xl font-bold font-[Poppins]">09:24</p>
                 <p className="text-[#D7CCC8] text-xs">Tuesday, 24 June 2025</p>
-                <p className="text-[#D7CCC8] text-xs">Sipho Mokoena · Supervisor</p>
+                <p className="text-[#D7CCC8] text-xs">Sipho Mokoena Â· Supervisor</p>
                 <div className="flex gap-3 w-full mt-4">
                   <button className="flex-1 py-3 rounded-xl font-semibold text-white text-xs" style={{ background: GREEN }}>Clock In</button>
                   <button className="flex-1 py-3 rounded-xl font-semibold text-white text-xs" style={{ background: RED }}>Clock Out</button>
@@ -2052,7 +2186,7 @@ function MobileScreensSection() {
                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0" style={{ background: BROWN }}>{s.name.charAt(0)}</div>
                       <div className="flex-1">
                         <p className="text-[10px] font-semibold text-[#1A1210]">{s.name}</p>
-                        <p className="text-[9px] text-[#8D6E63]">{s.role} · {s.shift}</p>
+                        <p className="text-[9px] text-[#8D6E63]">{s.role} Â· {s.shift}</p>
                       </div>
                       <div className={`w-2 h-2 rounded-full ${s.status === "Active" ? "bg-green-500" : "bg-gray-300"}`} />
                     </div>
@@ -2073,7 +2207,7 @@ function MobileScreensSection() {
                       <div className="p-2.5">
                         <p className="text-[10px] font-semibold text-[#1A1210]">{e.title}</p>
                         <div className="flex justify-between mt-1">
-                          <p className="text-[9px] text-[#8D6E63]">{e.date} · {e.time}</p>
+                          <p className="text-[9px] text-[#8D6E63]">{e.date} Â· {e.time}</p>
                           <p className="text-[9px] font-bold text-[#4E342E]">{e.price}</p>
                         </div>
                       </div>
@@ -2089,7 +2223,7 @@ function MobileScreensSection() {
   );
 }
 
-// ─── MAIN APP SHELL ───────────────────────────────────────────────────────────
+// â”€â”€â”€ MAIN APP SHELL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Section = "website" | "staff" | "manager" | "mobile" | "design";
 type WebScreen = "home" | "menu" | "cart" | "login" | "register" | "dashboard" | "events";
 type StaffScreen = "ops" | "pos" | "orders" | "inventory" | "attendance" | "schedule";
