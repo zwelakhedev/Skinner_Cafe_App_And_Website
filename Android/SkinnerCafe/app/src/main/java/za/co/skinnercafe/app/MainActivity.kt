@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.util.Log
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +42,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import za.co.skinnercafe.app.data.api.MenuCategory
+import za.co.skinnercafe.app.data.api.MenuProduct
+import za.co.skinnercafe.app.data.api.MenuRepository
 import za.co.skinnercafe.app.ui.theme.SkinnerCafeTheme
 
 private val CafeGreen = Color(0xFF315744)
@@ -67,6 +76,26 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SkinnerCafeHome() {
+    var categories by remember { mutableStateOf<List<MenuCategory>>(emptyList()) }
+    var products by remember { mutableStateOf<List<MenuProduct>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    var loadError by remember { mutableStateOf<String?>(null) }
+    var selectedCategory by remember { mutableStateOf("Coffee") }
+
+
+    LaunchedEffect(Unit) {
+        try {
+            val repository = MenuRepository()
+            categories = repository.getCategories()
+            products = repository.getProducts()
+            loadError = null
+        } catch (exception: Exception) {
+        Log.e("SkinnerCafeMenu", "Failed to load menu", exception)
+        loadError = "Unable to load the menu. Please try again."
+        } finally {
+            isLoading = false
+        }
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = CafeCream,
@@ -214,11 +243,18 @@ fun SkinnerCafeHome() {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(9.dp)
             ) {
-                CategoryChip("Coffee", selected = true)
-                CategoryChip("Iced drinks")
-                CategoryChip("Bakery")
-                CategoryChip("Sweet treats")
-                CategoryChip("Tea")
+                categories.forEach { category ->
+                    CategoryChip(
+                        label = category.categoryName,
+                        selected = category.categoryName.equals(
+                            selectedCategory,
+                            ignoreCase = true
+                        ),
+                        onClick = {
+                            selectedCategory = category.categoryName
+                        }
+                    )
+                }
             }
 
             Spacer(Modifier.height(30.dp))
@@ -255,25 +291,36 @@ fun SkinnerCafeHome() {
 
             Spacer(Modifier.height(16.dp))
 
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(13.dp)
             ) {
-                ProductCard(
-                    modifier = Modifier.weight(1f),
-                    imageRes = R.drawable.iced_caffee_latte,
-                    name = "Iced Latte",
-                    description = "Cool, smooth & creamy",
-                    price = "R 45"
-                )
+                val featuredProducts = products
+                    .filter {
+                        it.category.equals(
+                            selectedCategory,
+                            ignoreCase = true
+                        )
+                    }
+                    .take(2)
 
-                ProductCard(
-                    modifier = Modifier.weight(1f),
-                    imageRes = R.drawable.cappucino,
-                    name = "Cappuccino",
-                    description = "Rich, velvety coffee",
-                    price = "R 35"
-                )
+                featuredProducts.forEach { product ->
+                    ProductCard(
+                        modifier = Modifier.weight(1f),
+                        imageRes = productImageResource(product.productName),
+                        name = product.productName,
+                        description = product.description
+                            ?: "Freshly prepared at Skinner Cafe",
+                        price = "From R ${
+                            String.format(
+                                java.util.Locale.US,
+                                "%.2f",
+                                product.variants.minOfOrNull { it.price } ?: 0.0
+                            )
+                        }"
+                    )
+                }
             }
 
             Spacer(Modifier.height(28.dp))
@@ -337,9 +384,11 @@ private fun SectionHeading(
 @Composable
 private fun CategoryChip(
     label: String,
-    selected: Boolean = false
+    selected: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
     Surface(
+        onClick = onClick,
         color = if (selected) CafeDarkGreen else CafeWhite,
         shape = RoundedCornerShape(4.dp)
     ) {
@@ -433,6 +482,52 @@ private fun ProductCard(
                 )
             }
         }
+    }
+}
+
+
+private fun productImageResource(productName: String): Int {
+    return when (productName.trim().lowercase()) {
+        "caffe latte" -> R.drawable.caffe_latte
+        "cappuccino" -> R.drawable.cappucino
+        "americano" -> R.drawable.americano
+        "espresso" -> R.drawable.espresso
+        "flat white" -> R.drawable.flat_white
+        "cortado" -> R.drawable.cortado
+        "caffee mocha", "caffe mocha" -> R.drawable.caffee_mocha
+        "iced caffe latte" -> R.drawable.iced_caffee_latte
+        "iced caffe mocha" -> R.drawable.iced_caffe_mocha
+        "iced coffee" -> R.drawable.iced_coffee
+        "chai latte" -> R.drawable.chai_latte
+        "green/chai/peppermint" -> R.drawable.green_chai_peppermint
+        "rooibos/earl grey" -> R.drawable.rooibos_earl_grey
+        "plain croissant" -> R.drawable.plain_croissant
+        "almond croissant" -> R.drawable.almond_croissant
+        "chocolate croissant" -> R.drawable.chocolate_croissant
+        "ham & cheese croissant" -> R.drawable.ham_and_cheese_croissant
+        "blueberry muffin" -> R.drawable.blue_muffin
+        "double choc chip muffin" -> R.drawable.double_choc_chip__muffin
+        "lemon and poppyseed muffin" -> R.drawable.lemon_and_poppyseed_muffin
+        "chocolate ganache brownie" -> R.drawable.chocolate_ganache_brownie
+        "salted caramel cheesecake" -> R.drawable.salted_caramel_cheesecake
+        "strawberry cheesecake" -> R.drawable.strawberry_cheesecake
+        "skinner cookie" -> R.drawable.skinner_cookie
+        "cookie dough chocolate chip" -> R.drawable.cookie_dough_chocoloate_chip
+        "hot chocolate" -> R.drawable.hot_chocolate
+        "frosted caramel latte" -> R.drawable.frosted_caramel_latte
+        "spanish latte" -> R.drawable.spanish_latte
+        "coffee freezo" -> R.drawable.coffee_freezo
+        "salted caramel freezo" -> R.drawable.salted_caramel_freezo
+        "skinner freezo" -> R.drawable.skinner_freezo
+        "s'mores freezo", "smores freezo" -> R.drawable.s_mores_freezo
+        "toasted cheese bagel" -> R.drawable.toasted_cheese_bagel
+        "yoghurt and muesli" -> R.drawable.yoghurt_and_muesli
+        "mountain falls sparkling 1l" -> R.drawable.mountain_falls_sparkling_1l
+        "mountain falls still 500ml" -> R.drawable.mountain_falls_still_500ml
+        "san pellegrino sodas" -> R.drawable.san_pellegrino_sodas
+        "sir fruit fresh juices" -> R.drawable.sir_fruit_fresh_juices
+        "boosters" -> R.drawable.boosters
+        else -> R.drawable.skinner_cafe_logo
     }
 }
 
