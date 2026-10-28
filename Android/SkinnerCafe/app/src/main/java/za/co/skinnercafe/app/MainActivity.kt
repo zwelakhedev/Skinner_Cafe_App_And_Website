@@ -1,7 +1,7 @@
-
 package za.co.skinnercafe.app
 
 import android.os.Bundle
+import androidx.compose.foundation.clickable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -81,6 +81,7 @@ fun SkinnerCafeHome() {
     var isLoading by remember { mutableStateOf(true) }
     var loadError by remember { mutableStateOf<String?>(null) }
     var selectedCategory by remember { mutableStateOf("Coffee") }
+    var selectedTab by remember { mutableStateOf("Home") }
 
 
     LaunchedEffect(Unit) {
@@ -99,16 +100,35 @@ fun SkinnerCafeHome() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = CafeCream,
-        bottomBar = { CafeBottomNavigation() }
+        bottomBar = { CafeBottomNavigation(
+            selectedTab = selectedTab,
+            onTabSelected = { tab ->
+                selectedTab = tab
+            }
+        ) }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(CafeCream)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
         ) {
+            if (selectedTab == "Menu") {
+                SkinnerCafeMenuScreen(
+                    categories = categories,
+                    products = products,
+                    isLoading = isLoading,
+                    loadError = loadError,
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { selectedCategory = it }
+                )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(CafeCream)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp)
+                ) {
             Spacer(Modifier.height(18.dp))
 
             // Brand header
@@ -210,7 +230,7 @@ fun SkinnerCafeHome() {
                     Spacer(Modifier.height(18.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = { selectedTab = "Menu" },
                         shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = CafeCream,
@@ -353,10 +373,13 @@ fun SkinnerCafeHome() {
                 )
             }
 
-            Spacer(Modifier.height(26.dp))
+                    Spacer(Modifier.height(26.dp))
+                }
+            }
         }
     }
 }
+
 
 @Composable
 private fun SectionHeading(
@@ -507,6 +530,7 @@ private fun productImageResource(productName: String): Int {
         "ham & cheese croissant" -> R.drawable.ham_and_cheese_croissant
         "blueberry muffin" -> R.drawable.blue_muffin
         "double choc chip muffin" -> R.drawable.double_choc_chip__muffin
+        "lemon & poppyseed muffin",
         "lemon and poppyseed muffin" -> R.drawable.lemon_and_poppyseed_muffin
         "chocolate ganache brownie" -> R.drawable.chocolate_ganache_brownie
         "salted caramel cheesecake" -> R.drawable.salted_caramel_cheesecake
@@ -521,6 +545,7 @@ private fun productImageResource(productName: String): Int {
         "skinner freezo" -> R.drawable.skinner_freezo
         "s'mores freezo", "smores freezo" -> R.drawable.s_mores_freezo
         "toasted cheese bagel" -> R.drawable.toasted_cheese_bagel
+        "yoghurt & muesli",
         "yoghurt and muesli" -> R.drawable.yoghurt_and_muesli
         "mountain falls sparkling 1l" -> R.drawable.mountain_falls_sparkling_1l
         "mountain falls still 500ml" -> R.drawable.mountain_falls_still_500ml
@@ -532,7 +557,10 @@ private fun productImageResource(productName: String): Int {
 }
 
 @Composable
-private fun CafeBottomNavigation() {
+private fun CafeBottomNavigation(
+    selectedTab: String,
+    onTabSelected: (String) -> Unit
+) {
     Surface(
         color = CafeWhite,
         shadowElevation = 8.dp
@@ -544,10 +572,29 @@ private fun CafeBottomNavigation() {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomNavItem("Home", selected = true)
-            BottomNavItem("Menu")
-            BottomNavItem("Cart")
-            BottomNavItem("Profile")
+            BottomNavItem(
+                label = "Home",
+                selected = selectedTab == "Home",
+                onClick = { onTabSelected("Home") }
+            )
+
+            BottomNavItem(
+                label = "Menu",
+                selected = selectedTab == "Menu",
+                onClick = { onTabSelected("Menu") }
+            )
+
+            BottomNavItem(
+                label = "Cart",
+                selected = selectedTab == "Cart",
+                onClick = { onTabSelected("Cart") }
+            )
+
+            BottomNavItem(
+                label = "Profile",
+                selected = selectedTab == "Profile",
+                onClick = { onTabSelected("Profile") }
+            )
         }
     }
 }
@@ -555,10 +602,13 @@ private fun CafeBottomNavigation() {
 @Composable
 private fun BottomNavItem(
     label: String,
-    selected: Boolean = false
+    selected: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
     Column(
-        modifier = Modifier.width(68.dp),
+        modifier = Modifier
+            .width(68.dp)
+            .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -583,6 +633,163 @@ private fun BottomNavItem(
                 FontWeight.Normal
             }
         )
+    }
+}
+
+@Composable
+private fun SkinnerCafeMenuScreen(
+    categories: List<MenuCategory>,
+    products: List<MenuProduct>,
+    isLoading: Boolean,
+    loadError: String?,
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CafeCream)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp)
+    ) {
+        Spacer(Modifier.height(24.dp))
+
+        Text(
+            text = "SKINNER CAFE",
+            color = CafeGreen,
+            fontSize = 10.sp,
+            letterSpacing = 2.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            text = "Our Menu",
+            color = CafeDarkGreen,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        Text(
+            text = "Something delicious for every moment.",
+            color = CafeMuted,
+            fontSize = 13.sp
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.horizontalScroll(
+                rememberScrollState()
+            ),
+            horizontalArrangement = Arrangement.spacedBy(9.dp)
+        ) {
+            categories.forEach { category ->
+                CategoryChip(
+                    label = category.categoryName,
+                    selected = category.categoryName.equals(
+                        selectedCategory,
+                        ignoreCase = true
+                    ),
+                    onClick = {
+                        onCategorySelected(category.categoryName)
+                    }
+                )
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        when {
+            isLoading -> {
+                Text(
+                    text = "Loading our menu...",
+                    color = CafeMuted,
+                    fontSize = 14.sp
+                )
+            }
+
+            loadError != null -> {
+                Text(
+                    text = loadError,
+                    color = CafeDarkGreen,
+                    fontSize = 14.sp
+                )
+            }
+
+            else -> {
+                val filteredProducts = products.filter {
+                    it.category.equals(
+                        selectedCategory,
+                        ignoreCase = true
+                    )
+                }
+
+                Text(
+                    text = selectedCategory,
+                    color = CafeDarkGreen,
+                    fontSize = 21.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    text = "${filteredProducts.size} items",
+                    color = CafeMuted,
+                    fontSize = 12.sp
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                filteredProducts.chunked(2).forEach { productRow ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(13.dp)
+                    ) {
+                        productRow.forEach { product ->
+                            ProductCard(
+                                modifier = Modifier.weight(1f),
+                                imageRes = productImageResource(
+                                    product.productName
+                                ),
+                                name = product.productName,
+                                description = product.description
+                                    ?: "Freshly prepared at Skinner Cafe",
+                                price = "From R ${
+                                    String.format(
+                                        java.util.Locale.US,
+                                        "%.2f",
+                                        product.variants.minOfOrNull {
+                                            it.price
+                                        } ?: 0.0
+                                    )
+                                }"
+                            )
+                        }
+
+                        if (productRow.size == 1) {
+                            Spacer(Modifier.weight(1f))
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+                }
+
+                if (filteredProducts.isEmpty()) {
+                    Text(
+                        text = "No products are available in this category yet.",
+                        color = CafeMuted,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
     }
 }
 

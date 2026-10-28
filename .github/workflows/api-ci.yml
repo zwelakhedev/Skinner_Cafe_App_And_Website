@@ -1,0 +1,39 @@
+
+name: Skinner Cafe API CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/android-full-menu
+  pull_request:
+    branches:
+      - main
+      - feature/android-full-menu
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore API/SkinnerCafe.slnx
+
+      - name: Build API
+        run: dotnet build API/SkinnerCafe.slnx --configuration Release --no-restore
+
+      - name: Run automated API tests
+        run: dotnet test tests/api/SkinnerCafe.API.Tests/SkinnerCafe.API.Tests.csproj --configuration Release --no-restore --logger "console;verbosity=normal"
