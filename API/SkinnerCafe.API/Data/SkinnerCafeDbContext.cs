@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Models;
 
 namespace SkinnerCafe.API.Data;
 
-public partial class SkinnerCafeDbContext : DbContext
+public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
 {
     public SkinnerCafeDbContext(DbContextOptions<SkinnerCafeDbContext> options)
         : base(options)
@@ -42,6 +43,7 @@ public partial class SkinnerCafeDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<AddOn>(entity =>
         {
             entity.HasIndex(e => e.AddOnName, "UQ_AddOns_AddOnName").IsUnique();
