@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Data;
@@ -10,10 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Register controllers.
 builder.Services.AddControllers();
 
-// Register Entity Framework Core with the SkinnerCafe database.
-builder.Services.AddDbContext<SkinnerCafeDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("SkinnerCafe")));
+// Register SQL Server for normal application environments.
+// The test factory supplies SQLite when running automated tests.
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<SkinnerCafeDbContext>(options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("SkinnerCafe")));
+}
 
 // Register ASP.NET Core Identity.
 builder.Services
@@ -148,3 +151,7 @@ app.MapGet("/api/health/database", async (SkinnerCafeDbContext db) =>
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+}
