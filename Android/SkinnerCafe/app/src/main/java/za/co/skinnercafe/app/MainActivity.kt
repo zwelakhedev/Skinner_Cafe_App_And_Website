@@ -30,6 +30,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +53,23 @@ import za.co.skinnercafe.app.data.api.MenuCategory
 import za.co.skinnercafe.app.data.api.MenuProduct
 import za.co.skinnercafe.app.data.api.MenuRepository
 import za.co.skinnercafe.app.ui.theme.SkinnerCafeTheme
+import za.co.skinnercafe.app.navigation.SkinnerCafeNavigation
+import za.co.skinnercafe.app.data.api.CustomerDto
+import coil.compose.AsyncImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Context
+import android.net.Uri
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import androidx.compose.ui.platform.LocalContext
+import za.co.skinnercafe.app.ui.auth.AuthUiState
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import android.provider.OpenableColumns
+import android.widget.Toast
 
 private val CafeGreen = Color(0xFF315744)
 private val CafeDarkGreen = Color(0xFF183D2C)
@@ -68,21 +87,86 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SkinnerCafeTheme {
-                SkinnerCafeHome()
+                SkinnerCafeNavigation(
+                    homeContent = {
+                            customer,
+                            onLogout,
+                            onUploadProfilePicture,
+                            onRemoveProfilePicture,
+                            authState ->
+                        SkinnerCafeHome(
+                            customer = customer,
+                            onLogout = onLogout,
+                            onUploadProfilePicture = onUploadProfilePicture,
+                            onRemoveProfilePicture = onRemoveProfilePicture,
+                            authState = authState
+                        )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun SkinnerCafeHome() {
+fun SkinnerCafeHome(
+    customer: CustomerDto? = null,
+    onLogout: () -> Unit = {},
+    onUploadProfilePicture: (MultipartBody.Part) -> Unit = {},
+    onRemoveProfilePicture: () -> Unit = {},
+    authState: AuthUiState = AuthUiState()
+) {
+    if (authState.isLoading) {
+        CircularProgressIndicator()
+    }
+
+    authState.successMessage?.let { message ->
+        Text(
+            text = message,
+            color = CafeSage
+        )
+    }
+
+    authState.errorMessage?.let { message ->
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+    val customerInitials = customer?.let {
+        "${it.firstName.firstOrNull() ?: ""}${it.lastName.firstOrNull() ?: ""}"
+            .uppercase()
+    }?.ifBlank { "SC" } ?: "SC"
     var categories by remember { mutableStateOf<List<MenuCategory>>(emptyList()) }
     var products by remember { mutableStateOf<List<MenuProduct>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var loadError by remember { mutableStateOf<String?>(null) }
     var selectedCategory by remember { mutableStateOf("Coffee") }
     var selectedTab by remember { mutableStateOf("Home") }
+    val context = LocalContext.current
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            val imagePart = createProfilePicturePart(
+                context = context,
+                uri = uri
+            )
 
+            if (imagePart != null) {
+                onUploadProfilePicture(imagePart)
+            } else {
+                Toast.makeText(
+                    context,
+                    "Unable to read image or image exceeds 5 MB.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+    var isAccountMenuExpanded by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         try {
@@ -156,18 +240,77 @@ fun SkinnerCafeHome() {
                     )
                 }
 
-                Surface(
-                    shape = CircleShape,
-                    color = CafeSage,
-                    modifier = Modifier.size(46.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "SC",
-                            color = CafeDarkGreen,
-                            fontSize = 14.sp,
-                            letterSpacing = 1.sp,
-                            fontWeight = FontWeight.Bold
+                Box {
+                    Surface(
+                        shape = CircleShape,
+                        color = CafeSage,
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clickable {
+                                isAccountMenuExpanded = true
+                            }
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            if (!customer?.profilePictureUrl.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = customer?.profilePictureUrl,
+                                    contentDescription = "Profile picture",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.size(46.dp)
+                                )
+                            } else {
+                                Text(
+                                    text = customerInitials,
+                                    color = CafeDarkGreen,
+                                    fontSize = 14.sp,
+                                    letterSpacing = 1.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
+                    DropdownMenu(
+                        expanded = isAccountMenuExpanded,
+                        onDismissRequest = { isAccountMenuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Upload Profile Picture") },
+                            enabled = !authState.isLoading,
+                            onClick = {
+                                isAccountMenuExpanded = false
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
+                            }
+                        )
+
+                        if (!customer?.profilePictureUrl.isNullOrBlank()) {
+                            DropdownMenuItem(
+                                text = { Text("Remove Profile Picture") },
+                                enabled = !authState.isLoading,
+                                onClick = {
+                                    isAccountMenuExpanded = false
+                                    onRemoveProfilePicture()
+                                }
+                            )
+                        }
+
+                        DropdownMenuItem(
+                            text = { Text("My Orders") },
+                            onClick = {
+                                isAccountMenuExpanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("Logout") },
+                            onClick = {
+                                isAccountMenuExpanded = false
+                                onLogout()
+                            }
                         )
                     }
                 }
@@ -380,6 +523,48 @@ fun SkinnerCafeHome() {
     }
 }
 
+private fun createProfilePicturePart(
+    context: Context,
+    uri: Uri
+): MultipartBody.Part? {
+    val contentResolver = context.contentResolver
+
+    val mimeType = contentResolver.getType(uri) ?: return null
+
+    // Check the selected image size before reading it into memory.
+    val cursor = contentResolver.query(
+        uri,
+        arrayOf(OpenableColumns.SIZE),
+        null,
+        null,
+        null
+    )
+
+    val fileSize = cursor?.use {
+        if (it.moveToFirst()) {
+            it.getLong(it.getColumnIndexOrThrow(OpenableColumns.SIZE))
+        } else {
+            -1L
+        }
+    } ?: -1L
+
+    val maxSize = 5 * 1024 * 1024L
+
+    if (fileSize > maxSize) {
+        return null
+    }
+
+    val bytes = contentResolver.openInputStream(uri)
+        ?.use { it.readBytes() } ?: return null
+
+    val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+
+    return MultipartBody.Part.createFormData(
+        "File",
+        "profile_picture",
+        requestBody
+    )
+}
 
 @Composable
 private fun SectionHeading(

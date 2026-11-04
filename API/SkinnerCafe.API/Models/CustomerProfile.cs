@@ -17,6 +17,8 @@ public partial class CustomerProfile
 
     public string? PhoneNumber { get; set; }
 
+    public string? ProfilePictureUrl { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public bool IsActive { get; set; }

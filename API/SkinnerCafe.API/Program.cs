@@ -1,13 +1,53 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Data;
 using SkinnerCafe.API.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using SkinnerCafe.API.Services;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure the mkcert HTTPS certificate for local development only.
+if (builder.Environment.IsDevelopment())
+{
+    var certificatePath = Path.GetFullPath(
+        Path.Combine(
+            builder.Environment.ContentRootPath,
+            "..",
+            "certs",
+            "skinnercafe-dev.pfx"));
+
+    var certificatePassword =
+        builder.Configuration["Certificates:Password"];
+
+    if (string.IsNullOrWhiteSpace(certificatePassword))
+    {
+        throw new InvalidOperationException(
+            "The development certificate password is missing from User Secrets.");
+    }
+
+    var certificate = X509CertificateLoader.LoadPkcs12FromFile(
+        certificatePath,
+        certificatePassword,
+        X509KeyStorageFlags.UserKeySet |
+        X509KeyStorageFlags.PersistKeySet);
+
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(5043);
+
+        options.ListenAnyIP(7277, listenOptions =>
+        {
+            listenOptions.UseHttps(certificate);
+        });
+    });
+}
+
 // Register controllers.
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ProfilePictureService>();
 
 // Register SQL Server for normal application environments.
 // The test factory supplies SQLite when running automated tests.
@@ -135,6 +175,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("SkinnerCafeWeb");
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

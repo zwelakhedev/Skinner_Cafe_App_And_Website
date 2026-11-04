@@ -63,3 +63,17 @@ captures/
 *.tmp
 *.temp
 *.bak
+
+# Local development certificates and private keys
+API/certs/
+
+
+# Personal profile-picture uploads
+API/SkinnerCafe.API/wwwroot/uploads/
+
+# Temporary certificate diagnostic projects
+API/CertificateCheck/
+API/CertificateClient/
+
+# Public Android debug CA certificate
+!Android/SkinnerCafe/app/src/debug/res/raw/skinnercafe_root_ca.pem

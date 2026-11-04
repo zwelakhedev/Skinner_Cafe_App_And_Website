@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Data;
 using SkinnerCafe.API.Models;
+using SkinnerCafe.API.Services;
 
 namespace SkinnerCafe.API.Controllers;
 
@@ -15,15 +16,18 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly SkinnerCafeDbContext _db;
+    private readonly ProfilePictureService _profilePictureService;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        SkinnerCafeDbContext db)
+        SkinnerCafeDbContext db,
+        ProfilePictureService profilePictureService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _db = db;
+        _profilePictureService = profilePictureService;
     }
 
     public record RegisterRequest(
@@ -105,6 +109,9 @@ public class AuthController : ControllerBase
             });
         }
 
+        // Automatically sign in the customer after successful registration.
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
         return StatusCode(StatusCodes.Status201Created, new
         {
             message = "Account created successfully.",
@@ -113,7 +120,8 @@ public class AuthController : ControllerBase
                 profile.CustomerId,
                 profile.FirstName,
                 profile.LastName,
-                profile.Email
+                profile.Email,
+                profile.PhoneNumber
             }
         });
     }
@@ -201,6 +209,10 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
+        var profilePictureUrl = string.IsNullOrWhiteSpace(profile.ProfilePictureUrl)
+            ? null
+            : $"{Request.Scheme}://{Request.Host}{profile.ProfilePictureUrl}";
+
         return Ok(new
         {
             customer = new
@@ -209,8 +221,108 @@ public class AuthController : ControllerBase
                 profile.FirstName,
                 profile.LastName,
                 profile.Email,
-                profile.PhoneNumber
+                profile.PhoneNumber,
+                ProfilePictureUrl = profilePictureUrl
             }
         });
     }
+
+    [HttpPost("profile-picture")]
+    [Authorize]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadProfilePicture(
+    [FromForm] UploadProfilePictureRequest request)
+    {
+        var file = request.File;
+
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest(new
+            {
+                message = "Please select an image to upload."
+            });
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var profile = await _db.CustomerProfiles
+            .SingleOrDefaultAsync(c => c.IdentityUserId == user.Id);
+
+        if (profile is null || !profile.IsActive)
+        {
+            return Unauthorized();
+        }
+
+        var oldPictureUrl = profile.ProfilePictureUrl;
+
+        try
+        {
+            var newPictureUrl =
+                await _profilePictureService.SaveAsync(file);
+
+            profile.ProfilePictureUrl = newPictureUrl;
+
+            await _db.SaveChangesAsync();
+
+            _profilePictureService.Delete(oldPictureUrl);
+
+            var pictureUrl = $"{Request.Scheme}://{Request.Host}{newPictureUrl}";
+
+            return Ok(new
+            {
+                message = "Profile picture updated successfully.",
+                profilePictureUrl = pictureUrl
+            });
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new
+            {
+                message = exception.Message
+            });
+        }
+    }
+    [HttpDelete("profile-picture")]
+    [Authorize]
+    public async Task<IActionResult> RemoveProfilePicture()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var profile = await _db.CustomerProfiles
+            .SingleOrDefaultAsync(c => c.IdentityUserId == user.Id);
+
+        if (profile is null || !profile.IsActive)
+        {
+            return Unauthorized();
+        }
+
+        var oldPictureUrl = profile.ProfilePictureUrl;
+
+        profile.ProfilePictureUrl = null;
+
+        await _db.SaveChangesAsync();
+
+        _profilePictureService.Delete(oldPictureUrl);
+
+        return Ok(new
+        {
+            message = "Profile picture removed successfully."
+        });
+    }
 }
+
+public class UploadProfilePictureRequest
+{
+    public IFormFile? File { get; set; }
+}
+

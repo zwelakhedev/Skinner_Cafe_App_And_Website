@@ -350,6 +350,9 @@ namespace SkinnerCafe.API.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("CustomerId");
 
                     b.HasIndex(new[] { "Email" }, "UQ_CustomerProfiles_Email")
