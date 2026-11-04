@@ -77,3 +77,6 @@ API/CertificateClient/
 
 # Public Android debug CA certificate
 !Android/SkinnerCafe/app/src/debug/res/raw/skinnercafe_root_ca.pem
+
+# Include the Skinner Cafe assessment database backup
+!Database/SkinnerCafe_Assessment.bak
