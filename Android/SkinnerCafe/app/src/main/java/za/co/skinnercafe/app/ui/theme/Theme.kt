@@ -1,58 +1,103 @@
 package za.co.skinnercafe.app.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+data class CafeColors(
+    val green: Color,
+    val darkGreen: Color,
+    val cream: Color,
+    val white: Color,
+    val text: Color,
+    val muted: Color,
+    val sage: Color,
+    val gold: Color
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val LightCafeColors = CafeColors(
+    green = Color(0xFF315744),
+    darkGreen = Color(0xFF183D2C),
+    cream = Color(0xFFF7F4EC),
+    white = Color(0xFFFFFEFA),
+    text = Color(0xFF292D27),
+    muted = Color(0xFF77796F),
+    sage = Color(0xFFE4E9DF),
+    gold = Color(0xFFD8BB83)
+)
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+private val DarkCafeColors = CafeColors(
+    green = Color(0xFF9ABFA6),
+    darkGreen = Color(0xFFB8D0BD),
+    cream = Color(0xFF171E19),
+    white = Color(0xFF222C25),
+    text = Color(0xFFE8E9E1),
+    muted = Color(0xFFBBC6BC),
+    sage = Color(0xFF35443A),
+    gold = Color(0xFFD8BB83)
+)
+
+val LocalCafeColors = staticCompositionLocalOf {
+    LightCafeColors
+}
+
+private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF315744),
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = Color(0xFFD8BB83),
+    onSecondary = Color(0xFF292D27),
+    tertiary = Color(0xFF183D2C),
+    background = Color(0xFFF7F4EC),
+    onBackground = Color(0xFF292D27),
+    surface = Color(0xFFFFFEFA),
+    onSurface = Color(0xFF292D27),
+    surfaceVariant = Color(0xFFE4E9DF),
+    onSurfaceVariant = Color(0xFF77796F)
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFF9ABFA6),
+    onPrimary = Color(0xFF183D2C),
+    secondary = Color(0xFFD8BB83),
+    onSecondary = Color(0xFF292D27),
+    tertiary = Color(0xFFB8D0BD),
+    background = Color(0xFF171E19),
+    onBackground = Color(0xFFE8E9E1),
+    surface = Color(0xFF222C25),
+    onSurface = Color(0xFFE8E9E1),
+    surfaceVariant = Color(0xFF35443A),
+    onSurfaceVariant = Color(0xFFBBC6BC)
 )
 
 @Composable
 fun SkinnerCafeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = false,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = if (darkTheme) {
+        DarkColorScheme
+    } else {
+        LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val cafeColors = if (darkTheme) {
+        DarkCafeColors
+    } else {
+        LightCafeColors
+    }
+
+    CompositionLocalProvider(
+        LocalCafeColors provides cafeColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

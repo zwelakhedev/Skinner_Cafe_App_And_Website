@@ -47,6 +47,16 @@ interface MenuApiService {
     @DELETE("api/auth/profile-picture")
     suspend fun removeProfilePicture(): AuthResponse
 
+    @POST("api/orders")
+    suspend fun createOrder(
+        @Body request: CreateOrderRequest
+    ): CreateOrderResponse
+
+    @POST("api/orders/{orderId}/simulate-payment")
+    suspend fun simulatePayment(
+        @retrofit2.http.Path("orderId") orderId: Int,
+        @Body request: SimulatePaymentRequest
+    ): SimulatePaymentResponse
 }
 
 object MenuApiClient {

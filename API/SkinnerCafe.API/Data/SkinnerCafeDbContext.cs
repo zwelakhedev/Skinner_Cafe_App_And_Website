@@ -103,6 +103,7 @@ public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.CustomerName).HasMaxLength(200);
             entity.Property(e => e.CustomerPhone).HasMaxLength(30);
+            entity.Property(e => e.GuestAccessTokenHash).HasMaxLength(64);
             entity.Property(e => e.DiscountAmount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.OrderNumber).HasMaxLength(30);
             entity.Property(e => e.OrderSource).HasMaxLength(10);
@@ -202,6 +203,7 @@ public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.PaidAt).HasPrecision(0);
             entity.Property(e => e.PaymentMethod).HasMaxLength(20);
+            entity.Property(e => e.PaymentProvider).HasMaxLength(40);
             entity.Property(e => e.PaymentStatus)
                 .HasMaxLength(20)
                 .HasDefaultValue("Pending");

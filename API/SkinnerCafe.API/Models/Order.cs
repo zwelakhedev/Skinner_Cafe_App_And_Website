@@ -33,6 +33,8 @@ public partial class Order
 
     public DateTime? CompletedAt { get; set; }
 
+    public string? GuestAccessTokenHash { get; set; }
+
     public virtual CustomerProfile? Customer { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

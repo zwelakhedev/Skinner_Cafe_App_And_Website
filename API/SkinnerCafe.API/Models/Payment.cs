@@ -15,6 +15,8 @@ public partial class Payment
 
     public decimal Amount { get; set; }
 
+    public string? PaymentProvider { get; set; }
+
     public string? ProviderReference { get; set; }
 
     public string? IdempotencyKey { get; set; }
@@ -25,3 +27,4 @@ public partial class Payment
 
     public virtual Order Order { get; set; } = null!;
 }
+

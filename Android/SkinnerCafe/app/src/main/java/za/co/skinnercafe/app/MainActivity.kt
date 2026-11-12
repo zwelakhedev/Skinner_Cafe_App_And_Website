@@ -1,6 +1,12 @@
-package za.co.skinnercafe.app
+﻿package za.co.skinnercafe.app
+
+import androidx.compose.material3.RadioButton
+
+import androidx.compose.material3.Checkbox
 
 import android.os.Bundle
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Divider
 import androidx.compose.foundation.clickable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -70,15 +76,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import android.provider.OpenableColumns
 import android.widget.Toast
-
-private val CafeGreen = Color(0xFF315744)
-private val CafeDarkGreen = Color(0xFF183D2C)
-private val CafeCream = Color(0xFFF7F4EC)
-private val CafeWhite = Color(0xFFFFFEFA)
-private val CafeText = Color(0xFF292D27)
-private val CafeMuted = Color(0xFF77796F)
-private val CafeSage = Color(0xFFE4E9DF)
-private val CafeGold = Color(0xFFD8BB83)
+import androidx.compose.runtime.collectAsState
+import za.co.skinnercafe.app.ui.settings.AppPreferences
+import za.co.skinnercafe.app.ui.theme.LocalCafeColors
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,20 +86,33 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            SkinnerCafeTheme {
+            val appPreferences = remember {
+                AppPreferences(applicationContext)
+            }
+
+            val isDarkTheme by appPreferences.isDarkTheme.collectAsState(
+                initial = false
+            )
+
+            SkinnerCafeTheme(
+                darkTheme = isDarkTheme,
+                dynamicColor = false
+            ) {
                 SkinnerCafeNavigation(
                     homeContent = {
                             customer,
                             onLogout,
                             onUploadProfilePicture,
                             onRemoveProfilePicture,
-                            authState ->
+                            authState,
+                            onOpenSettings ->
                         SkinnerCafeHome(
                             customer = customer,
                             onLogout = onLogout,
                             onUploadProfilePicture = onUploadProfilePicture,
                             onRemoveProfilePicture = onRemoveProfilePicture,
-                            authState = authState
+                            authState = authState,
+                            onOpenSettings = onOpenSettings
                         )
                     }
                 )
@@ -114,7 +127,8 @@ fun SkinnerCafeHome(
     onLogout: () -> Unit = {},
     onUploadProfilePicture: (MultipartBody.Part) -> Unit = {},
     onRemoveProfilePicture: () -> Unit = {},
-    authState: AuthUiState = AuthUiState()
+    authState: AuthUiState = AuthUiState(),
+    onOpenSettings: () -> Unit = {}
 ) {
     if (authState.isLoading) {
         CircularProgressIndicator()
@@ -123,7 +137,7 @@ fun SkinnerCafeHome(
     authState.successMessage?.let { message ->
         Text(
             text = message,
-            color = CafeSage
+            color = MaterialTheme.colorScheme.surfaceVariant
         )
     }
 
@@ -143,6 +157,15 @@ fun SkinnerCafeHome(
     var loadError by remember { mutableStateOf<String?>(null) }
     var selectedCategory by remember { mutableStateOf("Coffee") }
     var selectedTab by remember { mutableStateOf("Home") }
+    var selectedProduct by remember {
+        mutableStateOf<MenuProduct?>(null)
+    }
+    var cartItems by remember {
+        mutableStateOf<List<CartItem>>(emptyList())
+    }
+    var isCheckoutScreen by remember {
+        mutableStateOf(false)
+    }
     val context = LocalContext.current
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -183,33 +206,102 @@ fun SkinnerCafeHome(
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = CafeCream,
-        bottomBar = { CafeBottomNavigation(
-            selectedTab = selectedTab,
-            onTabSelected = { tab ->
-                selectedTab = tab
-            }
-        ) }
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = {
+            CafeBottomNavigation(
+                selectedTab = selectedTab,
+                onTabSelected = { tab ->
+                    if (tab == "Profile") {
+                        onOpenSettings()
+                    } else {
+                        selectedTab = tab
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (selectedTab == "Menu") {
+            if (selectedProduct != null) {
+                ProductDetailsScreen(
+                    product = selectedProduct!!,
+                    onBack = {
+                        selectedProduct = null
+                    },
+                    onAddToCart = { item ->
+                        val existingIndex = cartItems.indexOfFirst { existing ->
+                            existing.product.productId == item.product.productId &&
+                                    existing.variant?.variantId == item.variant?.variantId &&
+                                    existing.addOns.map { it.addOnId }.toSet() ==
+                                    item.addOns.map { it.addOnId }.toSet()
+                        }
+
+                        cartItems = if (existingIndex >= 0) {
+                            cartItems.mapIndexed { index, existing ->
+                                if (index == existingIndex) {
+                                    existing.copy(
+                                        quantity = existing.quantity + item.quantity
+                                    )
+                                } else {
+                                    existing
+                                }
+                            }
+                        } else {
+                            cartItems + item
+                        }
+
+                        selectedProduct = null
+                        selectedTab = "Cart"
+                    }
+                )
+            } else if (selectedTab == "Menu") {
                 SkinnerCafeMenuScreen(
                     categories = categories,
                     products = products,
                     isLoading = isLoading,
                     loadError = loadError,
                     selectedCategory = selectedCategory,
-                    onCategorySelected = { selectedCategory = it }
+                    onCategorySelected = { selectedCategory = it },
+                    onViewItem = { product -> selectedProduct = product }
+                )
+            } else if (selectedTab == "Cart" && isCheckoutScreen) {
+                CheckoutScreen(
+                    customer = customer,
+                    cartItems = cartItems,
+                    onBack = {
+                        isCheckoutScreen = false
+                    },
+                    onOrderPlaced = {
+                        cartItems = emptyList()
+                    }
+                )
+            } else if (selectedTab == "Cart") {
+                CartScreen(
+                    cartItems = cartItems,
+                    onQuantityChange = { index, quantity ->
+                        cartItems = cartItems.toMutableList().also {
+                            it[index] = it[index].copy(quantity = quantity)
+                        }
+                    },
+                    onRemoveItem = { index ->
+                        cartItems = cartItems.toMutableList().also {
+                            it.removeAt(index)
+                        }
+                    },
+                    onCheckout = {
+                        if (cartItems.isNotEmpty()) {
+                            isCheckoutScreen = true
+                        }
+                    }
                 )
             } else {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(CafeCream)
+                        .background(MaterialTheme.colorScheme.background)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 20.dp)
                 ) {
@@ -233,7 +325,7 @@ fun SkinnerCafeHome(
 
                     Text(
                         text = "YOUR DAILY COFFEE RITUAL",
-                        color = CafeMuted,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 10.sp,
                         letterSpacing = 1.7.sp,
                         fontWeight = FontWeight.Medium
@@ -243,7 +335,7 @@ fun SkinnerCafeHome(
                 Box {
                     Surface(
                         shape = CircleShape,
-                        color = CafeSage,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         modifier = Modifier
                             .size(46.dp)
                             .clickable {
@@ -261,7 +353,7 @@ fun SkinnerCafeHome(
                             } else {
                                 Text(
                                     text = customerInitials,
-                                    color = CafeDarkGreen,
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontSize = 14.sp,
                                     letterSpacing = 1.sp,
                                     fontWeight = FontWeight.Bold
@@ -335,7 +427,7 @@ fun SkinnerCafeHome(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(CafeDarkGreen.copy(alpha = 0.76f))
+                        .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.76f))
                 )
 
                 Column(
@@ -346,7 +438,7 @@ fun SkinnerCafeHome(
                 ) {
                     Text(
                         text = "MADE FOR YOUR MOMENT",
-                        color = CafeGold,
+                        color = MaterialTheme.colorScheme.secondary,
                         fontSize = 10.sp,
                         letterSpacing = 2.sp,
                         fontWeight = FontWeight.Bold
@@ -356,7 +448,7 @@ fun SkinnerCafeHome(
 
                     Text(
                         text = "Good coffee.\nBetter moments.",
-                        color = CafeWhite,
+                        color = MaterialTheme.colorScheme.surface,
                         fontSize = 31.sp,
                         lineHeight = 37.sp,
                         fontWeight = FontWeight.SemiBold
@@ -366,7 +458,7 @@ fun SkinnerCafeHome(
 
                     Text(
                         text = "Your favourite cup is waiting.",
-                        color = CafeWhite.copy(alpha = 0.9f),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                         fontSize = 13.sp
                     )
 
@@ -376,8 +468,8 @@ fun SkinnerCafeHome(
                         onClick = { selectedTab = "Menu" },
                         shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = CafeCream,
-                            contentColor = CafeDarkGreen
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
                         Text(
@@ -431,21 +523,21 @@ fun SkinnerCafeHome(
                 Column {
                     Text(
                         text = "Customer favourites",
-                        color = CafeText,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = "Worth coming back for.",
-                        color = CafeMuted,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                 }
 
                 Text(
                     text = "OUR PICKS",
-                    color = CafeGreen,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 9.sp,
                     letterSpacing = 1.3.sp,
                     fontWeight = FontWeight.Bold
@@ -481,7 +573,10 @@ fun SkinnerCafeHome(
                                 "%.2f",
                                 product.variants.minOfOrNull { it.price } ?: 0.0
                             )
-                        }"
+                        }",
+                        onViewItem = {
+                            selectedProduct = product
+                        }
                     )
                 }
             }
@@ -493,14 +588,14 @@ fun SkinnerCafeHome(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = CafeSage,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(20.dp)
             ) {
                 Text(
                     text = "A moment to slow down.",
-                    color = CafeDarkGreen,
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -510,7 +605,7 @@ fun SkinnerCafeHome(
                 Text(
                     text = "From your first morning coffee to an afternoon treat, " +
                             "make a little room for something delicious.",
-                    color = CafeMuted,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp,
                     lineHeight = 21.sp
                 )
@@ -574,7 +669,7 @@ private fun SectionHeading(
     Column {
         Text(
             text = title,
-            color = CafeText,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -583,7 +678,7 @@ private fun SectionHeading(
 
         Text(
             text = subtitle,
-            color = CafeMuted,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 12.sp
         )
     }
@@ -597,12 +692,12 @@ private fun CategoryChip(
 ) {
     Surface(
         onClick = onClick,
-        color = if (selected) CafeDarkGreen else CafeWhite,
+        color = if (selected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(4.dp)
     ) {
         Text(
             text = label,
-            color = if (selected) CafeWhite else CafeText,
+            color = if (selected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
             fontSize = 12.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
             modifier = Modifier.padding(
@@ -619,13 +714,14 @@ private fun ProductCard(
     imageRes: Int,
     name: String,
     description: String,
-    price: String
+    price: String,
+    onViewItem: () -> Unit
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = CafeWhite
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 1.dp
@@ -648,7 +744,7 @@ private fun ProductCard(
 
             Text(
                 text = name,
-                color = CafeText,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -657,7 +753,7 @@ private fun ProductCard(
 
             Text(
                 text = description,
-                color = CafeMuted,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 11.sp,
                 lineHeight = 16.sp
             )
@@ -666,7 +762,7 @@ private fun ProductCard(
 
             Text(
                 text = price,
-                color = CafeDarkGreen,
+                color = MaterialTheme.colorScheme.tertiary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -674,12 +770,12 @@ private fun ProductCard(
             Spacer(Modifier.height(10.dp))
 
             Button(
-                onClick = { },
+                onClick = onViewItem,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = CafeGreen,
-                    contentColor = CafeWhite
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.surface
                 )
             ) {
                 Text(
@@ -692,7 +788,6 @@ private fun ProductCard(
         }
     }
 }
-
 
 private fun productImageResource(productName: String): Int {
     return when (productName.trim().lowercase()) {
@@ -747,7 +842,7 @@ private fun CafeBottomNavigation(
     onTabSelected: (String) -> Unit
 ) {
     Surface(
-        color = CafeWhite,
+        color = MaterialTheme.colorScheme.surface,
         shadowElevation = 8.dp
     ) {
         Row(
@@ -802,7 +897,7 @@ private fun BottomNavItem(
                 .height(3.dp)
                 .clip(CircleShape)
                 .background(
-                    if (selected) CafeGreen else Color.Transparent
+                    if (selected) MaterialTheme.colorScheme.primary else Color.Transparent
                 )
         )
 
@@ -810,7 +905,7 @@ private fun BottomNavItem(
 
         Text(
             text = label,
-            color = if (selected) CafeDarkGreen else CafeMuted,
+            color = if (selected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 11.sp,
             fontWeight = if (selected) {
                 FontWeight.Bold
@@ -828,12 +923,13 @@ private fun SkinnerCafeMenuScreen(
     isLoading: Boolean,
     loadError: String?,
     selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
+    onViewItem: (MenuProduct) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CafeCream)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
@@ -841,7 +937,7 @@ private fun SkinnerCafeMenuScreen(
 
         Text(
             text = "SKINNER CAFE",
-            color = CafeGreen,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 10.sp,
             letterSpacing = 2.sp,
             fontWeight = FontWeight.Bold
@@ -851,7 +947,7 @@ private fun SkinnerCafeMenuScreen(
 
         Text(
             text = "Our Menu",
-            color = CafeDarkGreen,
+            color = MaterialTheme.colorScheme.tertiary,
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -860,7 +956,7 @@ private fun SkinnerCafeMenuScreen(
 
         Text(
             text = "Something delicious for every moment.",
-            color = CafeMuted,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 13.sp
         )
 
@@ -892,7 +988,7 @@ private fun SkinnerCafeMenuScreen(
             isLoading -> {
                 Text(
                     text = "Loading our menu...",
-                    color = CafeMuted,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -900,7 +996,7 @@ private fun SkinnerCafeMenuScreen(
             loadError != null -> {
                 Text(
                     text = loadError,
-                    color = CafeDarkGreen,
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 14.sp
                 )
             }
@@ -915,7 +1011,7 @@ private fun SkinnerCafeMenuScreen(
 
                 Text(
                     text = selectedCategory,
-                    color = CafeDarkGreen,
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 21.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -924,7 +1020,7 @@ private fun SkinnerCafeMenuScreen(
 
                 Text(
                     text = "${filteredProducts.size} items",
-                    color = CafeMuted,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp
                 )
 
@@ -952,7 +1048,8 @@ private fun SkinnerCafeMenuScreen(
                                             it.price
                                         } ?: 0.0
                                     )
-                                }"
+                                }",
+                                onViewItem = { onViewItem(product) }
                             )
                         }
 
@@ -967,7 +1064,7 @@ private fun SkinnerCafeMenuScreen(
                 if (filteredProducts.isEmpty()) {
                     Text(
                         text = "No products are available in this category yet.",
-                        color = CafeMuted,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                 }
@@ -983,5 +1080,453 @@ private fun SkinnerCafeMenuScreen(
 private fun SkinnerCafeHomePreview() {
     SkinnerCafeTheme {
         SkinnerCafeHome()
+    }
+}
+
+
+
+
+@Composable
+private fun ProductDetailsScreen(
+    product: MenuProduct,
+    onBack: () -> Unit,
+    onAddToCart: (CartItem) -> Unit
+) {
+    var selectedVariantId by remember(product.productId) {
+        mutableStateOf(product.variants.firstOrNull()?.variantId)
+    }
+
+    var selectedAddOnIds by remember(product.productId) {
+        mutableStateOf(setOf<Int>())
+    }
+
+    val selectedVariant = product.variants.firstOrNull {
+        it.variantId == selectedVariantId
+    } ?: product.variants.firstOrNull()
+
+    val selectedAddOns = product.addOns.filter {
+        it.addOnId in selectedAddOnIds
+    }
+
+    val total = (selectedVariant?.price ?: 0.0) +
+        selectedAddOns.sumOf { it.price }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        Button(
+            onClick = onBack,
+            shape = RoundedCornerShape(6.dp)
+        ) {
+            Text("← BACK TO MENU")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Image(
+            painter = painterResource(
+                productImageResource(product.productName)
+            ),
+            contentDescription = product.productName,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+                .clip(RoundedCornerShape(8.dp))
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Text(
+            text = product.productName,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        Text(
+            text = product.category,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.tertiary
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = product.description
+                ?: "Freshly prepared at Skinner Cafe.",
+            fontSize = 14.sp,
+            lineHeight = 21.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Choose your size",
+            fontSize = 19.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (product.variants.isEmpty()) {
+            Text(
+                text = "No sizes or variants available.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            product.variants.forEach { variant ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            selectedVariantId = variant.variantId
+                        }
+                        .padding(vertical = 6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedVariantId == variant.variantId,
+                            onClick = {
+                                selectedVariantId = variant.variantId
+                            }
+                        )
+
+                        Text(
+                            text = variant.variantName,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Text(
+                        text = "R ${
+                            String.format(
+                                java.util.Locale.US,
+                                "%.2f",
+                                variant.price
+                            )
+                        }",
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "Add-ons",
+            fontSize = 19.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (product.addOns.isEmpty()) {
+            Text(
+                text = "No add-ons available for this product.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            product.addOns.forEach { addOn ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = addOn.addOnId in selectedAddOnIds,
+                            onCheckedChange = { checked ->
+                                selectedAddOnIds =
+                                    if (checked) {
+                                        selectedAddOnIds + addOn.addOnId
+                                    } else {
+                                        selectedAddOnIds - addOn.addOnId
+                                    }
+                            }
+                        )
+
+                        Text(
+                            text = addOn.addOnName,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Text(
+                        text = "+ R ${
+                            String.format(
+                                java.util.Locale.US,
+                                "%.2f",
+                                addOn.price
+                            )
+                        }",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Your total",
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(
+                    text = "R ${
+                        String.format(
+                            java.util.Locale.US,
+                            "%.2f",
+                            total
+                        )
+                    }",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                onAddToCart(
+                    CartItem(
+                        product = product,
+                        variant = selectedVariant,
+                        addOns = selectedAddOns,
+                        quantity = 1
+                    )
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Text(
+                text = "ADD TO CART",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+private fun CartScreen(
+    cartItems: List<CartItem>,
+    onQuantityChange: (Int, Int) -> Unit,
+    onRemoveItem: (Int) -> Unit,
+    onCheckout: () -> Unit
+) {
+    val subtotal = cartItems.sumOf { it.totalPrice }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp)
+    ) {
+        Text(
+            text = "Your Cart",
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        if (cartItems.isEmpty()) {
+            Text(
+                text = "Your cart is currently empty.",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            cartItems.forEachIndexed { index, item ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 14.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = item.product.productName,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        item.variant?.let {
+                            Text(
+                                text = "Size: ${it.variantName}",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        if (item.addOns.isNotEmpty()) {
+                            Text(
+                                text = "Add-ons: ${
+                                    item.addOns.joinToString { it.addOnName }
+                                }",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "Unit price: R${"%.2f".format(item.unitPrice)}",
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        if (item.quantity > 1) {
+                                            onQuantityChange(
+                                                index,
+                                                item.quantity - 1
+                                            )
+                                        }
+                                    }
+                                ) {
+                                    Text("-")
+                                }
+
+                                Text(
+                                    text = item.quantity.toString(),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+                                TextButton(
+                                    onClick = {
+                                        onQuantityChange(
+                                            index,
+                                            item.quantity + 1
+                                        )
+                                    }
+                                ) {
+                                    Text("+")
+                                }
+                            }
+
+                            Text(
+                                text = "R${"%.2f".format(item.totalPrice)}",
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        TextButton(
+                            onClick = { onRemoveItem(index) }
+                        ) {
+                            Text(
+                                text = "REMOVE ITEM",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Divider()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Subtotal",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "R${"%.2f".format(subtotal)}",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = onCheckout,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                enabled = cartItems.isNotEmpty(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "PROCEED TO CHECKOUT",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }

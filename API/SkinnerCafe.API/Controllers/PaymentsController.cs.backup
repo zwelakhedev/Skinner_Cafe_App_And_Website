@@ -1,0 +1,340 @@
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SkinnerCafe.API.Data;
+using SkinnerCafe.API.DTOs;
+using SkinnerCafe.API.Models;
+
+namespace SkinnerCafe.API.Controllers;
+
+[ApiController]
+[Route("api/orders")]
+public class PaymentsController : ControllerBase
+{
+    private readonly SkinnerCafeDbContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public PaymentsController(
+        SkinnerCafeDbContext db,
+        UserManager<ApplicationUser> userManager)
+    {
+        _db = db;
+        _userManager = userManager;
+    }
+
+    [HttpPost("{orderId:int}/simulate-payment")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SimulatePayment(
+        int orderId,
+        SimulatePaymentRequest request)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        // Retrieve the order before processing payment.
+        var order = await _db.Orders
+            .AsNoTracking()
+            .SingleOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order is null)
+            return NotFound(new { message = "Order not found." });
+
+        // Verify customer ownership or guest access.
+        string? identityUserId = null;
+
+        if (order.CustomerId.HasValue)
+        {
+            if (User.Identity?.IsAuthenticated != true)
+                return Unauthorized();
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user is null)
+                return Unauthorized();
+
+            var customer = await _db.CustomerProfiles
+                .SingleOrDefaultAsync(c =>
+                    c.IdentityUserId == user.Id &&
+                    c.IsActive);
+
+            if (customer is null ||
+                customer.CustomerId != order.CustomerId.Value)
+            {
+                return NotFound(new
+                {
+                    message = "Order not found."
+                });
+            }
+
+            identityUserId = customer.IdentityUserId;
+        }
+        else
+        {
+            if (!IsValidGuestToken(
+                    request.GuestAccessToken,
+                    order.GuestAccessTokenHash))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid guest access token."
+                });
+            }
+        }
+
+        // An already-paid order must never be charged again.
+        if (order.PaymentStatus == "Successful")
+        {
+            return await ReturnExistingPayment(orderId);
+        }
+
+        if (order.PaymentStatus != "Pending" ||
+            order.OrderStatus != "Pending")
+        {
+            return Conflict(new
+            {
+                message = "This order cannot be paid in its current state."
+            });
+        }
+
+        var idempotencyKey = request.IdempotencyKey.Trim();
+
+        var now = DateTime.UtcNow;
+
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync();
+
+        try
+        {
+            // Atomically claim the pending order.
+            // Only one payment request can change it from Pending.
+            var claimed = await _db.Orders
+                .Where(o =>
+                    o.OrderId == orderId &&
+                    o.PaymentStatus == "Pending" &&
+                    o.OrderStatus == "Pending")
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(o => o.PaymentStatus, "Successful")
+                    .SetProperty(o => o.OrderStatus, "Confirmed"));
+
+            if (claimed == 0)
+            {
+                await transaction.RollbackAsync();
+
+                var latestStatus = await _db.Orders
+                    .AsNoTracking()
+                    .Where(o => o.OrderId == orderId)
+                    .Select(o => o.PaymentStatus)
+                    .SingleOrDefaultAsync();
+
+                if (latestStatus == "Successful")
+                    return await ReturnExistingPayment(orderId);
+
+                return Conflict(new
+                {
+                    message = "The order is no longer awaiting payment."
+                });
+            }
+
+            // Load the order items and their products.
+            var paidOrder = await _db.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(i => i.Variant)
+                        .ThenInclude(v => v.Product)
+                .SingleAsync(o => o.OrderId == orderId);
+
+            // Group quantities by product, not by variant.
+            var stockRequirements = paidOrder.OrderItems
+                .Where(i => i.Variant.Product.IsStockTracked)
+                .GroupBy(i => i.Variant.ProductId)
+                .Select(group => new
+                {
+                    ProductId = group.Key,
+                    ProductName = group.First().Variant.Product.ProductName,
+                    Quantity = group.Sum(i => i.Quantity)
+                })
+                .OrderBy(item => item.ProductId)
+                .ToList();
+
+            // Deduct stock only after the order has been claimed.
+            // The conditional update prevents negative inventory.
+            foreach (var item in stockRequirements)
+            {
+                var updatedRows = await _db.ProductInventories
+                    .Where(inventory =>
+                        inventory.ProductId == item.ProductId &&
+                        inventory.QuantityOnHand >= item.Quantity)
+                    .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(
+                            inventory => inventory.QuantityOnHand,
+                            inventory => inventory.QuantityOnHand - item.Quantity)
+                        .SetProperty(
+                            inventory => inventory.UpdatedAt,
+                            now));
+
+                if (updatedRows != 1)
+                {
+                    await transaction.RollbackAsync();
+
+                    return Conflict(new
+                    {
+                        message =
+                            $"Insufficient stock for {item.ProductName}. " +
+                            "The payment was not completed."
+                    });
+                }
+
+                _db.StockMovements.Add(new StockMovement
+                {
+                    ProductId = item.ProductId,
+                    MovementType = "Sale",
+                    QuantityChange = -item.Quantity,
+                    OrderId = orderId,
+                    ChangedByIdentityUserId = identityUserId,
+                    Reason = "Stock deducted after successful simulated card payment.",
+                    CreatedAt = now
+                });
+            }
+
+            // Create the simulated successful card payment.
+            var payment = new Payment
+            {
+                OrderId = orderId,
+                PaymentMethod = "Card",
+                PaymentStatus = "Successful",
+                Amount = paidOrder.TotalAmount,
+                ProviderReference =
+                    "SIM-" + Convert.ToHexString(
+                        RandomNumberGenerator.GetBytes(12)),
+                IdempotencyKey = idempotencyKey,
+                CreatedAt = now,
+                PaidAt = now
+            };
+
+            _db.Payments.Add(payment);
+
+            // Record the order status change.
+            _db.OrderStatusHistories.Add(new OrderStatusHistory
+            {
+                OrderId = orderId,
+                PreviousStatus = "Pending",
+                NewStatus = "Confirmed",
+                ChangedByIdentityUserId = identityUserId,
+                Notes = "Simulated card payment successful.",
+                ChangedAt = now
+            });
+
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                message = "Simulated card payment successful.",
+                payment = new
+                {
+                    payment.PaymentId,
+                    payment.PaymentMethod,
+                    payment.PaymentStatus,
+                    payment.Amount,
+                    payment.ProviderReference,
+                    payment.PaidAt
+                },
+                order = new
+                {
+                    paidOrder.OrderId,
+                    paidOrder.OrderNumber,
+                    OrderStatus = "Confirmed",
+                    PaymentStatus = "Successful"
+                }
+            });
+        }
+        catch (DbUpdateException)
+        {
+            await transaction.RollbackAsync();
+
+            return Conflict(new
+            {
+                message =
+                    "The payment could not be completed. " +
+                    "Please check the order status before trying again."
+            });
+        }
+    }
+
+    private async Task<IActionResult> ReturnExistingPayment(int orderId)
+    {
+        var payment = await _db.Payments
+            .AsNoTracking()
+            .Where(p =>
+                p.OrderId == orderId &&
+                p.PaymentStatus == "Successful")
+            .OrderByDescending(p => p.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (payment is null)
+        {
+            return Conflict(new
+            {
+                message = "The order is marked as paid, but no successful payment record was found."
+            });
+        }
+
+        var order = await _db.Orders
+            .AsNoTracking()
+            .Where(o => o.OrderId == orderId)
+            .Select(o => new
+            {
+                o.OrderId,
+                o.OrderNumber,
+                o.OrderStatus,
+                o.PaymentStatus
+            })
+            .SingleAsync();
+
+        return Ok(new
+        {
+            message = "This order has already been paid.",
+            payment = new
+            {
+                payment.PaymentId,
+                payment.PaymentMethod,
+                payment.PaymentStatus,
+                payment.Amount,
+                payment.ProviderReference,
+                payment.PaidAt
+            },
+            order
+        });
+    }
+
+    private static bool IsValidGuestToken(
+        string? suppliedToken,
+        string? storedHash)
+    {
+        if (string.IsNullOrWhiteSpace(suppliedToken) ||
+            suppliedToken.Length != 64 ||
+            string.IsNullOrWhiteSpace(storedHash) ||
+            storedHash.Length != 64)
+        {
+            return false;
+        }
+
+        try
+        {
+            var suppliedHash = SHA256.HashData(
+                Convert.FromHexString(suppliedToken));
+
+            var expectedHash =
+                Convert.FromHexString(storedHash);
+
+            return CryptographicOperations.FixedTimeEquals(
+                suppliedHash,
+                expectedHash);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
+}

@@ -45,6 +45,7 @@ public class MenuController : ControllerBase
                 product.ProductName,
                 product.Description,
                 Category = product.Category.CategoryName,
+
                 Variants = product.ProductVariants
                     .Where(variant => variant.IsActive)
                     .OrderBy(variant => variant.DisplayOrder)
@@ -53,6 +54,17 @@ public class MenuController : ControllerBase
                         variant.VariantId,
                         variant.VariantName,
                         variant.Price
+                    })
+                    .ToList(),
+
+                AddOns = product.AddOns
+                    .Where(addOn => addOn.IsActive)
+                    .OrderBy(addOn => addOn.AddOnName)
+                    .Select(addOn => new
+                    {
+                        addOn.AddOnId,
+                        addOn.AddOnName,
+                        addOn.Price
                     })
                     .ToList()
             })

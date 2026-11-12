@@ -3,21 +3,26 @@ package za.co.skinnercafe.app.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import za.co.skinnercafe.app.data.api.CustomerDto
+import za.co.skinnercafe.app.ui.auth.AuthUiState
 import za.co.skinnercafe.app.ui.auth.AuthViewModel
 import za.co.skinnercafe.app.ui.auth.LoginScreen
 import za.co.skinnercafe.app.ui.auth.SignUpScreen
-import za.co.skinnercafe.app.data.api.CustomerDto
+import za.co.skinnercafe.app.ui.settings.AppPreferences
+import za.co.skinnercafe.app.ui.settings.SettingsScreen
 import okhttp3.MultipartBody
-import za.co.skinnercafe.app.ui.auth.AuthUiState
 
 private object Routes {
     const val LOGIN = "login"
     const val SIGN_UP = "sign_up"
     const val HOME = "home"
+    const val SETTINGS = "settings"
 }
 
 @Composable
@@ -27,12 +32,19 @@ fun SkinnerCafeNavigation(
         () -> Unit,
         (MultipartBody.Part) -> Unit,
         () -> Unit,
-        AuthUiState
+        AuthUiState,
+        () -> Unit
     ) -> Unit
 ) {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
+
+    val context = LocalContext.current
+
+    val appPreferences = remember {
+        AppPreferences(context.applicationContext)
+    }
 
     NavHost(
         navController = navController,
@@ -106,7 +118,32 @@ fun SkinnerCafeNavigation(
                 },
                 authViewModel::uploadProfilePicture,
                 authViewModel::removeProfilePicture,
-                authState
+                authState,
+                {
+                    navController.navigate(Routes.SETTINGS) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                customer = authState.customer,
+                appPreferences = appPreferences,
+                onLogout = {
+                    authViewModel.logout {
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.HOME) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }

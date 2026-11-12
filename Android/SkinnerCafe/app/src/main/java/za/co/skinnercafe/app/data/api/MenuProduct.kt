@@ -16,7 +16,10 @@ data class MenuProduct(
     val category: String,
 
     @SerializedName("variants")
-    val variants: List<ProductVariant>
+    val variants: List<ProductVariant>,
+
+    @SerializedName("addOns")
+    val addOns: List<ProductAddOn> = emptyList()
 )
 
 data class ProductVariant(
@@ -30,3 +33,13 @@ data class ProductVariant(
     val price: Double
 )
 
+data class ProductAddOn(
+    @SerializedName("addOnId")
+    val addOnId: Int,
+
+    @SerializedName("addOnName")
+    val addOnName: String,
+
+    @SerializedName("price")
+    val price: Double
+)
