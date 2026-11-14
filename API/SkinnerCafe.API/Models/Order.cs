@@ -35,6 +35,12 @@ public partial class Order
 
     public string? GuestAccessTokenHash { get; set; }
 
+    public string? IdempotencyKey { get; set; }
+
+    public string? RequestFingerprint { get; set; }
+
+    public string? GuestAccessTokenProtected { get; set; }
+
     public virtual CustomerProfile? Customer { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

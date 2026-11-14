@@ -93,6 +93,9 @@ public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => new { e.OrderStatus, e.CreatedAt }, "IX_Orders_OrderStatus_CreatedAt").IsDescending(false, true);
 
             entity.HasIndex(e => e.OrderNumber, "UQ_Orders_OrderNumber").IsUnique();
+            entity.HasIndex(e => e.IdempotencyKey, "UX_Orders_IdempotencyKey")
+                .IsUnique()
+                .HasFilter("[IdempotencyKey] IS NOT NULL");
 
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.CompletedAt).HasPrecision(0);
@@ -104,6 +107,9 @@ public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.CustomerName).HasMaxLength(200);
             entity.Property(e => e.CustomerPhone).HasMaxLength(30);
             entity.Property(e => e.GuestAccessTokenHash).HasMaxLength(64);
+            entity.Property(e => e.IdempotencyKey).HasMaxLength(36);
+            entity.Property(e => e.RequestFingerprint).HasMaxLength(64);
+            entity.Property(e => e.GuestAccessTokenProtected);
             entity.Property(e => e.DiscountAmount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.OrderNumber).HasMaxLength(30);
             entity.Property(e => e.OrderSource).HasMaxLength(10);

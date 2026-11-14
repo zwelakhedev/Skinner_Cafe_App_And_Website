@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Data;
@@ -42,6 +43,36 @@ if (builder.Environment.IsDevelopment())
             listenOptions.UseHttps(certificate);
         });
     });
+}
+
+// Register Data Protection for guest order token protection.
+var dataProtectionBuilder = builder.Services
+    .AddDataProtection()
+    .SetApplicationName("SkinnerCafe");
+
+// Persist encryption keys outside automated tests.
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    var keyDirectory = builder.Configuration["DataProtection:KeyDirectory"];
+
+    if (string.IsNullOrWhiteSpace(keyDirectory))
+    {
+        if (!builder.Environment.IsDevelopment())
+        {
+            throw new InvalidOperationException(
+                "DataProtection:KeyDirectory must be configured outside Testing and Development.");
+        }
+
+        keyDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "SkinnerCafe",
+            "DataProtection-Keys");
+    }
+
+    Directory.CreateDirectory(keyDirectory);
+
+    dataProtectionBuilder.PersistKeysToFileSystem(
+        new DirectoryInfo(keyDirectory));
 }
 
 // Register controllers.
