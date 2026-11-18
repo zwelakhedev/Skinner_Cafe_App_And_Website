@@ -1,21 +1,18 @@
-```{=html}
-<!--
-Skinner Cafe — Project README
-Replace every [PLACEHOLDER] with the final project evidence before submission.
-Keep implementation status accurate: do not describe planned features as completed.
--->
-```
-::: {align="center"}
-```{=html}
-<!-- Replace the path below with the final logo asset location if it changes. -->
-```
-`<img src="docs/assets/skinner-cafe-logo.png" alt="Skinner Cafe logo" width="220">`{=html}
+<div align="center">
 
 # ☕ Skinner Cafe
 
+<img
+  width="1000"
+  alt="Skinner Cafe Logo"
+  src="https://github.com/user-attachments/assets/2069363d-ec1e-4900-a85a-7feff6d5bdbe"
+/>
+
 ### Integrated Café Website & Android Mobile Application
 
-**A connected digital experience for customers and café operations**
+A connected digital experience for customers and café operations**
+
+</div>
 
 [![Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website)
 [![Android](https://img.shields.io/badge/Android-Kotlin%20%7C%20Jetpack%20Compose-3DDC84?logo=android&logoColor=white)](#-android-mobile-application)
