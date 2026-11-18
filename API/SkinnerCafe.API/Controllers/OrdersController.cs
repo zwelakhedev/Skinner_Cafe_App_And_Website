@@ -122,6 +122,7 @@ public class OrdersController : ControllerBase
                 {
                     history.PreviousStatus,
                     history.NewStatus,
+                    history.Notes,
                     history.ChangedAt
                 }).ToList()
         }).ToList();

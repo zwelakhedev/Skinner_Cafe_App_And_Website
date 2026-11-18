@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using SkinnerCafe.API.Data;
+using Microsoft.AspNetCore.Identity;
+using SkinnerCafe.API.Services.Notifications;
+using SkinnerCafe.API.Models;
 
 namespace SkinnerCafe.API.Tests;
 
@@ -20,18 +25,42 @@ public sealed class SkinnerCafeApiFactory : WebApplicationFactory<Program>
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
+{
+    builder.UseEnvironment("Testing");
+
+    builder.ConfigureServices(services =>
     {
-        builder.UseEnvironment("Testing");
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "TestOrCookie";
+            })
+            .AddPolicyScheme(
+                "TestOrCookie",
+                null,
+                options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                        context.Request.Headers.ContainsKey("X-Test-Role")
+                            ? TestAuthenticationHandler.SchemeName
+                            : IdentityConstants.ApplicationScheme;
+                })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
+                TestAuthenticationHandler.SchemeName,
+                options => { });
 
-        builder.ConfigureServices(services =>
-        {
-            services.RemoveAll<DbContextOptions<SkinnerCafeDbContext>>();
-            services.RemoveAll<SkinnerCafeDbContext>();
+        services.RemoveAll<DbContextOptions<SkinnerCafeDbContext>>();
+        services.RemoveAll<SkinnerCafeDbContext>();
 
-            services.AddDbContext<SkinnerCafeDbContext>(options =>
-                options.UseSqlite(_connection));
-        });
-    }
+        services.AddDbContext<SkinnerCafeDbContext>(options =>
+            options.UseSqlite(_connection));
+
+        services.RemoveAll<IOrderNotificationService>();
+        services.AddSingleton<TestOrderNotificationService>();
+        services.AddSingleton<IOrderNotificationService>(provider =>
+            provider.GetRequiredService<TestOrderNotificationService>());
+    });
+}
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -48,6 +77,25 @@ public sealed class SkinnerCafeApiFactory : WebApplicationFactory<Program>
             .GetRequiredService<SkinnerCafeDbContext>();
 
         dbContext.Database.EnsureCreated();
+
+                dbContext.Users.AddRange(
+            new ApplicationUser
+            {
+                Id = "test-staff-id",
+                UserName = "test-staff",
+                NormalizedUserName = "TEST-STAFF",
+                SecurityStamp = Guid.NewGuid().ToString()
+            },
+            new ApplicationUser
+            {
+                Id = "test-admin-id",
+                UserName = "test-admin",
+                NormalizedUserName = "TEST-ADMIN",
+                SecurityStamp = Guid.NewGuid().ToString()
+            }
+        );
+
+        dbContext.SaveChanges();
 
         return host;
     }

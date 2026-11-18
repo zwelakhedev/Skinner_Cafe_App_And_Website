@@ -19,6 +19,8 @@ public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<CustomerProfile> CustomerProfiles { get; set; }
 
+    public virtual DbSet<DeviceToken> DeviceTokens { get; set; }
+
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderItem> OrderItems { get; set; }
@@ -44,6 +46,38 @@ public partial class SkinnerCafeDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<DeviceToken>(entity =>
+        {
+            entity.HasIndex(e => e.Token, "UQ_DeviceTokens_Token").IsUnique();
+
+            entity.HasIndex(e => e.IdentityUserId, "IX_DeviceTokens_IdentityUserId");
+
+            entity.Property(e => e.IdentityUserId)
+                .HasMaxLength(450)
+                .IsRequired();
+
+            entity.Property(e => e.Token)
+                .HasMaxLength(850)
+                .IsRequired();
+
+            entity.Property(e => e.CreatedAt)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.Property(e => e.UpdatedAt)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.DeviceTokens)
+                .HasForeignKey(d => d.IdentityUserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_DeviceTokens_AspNetUsers");
+        });
+
         modelBuilder.Entity<AddOn>(entity =>
         {
             entity.HasIndex(e => e.AddOnName, "UQ_AddOns_AddOnName").IsUnique();

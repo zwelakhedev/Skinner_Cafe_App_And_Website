@@ -25,6 +25,7 @@ fun CheckoutScreen(
     customer: CustomerDto?,
     cartItems: List<CartItem>,
     onBack: () -> Unit,
+    onContinueShopping: () -> Unit,
     onOrderPlaced: () -> Unit
 ) {
     var customerName by remember(customer) {
@@ -41,13 +42,23 @@ fun CheckoutScreen(
         mutableStateOf(customer?.phoneNumber ?: "")
     }
 
-    val subtotal = cartItems.sumOf { it.totalPrice }
+    var submittedCartItems by remember {
+        mutableStateOf<List<CartItem>>(emptyList())
+    }
+    var submittedTotal by remember {
+        mutableStateOf(0.0)
+    }
+
+    var orderId by remember { mutableStateOf<Int?>(null) }
+
+    val displayItems = if (orderId != null) submittedCartItems else cartItems
+    val subtotal = if (orderId != null) submittedTotal else cartItems.sumOf { it.totalPrice }
+
     val coroutineScope = rememberCoroutineScope()
 
     var isSubmitting by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var orderNumber by remember { mutableStateOf<String?>(null) }
-    var orderId by remember { mutableStateOf<Int?>(null) }
     var guestAccessToken by remember { mutableStateOf<String?>(null) }
 
     var paymentMessage by remember { mutableStateOf<String?>(null) }
@@ -166,7 +177,7 @@ fun CheckoutScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        cartItems.forEach { item ->
+        displayItems.forEach { item ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -274,6 +285,9 @@ fun CheckoutScreen(
                             val response =
                                 MenuApiClient.service.createOrder(request)
 
+                            submittedCartItems = cartItems.toList()
+                            submittedTotal = cartItems.sumOf { it.totalPrice }
+
                             orderId = response.order.orderId
                             orderNumber = response.order.orderNumber
                             guestAccessToken = response.guestAccessToken
@@ -299,7 +313,7 @@ fun CheckoutScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
-                enabled = !isSubmitting && cartItems.isNotEmpty(),
+                enabled = !isSubmitting && cartItems.isNotEmpty() && orderId == null,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 if (isSubmitting) {
@@ -544,6 +558,20 @@ fun CheckoutScreen(
                     Text("Your order has been confirmed.")
                     Text("Order number: ${orderNumber ?: ""}")
                 }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onContinueShopping,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "CONTINUE SHOPPING",
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

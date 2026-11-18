@@ -5,9 +5,35 @@ using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Data;
 using SkinnerCafe.API.Models;
 using SkinnerCafe.API.Services;
+using SkinnerCafe.API.Services.Notifications;
 using System.Security.Cryptography.X509Certificates;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Initialize Firebase Admin SDK outside automated tests.
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    var serviceAccountPath =
+        builder.Configuration["Firebase:ServiceAccountPath"];
+
+    if (
+        string.IsNullOrWhiteSpace(serviceAccountPath) ||
+        !File.Exists(serviceAccountPath)
+    )
+    {
+        throw new InvalidOperationException(
+            "Firebase service account credentials are missing or invalid.");
+    }
+
+    FirebaseApp.Create(new AppOptions
+    {
+        Credential = CredentialFactory
+            .FromFile<ServiceAccountCredential>(serviceAccountPath)
+            .ToGoogleCredential()
+    });
+}
 
 // Configure the mkcert HTTPS certificate for local development only.
 if (builder.Environment.IsDevelopment())
@@ -79,6 +105,10 @@ if (!builder.Environment.IsEnvironment("Testing"))
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ProfilePictureService>();
+
+builder.Services.AddScoped<
+    IOrderNotificationService,
+    FirebaseOrderNotificationService>();
 
 // Register SQL Server for normal application environments.
 // The test factory supplies SQLite when running automated tests.
@@ -196,6 +226,36 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
+
+// Initialize application roles outside automated tests.
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    using var scope = app.Services.CreateScope();
+
+    var roleManager =
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = { "Staff", "Admin" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            var result = await roleManager.CreateAsync(
+                new IdentityRole(role));
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(
+                    "; ",
+                    result.Errors.Select(error => error.Description));
+
+                throw new InvalidOperationException(
+                    $"Failed to create the {role} role: {errors}");
+            }
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

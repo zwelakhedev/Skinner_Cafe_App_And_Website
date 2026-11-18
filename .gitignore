@@ -80,3 +80,6 @@ API/CertificateClient/
 
 # Include the Skinner Cafe assessment database backup
 !Database/SkinnerCafe_Assessment.bak
+
+# Separate Android project kept locally
+Android/VYNL/

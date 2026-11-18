@@ -1,0 +1,44 @@
+﻿<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Steam -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M8,6 C6.5,4.5 9.5,3.5 8,2" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M12,6 C10.5,4.5 13.5,3.5 12,2" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M16,6 C14.5,4.5 17.5,3.5 16,2" />
+
+    <!-- Coffee cup -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4,8 H18 V15
+            C18,18.3 15.3,21 12,21 H10
+            C6.7,21 4,18.3 4,15 Z" />
+
+    <!-- Cup handle -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M18,10 H19.5
+            C22.5,10 22.5,16 19.5,16 H18" />
+</vector>

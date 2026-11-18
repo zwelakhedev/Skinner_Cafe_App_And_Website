@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkinnerCafe.API.Data;
+using SkinnerCafe.API.DTOs;
 using SkinnerCafe.API.Models;
 using SkinnerCafe.API.Services;
 
@@ -110,7 +111,7 @@ public class AuthController : ControllerBase
         }
 
         // Automatically sign in the customer after successful registration.
-        await _signInManager.SignInAsync(user, isPersistent: false);
+        await _signInManager.SignInAsync(user, isPersistent: true);
 
         return StatusCode(StatusCodes.Status201Created, new
         {
@@ -156,7 +157,7 @@ public class AuthController : ControllerBase
         var result = await _signInManager.PasswordSignInAsync(
             user,
             request.Password,
-            isPersistent: false,
+            isPersistent: true,
             lockoutOnFailure: true);
 
         if (!result.Succeeded)
@@ -177,6 +178,183 @@ public class AuthController : ControllerBase
                 profile.LastName,
                 profile.Email
             }
+        });
+    }
+
+
+    [HttpPost("staff/login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> StaffLogin(LoginRequest request)
+    {
+        var email = request.Email.Trim();
+
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user is null)
+        {
+            return Unauthorized(new
+            {
+                message = "Invalid email or password."
+            });
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        if (!roles.Any(role =>
+                role is "Staff" or "Admin"))
+        {
+            return Unauthorized(new
+            {
+                message = "Invalid email or password."
+            });
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(
+            user,
+            request.Password,
+            isPersistent: true,
+            lockoutOnFailure: true);
+
+        if (!result.Succeeded)
+        {
+            return Unauthorized(new
+            {
+                message = "Invalid email or password."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Staff login successful.",
+            staff = new
+            {
+                user.Id,
+                user.Email,
+                Roles = roles
+            }
+        });
+    }
+
+    [HttpGet("staff/me")]
+    [Authorize(Roles = "Staff,Admin")]
+    public async Task<IActionResult> StaffMe()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return Ok(new
+        {
+            staff = new
+            {
+                user.Id,
+                user.Email,
+                Roles = roles
+            }
+        });
+    }
+
+    [HttpPost("staff/logout")]
+    [Authorize(Roles = "Staff,Admin")]
+    public async Task<IActionResult> StaffLogout()
+    {
+        await _signInManager.SignOutAsync();
+
+        return Ok(new
+        {
+            message = "Staff logged out successfully."
+        });
+    }
+
+    [HttpPost("device-token")]
+    [Authorize]
+    public async Task<IActionResult> RegisterDeviceToken(
+        RegisterDeviceTokenRequest request)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var profile = await _db.CustomerProfiles
+            .SingleOrDefaultAsync(c => c.IdentityUserId == user.Id);
+
+        if (profile is null || !profile.IsActive)
+        {
+            return Unauthorized();
+        }
+
+        var token = request.Token.Trim();
+
+        var deviceToken = await _db.DeviceTokens
+            .SingleOrDefaultAsync(d => d.Token == token);
+
+        if (deviceToken is null)
+        {
+            deviceToken = new DeviceToken
+            {
+                IdentityUserId = user.Id,
+                Token = token,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            _db.DeviceTokens.Add(deviceToken);
+        }
+        else
+        {
+            // A device token can belong to only one account at a time.
+            deviceToken.IdentityUserId = user.Id;
+            deviceToken.UpdatedAt = DateTime.UtcNow;
+            deviceToken.IsActive = true;
+        }
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "Device token registered successfully."
+        });
+    }
+
+    [HttpPost("device-token/unregister")]
+    [Authorize]
+    public async Task<IActionResult> UnregisterDeviceToken(
+        RegisterDeviceTokenRequest request)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var token = request.Token.Trim();
+
+        var deviceToken = await _db.DeviceTokens
+            .SingleOrDefaultAsync(d =>
+                d.Token == token &&
+                d.IdentityUserId == user.Id);
+
+        if (deviceToken is not null)
+        {
+            deviceToken.IsActive = false;
+            deviceToken.UpdatedAt = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+        }
+
+        return Ok(new
+        {
+            message = "Device token unregistered successfully."
         });
     }
 

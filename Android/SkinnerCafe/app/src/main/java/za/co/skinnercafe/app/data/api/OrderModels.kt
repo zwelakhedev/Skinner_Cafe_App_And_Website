@@ -60,3 +60,56 @@ data class PaidOrder(
     val orderStatus: String,
     val paymentStatus: String
 )
+
+data class MyOrder(
+    val orderId: Int,
+    val orderNumber: String,
+    val orderSource: String,
+    val orderStatus: String,
+    val paymentStatus: String,
+    val subtotal: Double,
+    val discountAmount: Double,
+    val totalAmount: Double,
+    val createdAt: String,
+    val completedAt: String?,
+    val items: List<MyOrderItem>,
+    val payments: List<MyOrderPayment>,
+    val statusHistory: List<MyOrderStatusHistory>
+)
+
+data class MyOrderItem(
+    val orderItemId: Int,
+    val productNameSnapshot: String,
+    val variantNameSnapshot: String,
+    val quantity: Int,
+    val unitPrice: Double,
+    val lineTotal: Double,
+    val addOns: List<MyOrderAddOn>
+)
+
+data class MyOrderAddOn(
+    val addOnNameSnapshot: String,
+    val quantity: Int,
+    val unitPrice: Double
+)
+
+data class MyOrderPayment(
+    val paymentId: Long,
+    val paymentMethod: String,
+    val paymentStatus: String,
+    val amount: Double,
+    val paymentProvider: String?,
+    val createdAt: String,
+    val paidAt: String?
+)
+
+data class MyOrderStatusHistory(
+    val previousStatus: String?,
+    val newStatus: String,
+    val notes: String? = null,
+    val changedAt: String
+)
+
+data class RegisterDeviceTokenRequest(
+    val token: String
+)

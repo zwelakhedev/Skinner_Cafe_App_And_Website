@@ -364,6 +364,51 @@ namespace SkinnerCafe.API.Data.Migrations
                     b.ToTable("CustomerProfiles");
                 });
 
+            modelBuilder.Entity("SkinnerCafe.API.Models.DeviceToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("IdentityUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(850)
+                        .HasColumnType("nvarchar(850)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "IdentityUserId" }, "IX_DeviceTokens_IdentityUserId");
+
+                    b.HasIndex(new[] { "Token" }, "UQ_DeviceTokens_Token")
+                        .IsUnique();
+
+                    b.ToTable("DeviceTokens");
+                });
+
             modelBuilder.Entity("SkinnerCafe.API.Models.Order", b =>
                 {
                     b.Property<int>("OrderId")
@@ -403,6 +448,17 @@ namespace SkinnerCafe.API.Data.Migrations
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(10, 2)");
 
+                    b.Property<string>("GuestAccessTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("GuestAccessTokenProtected")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
                     b.Property<string>("OrderNumber")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -427,6 +483,10 @@ namespace SkinnerCafe.API.Data.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasDefaultValue("Pending");
 
+                    b.Property<string>("RequestFingerprint")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(10, 2)");
 
@@ -443,6 +503,10 @@ namespace SkinnerCafe.API.Data.Migrations
 
                     b.HasIndex(new[] { "OrderNumber" }, "UQ_Orders_OrderNumber")
                         .IsUnique();
+
+                    b.HasIndex(new[] { "IdempotencyKey" }, "UX_Orders_IdempotencyKey")
+                        .IsUnique()
+                        .HasFilter("[IdempotencyKey] IS NOT NULL");
 
                     b.ToTable("Orders");
                 });
@@ -609,6 +673,10 @@ namespace SkinnerCafe.API.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PaymentProvider")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("PaymentStatus")
                         .IsRequired()
@@ -940,6 +1008,18 @@ namespace SkinnerCafe.API.Data.Migrations
                         .HasConstraintName("FK_ProductAddOns_Products");
                 });
 
+            modelBuilder.Entity("SkinnerCafe.API.Models.DeviceToken", b =>
+                {
+                    b.HasOne("SkinnerCafe.API.Models.ApplicationUser", "User")
+                        .WithMany("DeviceTokens")
+                        .HasForeignKey("IdentityUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_DeviceTokens_AspNetUsers");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SkinnerCafe.API.Models.Order", b =>
                 {
                     b.HasOne("SkinnerCafe.API.Models.CustomerProfile", "Customer")
@@ -1097,6 +1177,11 @@ namespace SkinnerCafe.API.Data.Migrations
             modelBuilder.Entity("SkinnerCafe.API.Models.AddOn", b =>
                 {
                     b.Navigation("OrderItemAddOns");
+                });
+
+            modelBuilder.Entity("SkinnerCafe.API.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("DeviceTokens");
                 });
 
             modelBuilder.Entity("SkinnerCafe.API.Models.Category", b =>

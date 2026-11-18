@@ -1,5 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using SkinnerCafe.API.Models;
 using Xunit;
 
 namespace SkinnerCafe.API.Tests;
@@ -221,5 +224,158 @@ public sealed class AuthTests : IClassFixture<SkinnerCafeApiFactory>
             HttpStatusCode.Unauthorized,
             response.StatusCode);
     }
+    private async Task<string> CreateStaffAccountAsync(string role)
+{
+    var email = $"{role.ToLowerInvariant()}.{Guid.NewGuid():N}@example.com";
+
+    using var scope = _factory.Services.CreateScope();
+
+    var userManager = scope.ServiceProvider
+        .GetRequiredService<UserManager<ApplicationUser>>();
+
+    var roleManager = scope.ServiceProvider
+    .GetRequiredService<RoleManager<IdentityRole>>();
+
+if (!await roleManager.RoleExistsAsync(role))
+{
+    var roleCreation = await roleManager.CreateAsync(
+        new IdentityRole(role));
+
+    Assert.True(
+        roleCreation.Succeeded,
+        string.Join(", ", roleCreation.Errors.Select(e => e.Description)));
+}
+
+    var user = new ApplicationUser
+    {
+        UserName = email,
+        Email = email,
+        EmailConfirmed = true
+    };
+
+    var createResult = await userManager.CreateAsync(
+        user,
+        "TestPassword123!");
+
+    Assert.True(
+        createResult.Succeeded,
+        string.Join(", ", createResult.Errors.Select(e => e.Description)));
+
+    var roleResult = await userManager.AddToRoleAsync(user, role);
+
+    Assert.True(
+        roleResult.Succeeded,
+        string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+
+    return email;
+}
+
+[Theory]
+[InlineData("Staff")]
+[InlineData("Admin")]
+public async Task StaffLogin_WithValidCredentials_ReturnsSuccess(string role)
+{
+    using var client = CreateClient();
+
+    var email = await CreateStaffAccountAsync(role);
+
+    var response = await client.PostAsJsonAsync(
+        "/api/auth/staff/login",
+        new
+        {
+            email,
+            password = "TestPassword123!"
+        });
+
+    var body = await response.Content.ReadAsStringAsync();
+
+    Assert.True(
+        response.StatusCode == HttpStatusCode.OK,
+        $"Staff login failed: {(int)response.StatusCode} {body}");
+
+    Assert.Contains(email, body);
+}
+
+[Fact]
+public async Task StaffLogin_CustomerAccount_ReturnsUnauthorized()
+{
+    using var client = CreateClient();
+
+    var email = $"customer.staff.{Guid.NewGuid():N}@example.com";
+
+    var registrationResponse = await client.PostAsJsonAsync(
+        "/api/auth/register",
+        CreateRegistrationRequest(email));
+
+    Assert.Equal(HttpStatusCode.Created, registrationResponse.StatusCode);
+
+    var response = await client.PostAsJsonAsync(
+        "/api/auth/staff/login",
+        new
+        {
+            email,
+            password = "TestPassword123!"
+        });
+
+    Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+}
+
+[Fact]
+public async Task StaffMe_AfterSuccessfulLogin_ReturnsStaffProfile()
+{
+    using var client = CreateClient();
+
+    var email = await CreateStaffAccountAsync("Staff");
+
+    var loginResponse = await client.PostAsJsonAsync(
+        "/api/auth/staff/login",
+        new
+        {
+            email,
+            password = "TestPassword123!"
+        });
+
+    Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+    var profileResponse = await client.GetAsync("/api/auth/staff/me");
+    var body = await profileResponse.Content.ReadAsStringAsync();
+
+    Assert.True(
+        profileResponse.StatusCode == HttpStatusCode.OK,
+        $"Staff profile failed: {(int)profileResponse.StatusCode} {body}");
+
+    Assert.Contains(email, body);
+    Assert.Contains("Staff", body);
+}
+
+[Fact]
+public async Task StaffLogout_AfterSuccessfulLogin_InvalidatesSession()
+{
+    using var client = CreateClient();
+
+    var email = await CreateStaffAccountAsync("Staff");
+
+    var loginResponse = await client.PostAsJsonAsync(
+        "/api/auth/staff/login",
+        new
+        {
+            email,
+            password = "TestPassword123!"
+        });
+
+    Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+    var logoutResponse = await client.PostAsync(
+        "/api/auth/staff/logout", null);
+
+    Assert.Equal(HttpStatusCode.OK, logoutResponse.StatusCode);
+
+    var profileResponse = await client.GetAsync("/api/auth/staff/me");
+
+    Assert.Equal(
+        HttpStatusCode.Unauthorized,
+        profileResponse.StatusCode);
+}
+
 }
 

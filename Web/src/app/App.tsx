@@ -25,6 +25,14 @@ const CARD = "#FFFFFF";
 const MUTED = "#8D6E63";
 const DARK_BROWN = "#3E2723";
 
+const STAFF_API_URL = "https://localhost:7277/api";
+
+type StaffUser = {
+  id: string;
+  email: string;
+  roles: string[];
+};
+
 // â”€â”€â”€ Realistic Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type MenuItem = {
   id: number;
@@ -825,6 +833,89 @@ function CartScreen() {
   );
 }
 
+function StaffLoginScreen({
+  onLogin,
+  error,
+}: {
+  onLogin: (email: string, password: string) => Promise<void>;
+  error: string;
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+
+    try {
+      await onLogin(email, password);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-full flex items-center justify-center bg-[#FAFAFA] p-6">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <div className="text-center mb-8">
+          <Coffee size={40} className="mx-auto text-[#4E342E] mb-3" />
+          <h1 className="text-2xl font-bold text-[#3E2723]">
+            Staff Portal
+          </h1>
+          <p className="text-sm text-[#8D6E63] mt-2">
+            Sign in with your authorised staff account
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-[#3E2723] mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="w-full border border-[#D7CCC8] rounded-lg px-4 py-3 outline-none focus:border-[#4E342E]"
+              placeholder="staff@example.co.za"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#3E2723] mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className="w-full border border-[#D7CCC8] rounded-lg px-4 py-3 outline-none focus:border-[#4E342E]"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#4E342E] text-white rounded-lg py-3 font-medium hover:bg-[#3E2723] disabled:opacity-60"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function LoginScreen() {
   return (
     <div className="min-h-screen flex" style={{ background: "#FAFAFA" }}>
@@ -1016,7 +1107,17 @@ function EventsScreen() {
 }
 
 // â”€â”€â”€ SECTION: STAFF PORTAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function StaffSidebar({ active, setActive }: any) {
+function StaffSidebar({
+  active,
+  setActive,
+  staffUser,
+  onLogout,
+}: {
+  active: StaffScreen;
+  setActive: (screen: StaffScreen) => void;
+  staffUser: StaffUser;
+  onLogout: () => void;
+}) {
   const links = [
     { id: "ops", label: "Dashboard", icon: Home },
     { id: "pos", label: "Point of Sale", icon: ShoppingBag },
@@ -1050,10 +1151,21 @@ function StaffSidebar({ active, setActive }: any) {
             <User size={14} style={{ color: ORANGE }} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-xs font-semibold truncate">Sipho Mokoena</p>
-            <p className="text-[#D7CCC8] text-xs">Supervisor</p>
+            <p className="text-white text-xs font-semibold truncate">
+              {staffUser.email}
+            </p>
+            <p className="text-[#D7CCC8] text-xs">
+              {staffUser.roles.includes("Admin") ? "Administrator" : "Staff"}
+            </p>
           </div>
-          <LogOut size={14} className="text-[#D7CCC8]" />
+          <button
+            type="button"
+            onClick={onLogout}
+            title="Sign out"
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+          >
+            <LogOut size={14} className="text-[#D7CCC8]" />
+          </button>
         </div>
       </div>
     </aside>
@@ -2234,6 +2346,102 @@ export default function App() {
   const [webScreen, setWebScreen] = useState<WebScreen>("home");
   const [staffScreen, setStaffScreen] = useState<StaffScreen>("ops");
   const [mgrScreen, setMgrScreen] = useState<MgrScreen>("mgrdash");
+  const [staffUser, setStaffUser] = useState<StaffUser | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [authError, setAuthError] = useState("");
+
+    useEffect(() => {
+    let cancelled = false;
+
+    async function checkStaffSession() {
+      try {
+        const response = await fetch(
+          `${STAFF_API_URL}/auth/staff/me`,
+          { credentials: "include" }
+        );
+
+        if (response.status === 401) {
+          if (!cancelled) setStaffUser(null);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Authentication check failed: ${response.status}`);
+        }
+
+        const data: { staff: StaffUser } = await response.json();
+
+        if (!cancelled) {
+          setStaffUser(data.staff);
+        }
+      } catch {
+        if (!cancelled) {
+          setAuthError("Unable to connect to the staff authentication service.");
+        }
+      } finally {
+        if (!cancelled) {
+          setAuthChecking(false);
+        }
+      }
+    }
+
+    void checkStaffSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+    async function handleStaffLogin(email: string, password: string) {
+    setAuthError("");
+
+    try {
+      const response = await fetch(`${STAFF_API_URL}/auth/staff/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || "Invalid email or password.");
+      }
+
+      const sessionResponse = await fetch(
+        `${STAFF_API_URL}/auth/staff/me`,
+        { credentials: "include" }
+      );
+
+      if (!sessionResponse.ok) {
+        throw new Error("Login succeeded, but the staff session could not be verified.");
+      }
+
+      const data: { staff: StaffUser } = await sessionResponse.json();
+
+      setStaffUser(data.staff);
+      setAuthError("");
+      setSection("staff");
+    } catch (error) {
+      setAuthError(
+        error instanceof Error ? error.message : "Staff login failed."
+      );
+    }
+  }
+
+  async function handleStaffLogout() {
+    try {
+      await fetch(`${STAFF_API_URL}/auth/staff/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setStaffUser(null);
+      setAuthError("");
+      setSection("website");
+      setWebScreen("home");
+    }
+  }
 
   const sections: { id: Section; label: string }[] = [
     { id: "design", label: "Design System" },
@@ -2264,7 +2472,10 @@ export default function App() {
         {sections.map(s => (
           <button
             key={s.id}
-            onClick={() => setSection(s.id)}
+            onClick={() => {
+              setAuthError("");
+              setSection(s.id);
+            }}
             className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
             style={section === s.id ? { background: BROWN, color: "white" } : { color: MUTED }}
           >
@@ -2312,7 +2523,14 @@ export default function App() {
           )}
 
           {section === "staff" && (
-            <div className="flex h-full">
+  authChecking ? (
+    <div className="h-full flex items-center justify-center text-[#8D6E63]">
+      Checking staff session...
+    </div>
+  ) : !staffUser ? (
+    <StaffLoginScreen onLogin={handleStaffLogin} error={authError} />
+  ) : (
+    <div className="flex h-full">
               <StaffSidebar active={staffScreen} setActive={(s: StaffScreen) => setStaffScreen(s)} />
               <div className="flex-1 flex flex-col overflow-hidden">
                 <OpsTopbar />
@@ -2326,10 +2544,24 @@ export default function App() {
                 </div>
               </div>
             </div>
-          )}
+          ))}
 
           {section === "manager" && (
-            <div className="flex h-full">
+  authChecking ? (
+    <div className="h-full flex items-center justify-center text-[#8D6E63]">
+      Checking staff session...
+    </div>
+  ) : !staffUser ? (
+    <StaffLoginScreen onLogin={handleStaffLogin} error={authError} />
+  ) : !staffUser.roles.includes("Admin") ? (
+    <div className="h-full flex flex-col items-center justify-center text-center p-6">
+      <h2 className="text-xl font-bold text-[#3E2723]">Access Denied</h2>
+      <p className="text-sm text-[#8D6E63] mt-2">
+        Only authorised administrators can access the Manager Dashboard.
+      </p>
+    </div>
+  ) : (
+    <div className="flex h-full">
               <ManagerSidebar active={mgrScreen} setActive={(s: MgrScreen) => setMgrScreen(s)} />
               <div className="flex-1 overflow-auto">
                 {mgrScreen === "mgrdash" && <ManagerDashContent />}
@@ -2340,7 +2572,7 @@ export default function App() {
                 {mgrScreen === "analytics" && <AnalyticsScreen />}
               </div>
             </div>
-          )}
+          ))}
 
           {section === "mobile" && <MobileScreensSection />}
         </main>

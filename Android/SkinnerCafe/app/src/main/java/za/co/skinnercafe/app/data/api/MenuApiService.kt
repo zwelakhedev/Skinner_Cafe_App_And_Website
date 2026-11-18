@@ -1,6 +1,5 @@
 package za.co.skinnercafe.app.data.api
 
-import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -11,8 +10,7 @@ import okhttp3.MultipartBody
 import retrofit2.http.DELETE
 import retrofit2.http.Multipart
 import retrofit2.http.Part
-import java.net.CookieManager
-import java.net.CookiePolicy
+import android.content.Context
 
 interface MenuApiService {
 
@@ -38,6 +36,16 @@ interface MenuApiService {
     @POST("api/auth/logout")
     suspend fun logout(): AuthResponse
 
+    @POST("api/auth/device-token")
+    suspend fun registerDeviceToken(
+        @Body request: RegisterDeviceTokenRequest
+    ): AuthResponse
+
+    @POST("api/auth/device-token/unregister")
+    suspend fun unregisterDeviceToken(
+        @Body request: RegisterDeviceTokenRequest
+    ): AuthResponse
+
     @Multipart
     @POST("api/auth/profile-picture")
     suspend fun uploadProfilePicture(
@@ -52,6 +60,9 @@ interface MenuApiService {
         @Body request: CreateOrderRequest
     ): CreateOrderResponse
 
+    @GET("api/orders/my-orders")
+    suspend fun getMyOrders(): List<MyOrder>
+
     @POST("api/orders/{orderId}/simulate-payment")
     suspend fun simulatePayment(
         @retrofit2.http.Path("orderId") orderId: Int,
@@ -61,16 +72,21 @@ interface MenuApiService {
 
 object MenuApiClient {
 
-    // ASP.NET Core API HTTPS endpoint on the Android emulator.
     private const val BASE_URL = "https://10.0.2.2:7277/"
 
-    private val cookieManager = CookieManager().apply {
-        setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER)
+    private lateinit var applicationContext: Context
+
+    fun initialize(context: Context) {
+        applicationContext = context.applicationContext
     }
 
     private val okHttpClient: OkHttpClient by lazy {
+        check(::applicationContext.isInitialized) {
+            "MenuApiClient must be initialized before use."
+        }
+
         OkHttpClient.Builder()
-            .cookieJar(JavaNetCookieJar(cookieManager))
+            .cookieJar(SecureCookieJar(applicationContext))
             .build()
     }
 
@@ -84,5 +100,11 @@ object MenuApiClient {
 
     val service: MenuApiService by lazy {
         retrofit.create(MenuApiService::class.java)
+    }
+
+    fun clearCookies() {
+        if (::applicationContext.isInitialized) {
+            SecureCookieJar(applicationContext).clear()
+        }
     }
 }

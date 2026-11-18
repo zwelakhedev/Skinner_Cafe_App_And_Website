@@ -142,7 +142,8 @@ public class PaymentsController : ControllerBase
             // Failed attempts may be retried.
             if ((order.PaymentStatus != "Pending" &&
                  order.PaymentStatus != "Failed") ||
-                order.OrderStatus != "Pending")
+                (order.OrderStatus != "Pending" &&
+                 order.OrderStatus != "Confirmed"))
             {
                 await transaction.RollbackAsync();
 
@@ -157,8 +158,8 @@ public class PaymentsController : ControllerBase
                 "SIM-" + Convert.ToHexString(
                     RandomNumberGenerator.GetBytes(12));
 
-            // Only a successful payment confirms the order.
-            // Failure and cancellation leave the order unconfirmed.
+            // Payment status is tracked independently from order status.
+            // Failure and cancellation do not change the order status..
             var newOrderPaymentStatus = outcome switch
             {
                 "Success" => "Successful",
@@ -171,18 +172,14 @@ public class PaymentsController : ControllerBase
             var claimed = await _db.Orders
                 .Where(o =>
                     o.OrderId == orderId &&
-                    o.OrderStatus == "Pending" &&
+                    (o.OrderStatus == "Pending" ||
+                     o.OrderStatus == "Confirmed") &&
                     (o.PaymentStatus == "Pending" ||
                      o.PaymentStatus == "Failed"))
                 .ExecuteUpdateAsync(setters =>
                     setters.SetProperty(
                         o => o.PaymentStatus,
-                        newOrderPaymentStatus)
-                    .SetProperty(
-                        o => o.OrderStatus,
-                        outcome == "Success"
-                            ? "Confirmed"
-                            : "Pending"));
+                        newOrderPaymentStatus));
 
             if (claimed == 0)
             {
@@ -285,18 +282,6 @@ public class PaymentsController : ControllerBase
                         CreatedAt = now
                     });
                 }
-
-                _db.OrderStatusHistories.Add(
-                    new OrderStatusHistory
-                    {
-                        OrderId = orderId,
-                        PreviousStatus = "Pending",
-                        NewStatus = "Confirmed",
-                        ChangedByIdentityUserId = identityUserId,
-                        Notes =
-                            $"Simulated {paymentProvider} payment successful.",
-                        ChangedAt = now
-                    });
             }
 
             await _db.SaveChangesAsync();
@@ -375,6 +360,7 @@ public class PaymentsController : ControllerBase
                     "Please check the order status before trying again."
             });
         }
+        catch (Exception)
         {
             await transaction.RollbackAsync();
 

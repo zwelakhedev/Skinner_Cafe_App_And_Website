@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "35905814742",
+    "project_id": "skinner-cafe",
+    "storage_bucket": "skinner-cafe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35905814742:android:6f6aad94b44232edfac977",
+        "android_client_info": {
+          "package_name": "za.co.skinnercafe.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNW65tCTaIDfMGu3QurJCD4BikiJjgnhc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

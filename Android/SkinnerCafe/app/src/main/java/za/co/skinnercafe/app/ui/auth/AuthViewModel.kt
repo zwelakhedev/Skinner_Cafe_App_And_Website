@@ -6,13 +6,17 @@ import za.co.skinnercafe.app.data.api.AuthRepository
 import za.co.skinnercafe.app.data.api.LoginRequest
 import za.co.skinnercafe.app.data.api.RegisterRequest
 import za.co.skinnercafe.app.data.api.CustomerDto
+import za.co.skinnercafe.app.ui.settings.AppPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import okhttp3.MultipartBody
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.tasks.await
 
 data class AuthUiState(
     val isLoading: Boolean = false,
@@ -22,11 +26,72 @@ data class AuthUiState(
 )
 
 class AuthViewModel(
-    private val repository: AuthRepository = AuthRepository()
+    private val repository: AuthRepository = AuthRepository(),
+    private val appPreferences: AppPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+private suspend fun syncFcmToken() {
+    try {
+        val token = FirebaseMessaging.getInstance().token.await()
+
+        appPreferences.saveFcmDeviceToken(token)
+        repository.registerDeviceToken(token)
+
+    } catch (exception: Exception) {
+        android.util.Log.e(
+            "SkinnerCafeFCM",
+            "Unable to synchronize the FCM device token.",
+            exception
+        )
+    }
+}
+
+    fun checkSession(
+        onAuthenticated: () -> Unit,
+        onUnauthenticated: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _uiState.value = AuthUiState(isLoading = true)
+
+            try {
+                val customer = repository.getCurrentCustomer().customer
+
+                syncFcmToken()
+
+                _uiState.value = AuthUiState(customer = customer)
+                onAuthenticated()
+
+            } catch (exception: HttpException) {
+                if (exception.code() == 401) {
+                    repository.clearLocalSession()
+                    _uiState.value = AuthUiState()
+                    onUnauthenticated()
+                } else {
+                    _uiState.value = AuthUiState(
+                        errorMessage = "Unable to verify your session. Please try again."
+                    )
+                }
+
+            } catch (exception: IOException) {
+                _uiState.value = AuthUiState(
+                    errorMessage = "Unable to connect to Skinner Cafe. Check your connection and try again."
+                )
+
+            } catch (exception: Exception) {
+                _uiState.value = AuthUiState(
+                    errorMessage = "Something went wrong while checking your session. Please try again."
+                )
+            }
+        }
+    }
+
+    fun handleSessionExpired() {
+        repository.clearLocalSession()
+        _uiState.value = AuthUiState()
+    }
 
     fun login(email: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
@@ -38,6 +103,8 @@ class AuthViewModel(
                 )
 
                 val customer = repository.getCurrentCustomer().customer
+
+                syncFcmToken()
 
                 _uiState.value = AuthUiState(customer = customer)
                 onSuccess()
@@ -71,7 +138,11 @@ class AuthViewModel(
                 )
 
                 // Retrieve the newly authenticated customer.
+                // Retrieve the newly authenticated customer.
                 val customer = repository.getCurrentCustomer().customer
+
+                // Register this device for customer notifications.
+                syncFcmToken()
 
                 // Store the customer and finish registration.
                 _uiState.value = AuthUiState(
@@ -93,7 +164,8 @@ class AuthViewModel(
             _uiState.value = AuthUiState(isLoading = true)
 
             try {
-                repository.logout()
+                val deviceToken = appPreferences.fcmDeviceToken.first()
+                repository.logout(deviceToken)
 
                 // Clear the signed-in customer's details.
                 _uiState.value = AuthUiState()

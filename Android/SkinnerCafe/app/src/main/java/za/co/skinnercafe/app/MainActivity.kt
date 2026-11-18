@@ -79,10 +79,31 @@ import android.widget.Toast
 import androidx.compose.runtime.collectAsState
 import za.co.skinnercafe.app.ui.settings.AppPreferences
 import za.co.skinnercafe.app.ui.theme.LocalCafeColors
+import za.co.skinnercafe.app.data.api.MenuApiClient
+import za.co.skinnercafe.app.notifications.SkinnerCafeNotificationChannel
+import android.content.Intent
+import androidx.compose.runtime.mutableIntStateOf
+import za.co.skinnercafe.app.notifications.NotificationDestinations
 
 class MainActivity : ComponentActivity() {
+
+    private val notificationNavigationRequest = mutableIntStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (
+            intent?.getBooleanExtra(
+                NotificationDestinations.EXTRA_OPEN_MY_ORDERS,
+                false
+            ) == true
+        ) {
+            notificationNavigationRequest.intValue++
+            intent.removeExtra(NotificationDestinations.EXTRA_OPEN_MY_ORDERS)
+        }
+
+        MenuApiClient.initialize(applicationContext)
+        SkinnerCafeNotificationChannel.create(this)
+
         enableEdgeToEdge()
 
         setContent {
@@ -99,24 +120,43 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = false
             ) {
                 SkinnerCafeNavigation(
+                    openMyOrdersRequest = notificationNavigationRequest.intValue,
                     homeContent = {
                             customer,
                             onLogout,
                             onUploadProfilePicture,
                             onRemoveProfilePicture,
                             authState,
-                            onOpenSettings ->
+                            onOpenSettings,
+                            onOpenMyOrders ->
                         SkinnerCafeHome(
                             customer = customer,
                             onLogout = onLogout,
                             onUploadProfilePicture = onUploadProfilePicture,
                             onRemoveProfilePicture = onRemoveProfilePicture,
                             authState = authState,
-                            onOpenSettings = onOpenSettings
+                            onOpenSettings = onOpenSettings,
+                            onOpenMyOrders = onOpenMyOrders
                         )
                     }
                 )
             }
+        }
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        if (
+            intent.getBooleanExtra(
+                NotificationDestinations.EXTRA_OPEN_MY_ORDERS,
+                false
+            )
+        ) {
+            notificationNavigationRequest.intValue++
+            intent.removeExtra(
+                NotificationDestinations.EXTRA_OPEN_MY_ORDERS
+            )
         }
     }
 }
@@ -128,7 +168,8 @@ fun SkinnerCafeHome(
     onUploadProfilePicture: (MultipartBody.Part) -> Unit = {},
     onRemoveProfilePicture: () -> Unit = {},
     authState: AuthUiState = AuthUiState(),
-    onOpenSettings: () -> Unit = {}
+    onOpenSettings: () -> Unit = {},
+    onOpenMyOrders: () -> Unit = {}
 ) {
     if (authState.isLoading) {
         CircularProgressIndicator()
@@ -274,6 +315,10 @@ fun SkinnerCafeHome(
                     onBack = {
                         isCheckoutScreen = false
                     },
+                    onContinueShopping = {
+                        isCheckoutScreen = false
+                        selectedTab = "Menu"
+                    },
                     onOrderPlaced = {
                         cartItems = emptyList()
                     }
@@ -394,6 +439,7 @@ fun SkinnerCafeHome(
                             text = { Text("My Orders") },
                             onClick = {
                                 isAccountMenuExpanded = false
+                                onOpenMyOrders()
                             }
                         )
 
