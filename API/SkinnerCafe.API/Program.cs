@@ -105,6 +105,7 @@ if (!builder.Environment.IsEnvironment("Testing"))
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ProfilePictureService>();
+builder.Services.AddScoped<IGoogleIdTokenValidator, GoogleIdTokenValidator>();
 
 builder.Services.AddScoped<
     IOrderNotificationService,
@@ -197,33 +198,6 @@ builder.Services.AddCors(options =>
 
 // Register OpenAPI.
 builder.Services.AddOpenApi();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Events.OnRedirectToLogin = context =>
-    {
-        if (context.Request.Path.StartsWithSegments("/api"))
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return Task.CompletedTask;
-        }
-
-        context.Response.Redirect(context.RedirectUri);
-        return Task.CompletedTask;
-    };
-
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        if (context.Request.Path.StartsWithSegments("/api"))
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        }
-
-        context.Response.Redirect(context.RedirectUri);
-        return Task.CompletedTask;
-    };
-});
 
 var app = builder.Build();
 

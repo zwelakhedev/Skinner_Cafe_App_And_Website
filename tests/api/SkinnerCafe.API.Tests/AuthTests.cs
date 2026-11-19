@@ -377,5 +377,52 @@ public async Task StaffLogout_AfterSuccessfulLogin_InvalidatesSession()
         profileResponse.StatusCode);
 }
 
+[Fact]
+public async Task GoogleLogin_NewCustomer_CreatesAccount()
+{
+    using var client = CreateClient();
+
+    var email = $"google.{Guid.NewGuid():N}@example.com";
+
+    var response = await client.PostAsJsonAsync(
+        "/api/auth/google",
+        new { idToken = $"valid:{email}" });
+
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+    var profile = await client.GetAsync("/api/auth/me");
+
+    Assert.Equal(HttpStatusCode.OK, profile.StatusCode);
+}
+
+[Fact]
+public async Task GoogleLogin_InvalidToken_ReturnsUnauthorized()
+{
+    using var client = CreateClient();
+
+    var response = await client.PostAsJsonAsync(
+        "/api/auth/google",
+        new { idToken = "invalid-token" });
+
+    Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+}
+
+[Fact]
+public async Task GoogleLogin_ExistingEmail_ReturnsConflict()
+{
+    using var client = CreateClient();
+    var email = $"existing.{Guid.NewGuid():N}@example.com";
+
+    await client.PostAsJsonAsync(
+        "/api/auth/register",
+        CreateRegistrationRequest(email));
+
+    var response = await client.PostAsJsonAsync(
+        "/api/auth/google",
+        new { idToken = $"valid:{email}" });
+
+    Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+}
+
 }
 

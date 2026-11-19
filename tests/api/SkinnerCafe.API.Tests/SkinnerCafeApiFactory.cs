@@ -11,6 +11,7 @@ using SkinnerCafe.API.Data;
 using Microsoft.AspNetCore.Identity;
 using SkinnerCafe.API.Services.Notifications;
 using SkinnerCafe.API.Models;
+using SkinnerCafe.API.Services;
 
 namespace SkinnerCafe.API.Tests;
 
@@ -59,6 +60,8 @@ public sealed class SkinnerCafeApiFactory : WebApplicationFactory<Program>
         services.AddSingleton<TestOrderNotificationService>();
         services.AddSingleton<IOrderNotificationService>(provider =>
             provider.GetRequiredService<TestOrderNotificationService>());
+        services.RemoveAll<IGoogleIdTokenValidator>();
+        services.AddScoped<IGoogleIdTokenValidator, TestGoogleIdTokenValidator>();
     });
 }
 

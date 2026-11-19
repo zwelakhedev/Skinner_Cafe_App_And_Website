@@ -113,6 +113,9 @@ class SecureCookieJar(context: Context) : CookieJar {
         val authCookie = cookies.firstOrNull {
             it.name == COOKIE_NAME
         } ?: return
+        if (!authCookie.matches(url)) {
+            return
+        }
 
         if (authCookie.expiresAt <= System.currentTimeMillis()) {
             clear()

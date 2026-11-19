@@ -7,6 +7,7 @@ import za.co.skinnercafe.app.data.api.LoginRequest
 import za.co.skinnercafe.app.data.api.RegisterRequest
 import za.co.skinnercafe.app.data.api.CustomerDto
 import za.co.skinnercafe.app.ui.settings.AppPreferences
+import za.co.skinnercafe.app.data.api.GoogleLoginRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,12 +18,17 @@ import java.io.IOException
 import okhttp3.MultipartBody
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
+import za.co.skinnercafe.app.data.api.SetPasswordRequest
+import za.co.skinnercafe.app.data.api.ChangePasswordRequest
+import za.co.skinnercafe.app.data.api.UnlinkGoogleAccountRequest
 
 data class AuthUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null,
-    val customer: CustomerDto? = null
+    val customer: CustomerDto? = null,
+    val hasPassword: Boolean = false,
+    val isGoogleLinked: Boolean = false
 )
 
 class AuthViewModel(
@@ -49,6 +55,16 @@ private suspend fun syncFcmToken() {
     }
 }
 
+    private suspend fun refreshAccountState() {
+        val account = repository.getCurrentCustomer()
+
+        _uiState.value = _uiState.value.copy(
+            customer = account.customer,
+            hasPassword = account.hasPassword,
+            isGoogleLinked = account.isGoogleLinked
+        )
+    }
+
     fun checkSession(
         onAuthenticated: () -> Unit,
         onUnauthenticated: () -> Unit
@@ -57,12 +73,15 @@ private suspend fun syncFcmToken() {
             _uiState.value = AuthUiState(isLoading = true)
 
             try {
-                val customer = repository.getCurrentCustomer().customer
+                val account = repository.getCurrentCustomer()
 
                 syncFcmToken()
 
-                _uiState.value = AuthUiState(customer = customer)
-                onAuthenticated()
+                _uiState.value = AuthUiState(
+                    customer = account.customer,
+                    hasPassword = account.hasPassword,
+                    isGoogleLinked = account.isGoogleLinked
+                )
 
             } catch (exception: HttpException) {
                 if (exception.code() == 401) {
@@ -102,15 +121,268 @@ private suspend fun syncFcmToken() {
                     LoginRequest(email = email, password = password)
                 )
 
-                val customer = repository.getCurrentCustomer().customer
+                val account = repository.getCurrentCustomer()
 
                 syncFcmToken()
 
-                _uiState.value = AuthUiState(customer = customer)
+                _uiState.value = AuthUiState(
+                    customer = account.customer,
+                    hasPassword = account.hasPassword,
+                    isGoogleLinked = account.isGoogleLinked
+                )
                 onSuccess()
             } catch (exception: Exception) {
                 _uiState.value = AuthUiState(
                     errorMessage = getErrorMessage(exception)
+                )
+            }
+        }
+    }
+
+    fun loginWithGoogle(idToken: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.value = AuthUiState(isLoading = true)
+
+            try {
+                repository.loginWithGoogle(GoogleLoginRequest(idToken))
+
+                val account = repository.getCurrentCustomer()
+
+                syncFcmToken()
+
+                _uiState.value = AuthUiState(
+                    customer = account.customer,
+                    hasPassword = account.hasPassword,
+                    isGoogleLinked = account.isGoogleLinked
+                )
+                onSuccess()
+            } catch (exception: Exception) {
+                _uiState.value = AuthUiState(
+                    errorMessage = getErrorMessage(exception)
+                )
+            }
+        }
+    }
+
+
+
+    fun linkGoogleAccount(
+        idToken: String,
+        onSessionExpired: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val currentCustomer = _uiState.value.customer
+
+            if (currentCustomer == null) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Please sign in before linking Google."
+                )
+                return@launch
+            }
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null,
+                successMessage = null
+            )
+
+            try {
+                val response = repository.linkGoogleAccount(
+                    GoogleLoginRequest(idToken)
+                )
+
+                refreshAccountState()
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    successMessage = response.message
+                )
+
+            } catch (exception: Exception) {
+
+                if (exception is HttpException && exception.code() == 401) {
+                    handleSessionExpired()
+                    onSessionExpired()
+                    return@launch
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = when (exception) {
+                        is HttpException -> when (exception.code()) {
+                            400 -> "Google sign-in returned an invalid token. Please try again."
+                            403 -> "This account cannot link a Google account."
+                            409 -> "This Google account cannot be linked. Check that its email matches your customer account."
+                            else -> getErrorMessage(exception)
+                        }
+
+                        else -> getErrorMessage(exception)
+                    }
+                )
+            }
+        }
+    }
+
+    fun setPassword(
+        idToken: String,
+        newPassword: String,
+        onSessionExpired: () -> Unit
+    ) {
+        viewModelScope.launch {
+            if (_uiState.value.customer == null) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Please sign in before setting a password."
+                )
+                return@launch
+            }
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null,
+                successMessage = null
+            )
+
+            try {
+                val response = repository.setPassword(
+                    SetPasswordRequest(idToken, newPassword)
+                )
+
+                refreshAccountState()
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    successMessage = response.message
+                )
+
+            } catch (exception: Exception) {
+                if (exception is HttpException && exception.code() == 401) {
+                    handleSessionExpired()
+                    onSessionExpired()
+                    return@launch
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = when (exception) {
+                        is HttpException -> when (exception.code()) {
+                            400 -> "The password does not meet the requirements, or Google verification failed."
+                            403 -> "This account cannot set a password."
+                            409 -> "A password already exists or Google verification failed."
+                            else -> getErrorMessage(exception)
+                        }
+                        else -> getErrorMessage(exception)
+                    }
+                )
+            }
+        }
+    }
+
+    fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        onSessionExpired: () -> Unit
+    ) {
+        viewModelScope.launch {
+            if (_uiState.value.customer == null) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Please sign in before changing your password."
+                )
+                return@launch
+            }
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null,
+                successMessage = null
+            )
+
+            try {
+                val response = repository.changePassword(
+                    ChangePasswordRequest(
+                        currentPassword,
+                        newPassword
+                    )
+                )
+
+                refreshAccountState()
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    successMessage = response.message
+                )
+
+            } catch (exception: Exception) {
+                if (exception is HttpException && exception.code() == 401) {
+                    handleSessionExpired()
+                    onSessionExpired()
+                    return@launch
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = when (exception) {
+                        is HttpException -> when (exception.code()) {
+                            400 -> "Your current password may be incorrect, or your new password does not meet the requirements."
+                            403 -> "This account cannot change its password."
+                            409 -> "Your account does not have a password yet."
+                            else -> getErrorMessage(exception)
+                        }
+                        else -> getErrorMessage(exception)
+                    }
+                )
+            }
+        }
+    }
+
+    fun unlinkGoogleAccount(
+        currentPassword: String,
+        onSessionExpired: () -> Unit
+    ) {
+        viewModelScope.launch {
+            if (_uiState.value.customer == null) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Please sign in before unlinking Google."
+                )
+                return@launch
+            }
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null,
+                successMessage = null
+            )
+
+            try {
+                val response = repository.unlinkGoogleAccount(
+                    UnlinkGoogleAccountRequest(
+                        currentPassword = currentPassword
+                    )
+                )
+
+                refreshAccountState()
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    successMessage = response.message
+                )
+
+            } catch (exception: Exception) {
+                if (exception is HttpException && exception.code() == 401) {
+                    handleSessionExpired()
+                    onSessionExpired()
+                    return@launch
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = when (exception) {
+                        is HttpException -> when (exception.code()) {
+                            403 -> "This account cannot unlink Google."
+                            409 -> "Create a password before unlinking Google."
+                            else -> getErrorMessage(exception)
+                        }
+                        else -> getErrorMessage(exception)
+                    }
                 )
             }
         }
@@ -137,16 +409,17 @@ private suspend fun syncFcmToken() {
                     )
                 )
 
-                // Retrieve the newly authenticated customer.
-                // Retrieve the newly authenticated customer.
-                val customer = repository.getCurrentCustomer().customer
+                // Retrieve the newly authenticated customer and account status.
+                val account = repository.getCurrentCustomer()
 
                 // Register this device for customer notifications.
                 syncFcmToken()
 
-                // Store the customer and finish registration.
+                // Store the customer and account status.
                 _uiState.value = AuthUiState(
-                    customer = customer
+                    customer = account.customer,
+                    hasPassword = account.hasPassword,
+                    isGoogleLinked = account.isGoogleLinked
                 )
 
                 onSuccess()

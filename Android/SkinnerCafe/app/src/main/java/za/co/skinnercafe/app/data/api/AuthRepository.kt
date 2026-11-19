@@ -1,6 +1,7 @@
 package za.co.skinnercafe.app.data.api
 
 import okhttp3.MultipartBody
+import za.co.skinnercafe.app.data.api.UnlinkGoogleAccountRequest
 
 class AuthRepository(
     private val api: MenuApiService = MenuApiClient.service
@@ -11,6 +12,31 @@ class AuthRepository(
 
     suspend fun login(request: LoginRequest): AuthResponse {
         return api.login(request)
+    }
+
+    suspend fun loginWithGoogle(request: GoogleLoginRequest): AuthResponse {
+        return api.loginWithGoogle(request)
+    }
+    suspend fun linkGoogleAccount(
+        request: GoogleLoginRequest
+    ): AuthResponse {
+        return api.linkGoogleAccount(request)
+    }
+
+    suspend fun unlinkGoogleAccount(
+        request: UnlinkGoogleAccountRequest
+    ): AuthResponse = api.unlinkGoogleAccount(request)
+
+    suspend fun setPassword(
+        request: SetPasswordRequest
+    ): AuthResponse {
+        return api.setPassword(request)
+    }
+
+    suspend fun changePassword(
+        request: ChangePasswordRequest
+    ): AuthResponse {
+        return api.changePassword(request)
     }
 
     suspend fun getCurrentCustomer(): MeResponse {
@@ -30,22 +56,22 @@ class AuthRepository(
     }
 
     suspend fun logout(deviceToken: String?): AuthResponse {
-    if (!deviceToken.isNullOrBlank()) {
-        try {
-            unregisterDeviceToken(deviceToken)
-        } catch (exception: Exception) {
-            android.util.Log.e(
-                "SkinnerCafeFCM",
-                "Unable to unregister the device token during logout.",
-                exception
-            )
+        if (!deviceToken.isNullOrBlank()) {
+            try {
+                unregisterDeviceToken(deviceToken)
+            } catch (exception: Exception) {
+                android.util.Log.e(
+                    "SkinnerCafeFCM",
+                    "Unable to unregister the device token during logout.",
+                    exception
+                )
+            }
         }
-    }
 
-    val response = api.logout()
-    MenuApiClient.clearCookies()
-    return response
-}
+        val response = api.logout()
+        MenuApiClient.clearCookies()
+        return response
+    }
 
     fun clearLocalSession() {
         MenuApiClient.clearCookies()

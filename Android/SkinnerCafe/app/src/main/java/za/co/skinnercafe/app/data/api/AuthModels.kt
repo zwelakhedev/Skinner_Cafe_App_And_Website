@@ -13,6 +13,24 @@ data class LoginRequest(
     val password: String
 )
 
+data class GoogleLoginRequest(
+    val idToken: String
+)
+
+data class SetPasswordRequest(
+    val idToken: String,
+    val newPassword: String
+)
+
+data class ChangePasswordRequest(
+    val currentPassword: String,
+    val newPassword: String
+)
+
+data class UnlinkGoogleAccountRequest(
+    val currentPassword: String
+)
+
 data class AuthResponse(
     val message: String,
     val customer: CustomerDto? = null,
@@ -30,5 +48,7 @@ data class CustomerDto(
 )
 
 data class MeResponse(
-    val customer: CustomerDto
+    val customer: CustomerDto,
+    val hasPassword: Boolean = false,
+    val isGoogleLinked: Boolean = false
 )

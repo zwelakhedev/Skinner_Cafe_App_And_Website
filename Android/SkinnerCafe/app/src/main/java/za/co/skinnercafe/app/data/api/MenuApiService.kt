@@ -3,6 +3,7 @@ package za.co.skinnercafe.app.data.api
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.HTTP
 import retrofit2.http.GET
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -28,6 +29,35 @@ interface MenuApiService {
     @POST("api/auth/login")
     suspend fun login(
         @Body request: LoginRequest
+    ): AuthResponse
+
+    @POST("api/auth/google")
+    suspend fun loginWithGoogle(
+        @Body request: GoogleLoginRequest
+    ): AuthResponse
+
+    @POST("api/auth/google/link")
+    suspend fun linkGoogleAccount(
+        @Body request: GoogleLoginRequest
+    ): AuthResponse
+
+    @HTTP(
+        method = "DELETE",
+        path = "api/auth/google/unlink",
+        hasBody = true
+    )
+    suspend fun unlinkGoogleAccount(
+        @Body request: UnlinkGoogleAccountRequest
+    ): AuthResponse
+
+    @POST("api/auth/password/set")
+    suspend fun setPassword(
+        @Body request: SetPasswordRequest
+    ): AuthResponse
+
+    @POST("api/auth/password/change")
+    suspend fun changePassword(
+        @Body request: ChangePasswordRequest
     ): AuthResponse
 
     @GET("api/auth/me")
@@ -80,13 +110,17 @@ object MenuApiClient {
         applicationContext = context.applicationContext
     }
 
-    private val okHttpClient: OkHttpClient by lazy {
+    private val cookieJar: SecureCookieJar by lazy {
         check(::applicationContext.isInitialized) {
             "MenuApiClient must be initialized before use."
         }
 
+        SecureCookieJar(applicationContext)
+    }
+
+    private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .cookieJar(SecureCookieJar(applicationContext))
+            .cookieJar(cookieJar)
             .build()
     }
 
@@ -104,7 +138,7 @@ object MenuApiClient {
 
     fun clearCookies() {
         if (::applicationContext.isInitialized) {
-            SecureCookieJar(applicationContext).clear()
+            cookieJar.clear()
         }
     }
 }

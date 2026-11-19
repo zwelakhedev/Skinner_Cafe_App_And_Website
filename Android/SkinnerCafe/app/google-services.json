@@ -12,7 +12,20 @@
           "package_name": "za.co.skinnercafe.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "35905814742-2arktmd1sacrn911qh51gah06j4ds2cj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "za.co.skinnercafe.app",
+            "certificate_hash": "5bfdbe5fddcd8ea6bbe8090d6aa63aa4565ac11d"
+          }
+        },
+        {
+          "client_id": "35905814742-rjh84ohbd9pae47b1t51lp8gquvd7pph.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBNW65tCTaIDfMGu3QurJCD4BikiJjgnhc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35905814742-rjh84ohbd9pae47b1t51lp8gquvd7pph.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -43,14 +43,27 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 @Composable
 fun SettingsScreen(
     customer: CustomerDto?,
     appPreferences: AppPreferences,
+    isLoading: Boolean,
+    successMessage: String?,
+    errorMessage: String?,
+    hasPassword: Boolean,
+    isGoogleLinked: Boolean,
+    onLinkGoogleAccount: () -> Unit,
+    onSetPassword: (String) -> Unit,
+    onChangePassword: (String, String) -> Unit,
+    onUnlinkGoogleAccount: (String) -> Unit,
     onLogout: () -> Unit,
     onBack: () -> Unit
 ) {
+
     val isDarkTheme by appPreferences.isDarkTheme.collectAsState(
         initial = false
     )
@@ -61,6 +74,11 @@ fun SettingsScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    var newPassword by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var currentPassword by remember { mutableStateOf("") }
+    var unlinkPassword by remember { mutableStateOf("") }
+    var showUnlinkConfirmation by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -140,6 +158,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(24.dp))
 
             SettingsSection(title = "MY ACCOUNT") {
+
                 Text(
                     text = "${customer?.firstName.orEmpty()} ${customer?.lastName.orEmpty()}",
                     fontWeight = FontWeight.SemiBold,
@@ -160,12 +179,228 @@ fun SettingsScreen(
                     color = colors.onSurfaceVariant
                 )
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(20.dp))
 
                 Text(
-                    text = "Account editing and password changes will be available when the API supports them.",
+                    text = "Password",
+                    fontWeight = FontWeight.SemiBold,
+                    color = colors.onSurface
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = if (hasPassword) {
+                        "Your account has a password."
+                    } else {
+                        "Your account currently uses Google sign-in."
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                if (hasPassword) {
+
+                    OutlinedTextField(
+                        value = currentPassword,
+                        onValueChange = { currentPassword = it },
+                        label = { Text("Current password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        enabled = !isLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                OutlinedTextField(
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
+                    label = {
+                        Text(if (hasPassword) "New password" else "Create password")
+                    },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirm new password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                Button(
+                    onClick = {
+                        if (hasPassword) {
+                            onChangePassword(currentPassword, newPassword)
+                        } else {
+                            onSetPassword(newPassword)
+                        }
+
+                        currentPassword = ""
+                        newPassword = ""
+                        confirmPassword = ""
+                    },
+                    enabled = !isLoading &&
+                            customer != null &&
+                            newPassword.length >= 8 &&
+                            newPassword.any { it.isDigit() } &&
+                            newPassword.any { it.isLowerCase() } &&
+                            newPassword.any { it.isUpperCase() } &&
+                            newPassword.any { !it.isLetterOrDigit() } &&
+                            newPassword == confirmPassword &&
+                            (!hasPassword || currentPassword.isNotBlank()),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        when {
+                            isLoading -> "Please wait..."
+                            hasPassword -> "Change Password"
+                            else -> "Set Password"
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(20.dp))
+
+                Text(
+                    text = "Google Account",
+                    fontWeight = FontWeight.SemiBold,
+                    color = colors.onSurface
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = if (isGoogleLinked) {
+                        "Your Google account is linked."
+                    } else {
+                        "Your Google account is not linked."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                if (!isGoogleLinked) {
+
+                    Button(
+                        onClick = onLinkGoogleAccount,
+                        enabled = !isLoading && customer != null,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Link Google Account")
+                    }
+
+                } else {
+
+                    Button(
+                        onClick = {
+                            showUnlinkConfirmation = true
+                        },
+                        enabled = !isLoading && hasPassword,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.error
+                        )
+                    ) {
+                        Text("Unlink Google Account")
+                    }
+
+                    if (!hasPassword) {
+                        Spacer(Modifier.height(6.dp))
+
+                        Text(
+                            text = "Create a password before unlinking Google. This ensures you won't lose access to your account.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.onSurfaceVariant
+                        )
+                    }
+                }
+
+                if (!successMessage.isNullOrBlank()) {
+                    Spacer(Modifier.height(12.dp))
+
+                    Text(
+                        text = successMessage,
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                if (!errorMessage.isNullOrBlank()) {
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
+            if (showUnlinkConfirmation) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showUnlinkConfirmation = false
+                        unlinkPassword = ""
+                    },
+                    title = {
+                        Text("Unlink Google account?")
+                    },
+                    text = {
+                        Column {
+                            Text(
+                                "You will no longer be able to sign in using Google. " +
+                                        "You can still sign in using your email and password."
+                            )
+
+                            Spacer(Modifier.height(12.dp))
+
+                            OutlinedTextField(
+                                value = unlinkPassword,
+                                onValueChange = { unlinkPassword = it },
+                                label = { Text("Current password") },
+                                visualTransformation = PasswordVisualTransformation(),
+                                singleLine = true,
+                                enabled = !isLoading,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showUnlinkConfirmation = false
+                                onUnlinkGoogleAccount(unlinkPassword)
+                                unlinkPassword = ""
+                            },
+                            enabled = !isLoading && unlinkPassword.isNotBlank()
+                        ) {
+                            Text("Unlink")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showUnlinkConfirmation = false
+                                unlinkPassword = ""
+                            },
+                            enabled = !isLoading
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
                 )
             }
 

@@ -34,6 +34,21 @@ import za.co.skinnercafe.app.ui.orders.MyOrdersScreen
 import okhttp3.MultipartBody
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.navigation.compose.currentBackStackEntryAsState
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.widget.Toast
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.compose.runtime.rememberCoroutineScope
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.launch
+import za.co.skinnercafe.app.R
 
 private object Routes {
 
@@ -43,6 +58,54 @@ private object Routes {
     const val HOME = "home"
     const val SETTINGS = "settings"
     const val MY_ORDERS = "my_orders"
+}
+
+private fun Context.findActivity(): Activity? {
+    return when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
+    }
+}
+
+private suspend fun requestGoogleIdToken(context: Context): String {
+    val activity = context.findActivity()
+        ?: throw IllegalStateException(
+            "Unable to access the current activity."
+        )
+
+    val credentialManager = CredentialManager.create(context)
+
+    val googleOption = GetSignInWithGoogleOption.Builder(
+        serverClientId = context.getString(
+            R.string.default_web_client_id
+        )
+    ).build()
+
+    val request = GetCredentialRequest.Builder()
+        .addCredentialOption(googleOption)
+        .build()
+
+    val result = credentialManager.getCredential(
+        context = activity,
+        request = request
+    )
+
+    val credential = result.credential
+
+    if (
+        credential !is CustomCredential ||
+        credential.type !=
+        GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+    ) {
+        throw IllegalStateException(
+            "Google returned an unsupported credential."
+        )
+    }
+
+    return GoogleIdTokenCredential
+        .createFrom(credential.data)
+        .idToken
 }
 
 @Composable
@@ -63,13 +126,136 @@ fun SkinnerCafeNavigation(
 
     val appPreferences = remember {
         AppPreferences(context.applicationContext)
-}
+    }
 
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(appPreferences)
-)
+    )
 
     val authState by authViewModel.uiState.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+
+
+    val startGoogleSignIn: () -> Unit = {
+        coroutineScope.launch {
+            try {
+                val idToken = requestGoogleIdToken(context)
+
+                authViewModel.loginWithGoogle(idToken) {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.LOGIN) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+
+            } catch (_: GetCredentialCancellationException) {
+                // The user cancelled Google sign-in.
+            } catch (exception: GoogleIdTokenParsingException) {
+                Toast.makeText(
+                    context,
+                    "Unable to read your Google account. Please try again.",
+                    Toast.LENGTH_LONG
+                ).show()
+            } catch (exception: GetCredentialException) {
+                Toast.makeText(
+                    context,
+                    exception.message ?: "Google sign-in failed.",
+                    Toast.LENGTH_LONG
+                ).show()
+            } catch (exception: Exception) {
+                Toast.makeText(
+                    context,
+                    exception.message
+                        ?: "An unexpected sign-in error occurred.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    val startGoogleAccountLink: () -> Unit = {
+        coroutineScope.launch {
+            try {
+                val idToken = requestGoogleIdToken(context)
+
+                authViewModel.linkGoogleAccount(idToken) {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.HOME) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+
+            } catch (_: GetCredentialCancellationException) {
+                // The user cancelled account linking.
+            } catch (exception: GoogleIdTokenParsingException) {
+                Toast.makeText(
+                    context,
+                    "Unable to read your Google account. Please try again.",
+                    Toast.LENGTH_LONG
+                ).show()
+            } catch (exception: GetCredentialException) {
+                Toast.makeText(
+                    context,
+                    exception.message ?: "Google account linking failed.",
+                    Toast.LENGTH_LONG
+                ).show()
+            } catch (exception: Exception) {
+                Toast.makeText(
+                    context,
+                    exception.message
+                        ?: "An unexpected account-linking error occurred.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    val startSetPassword: (String) -> Unit = { newPassword ->
+        coroutineScope.launch {
+            try {
+                val idToken = requestGoogleIdToken(context)
+
+                authViewModel.setPassword(idToken, newPassword) {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.HOME) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+
+            } catch (_: GetCredentialCancellationException) {
+                // The user cancelled password setup.
+
+            } catch (exception: GoogleIdTokenParsingException) {
+                Toast.makeText(
+                    context,
+                    "Unable to read your Google account. Please try again.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            } catch (exception: GetCredentialException) {
+                Toast.makeText(
+                    context,
+                    exception.message ?: "Google verification failed.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            } catch (exception: Exception) {
+                Toast.makeText(
+                    context,
+                    exception.message ?: "Unable to set your password.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -188,9 +374,7 @@ fun SkinnerCafeNavigation(
                         }
                     }
                 },
-                onGoogleSignInClick = {
-                    // Google SSO will be implemented separately.
-                },
+                onGoogleSignInClick = startGoogleSignIn,
                 onSignUpClick = {
                     authViewModel.clearMessages()
                     navController.navigate(Routes.SIGN_UP)
@@ -215,9 +399,7 @@ fun SkinnerCafeNavigation(
                         }
                     }
                 },
-                onGoogleSignInClick = {
-                    // Google SSO will be implemented separately.
-                },
+                onGoogleSignInClick = startGoogleSignIn,
                 onLoginClick = {
                     authViewModel.clearMessages()
                     navController.popBackStack()
@@ -253,6 +435,51 @@ fun SkinnerCafeNavigation(
             SettingsScreen(
                 customer = authState.customer,
                 appPreferences = appPreferences,
+                isLoading = authState.isLoading,
+                successMessage = authState.successMessage,
+                errorMessage = authState.errorMessage,
+                hasPassword = authState.hasPassword,
+                isGoogleLinked = authState.isGoogleLinked,
+
+                onLinkGoogleAccount = {
+                    authViewModel.clearMessages()
+                    startGoogleAccountLink()
+                },
+
+                onSetPassword = { newPassword ->
+                    authViewModel.clearMessages()
+                    startSetPassword(newPassword)
+                },
+
+                onChangePassword = { currentPassword, newPassword ->
+                    authViewModel.clearMessages()
+
+                    authViewModel.changePassword(
+                        currentPassword,
+                        newPassword
+                    ) {
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.HOME) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+
+                onUnlinkGoogleAccount = { currentPassword ->
+                    authViewModel.clearMessages()
+
+                    authViewModel.unlinkGoogleAccount(currentPassword) {
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.HOME) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+
                 onLogout = {
                     authViewModel.logout {
                         navController.navigate(Routes.LOGIN) {
@@ -263,6 +490,7 @@ fun SkinnerCafeNavigation(
                         }
                     }
                 },
+
                 onBack = {
                     navController.popBackStack()
                 }
@@ -288,4 +516,3 @@ fun SkinnerCafeNavigation(
         }
     }
 }
-
