@@ -84,12 +84,14 @@ import za.co.skinnercafe.app.notifications.SkinnerCafeNotificationChannel
 import android.content.Intent
 import androidx.compose.runtime.mutableIntStateOf
 import za.co.skinnercafe.app.notifications.NotificationDestinations
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : ComponentActivity() {
 
     private val notificationNavigationRequest = mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         if (
             intent?.getBooleanExtra(
