@@ -907,8 +907,6 @@ Design principles include:
 -   **Brand coherence:** consistent use of the Skinner Cafe logo and
     visual identity.
 
-Design reference: **\[Add the Figma / Figma Make project URL here\]**.
-
 ## 16. 🗂️ Repository structure
 
 The repository is organised as a monorepo so that the clients, API,
