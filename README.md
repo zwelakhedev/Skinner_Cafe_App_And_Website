@@ -1,1517 +1,1717 @@
-<div align="center">
-
+::: {align="center"}
 # ☕ Skinner Cafe
 
-<img
-  width="1000"
-  alt="Skinner Cafe Logo"
+`<img
+  width="760"
+  alt="Skinner Cafe logo"
   src="https://github.com/user-attachments/assets/2069363d-ec1e-4900-a85a-7feff6d5bdbe"
-/>
+/>`{=html}
 
-### Integrated Café Website & Android Mobile Application
+### Integrated Café Website, Android Application and Management Platform
 
-A connected digital experience for customers and café operations**
-
-</div>
+**A connected digital platform for convenient customer ordering and
+coordinated café operations.**
 
 [![Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website)
 [![Android](https://img.shields.io/badge/Android-Kotlin%20%7C%20Jetpack%20Compose-3DDC84?logo=android&logoColor=white)](#-android-mobile-application)
-[![Backend](https://img.shields.io/badge/Backend-ASP.NET%20Core-512BD4?logo=dotnet&logoColor=white)](#-backend-and-system-architecture)
-[![Database](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver&logoColor=white)](#-database)
-[![Status](https://img.shields.io/badge/Status-Active%20Development-orange)](#-project-status)
+[![Website](https://img.shields.io/badge/Website-React%20%7C%20Vite-61DAFB?logo=react&logoColor=black)](#-website-platform)
+[![Backend](https://img.shields.io/badge/Backend-ASP.NET%20Core-512BD4?logo=dotnet&logoColor=white)](#-backend-and-api)
+[![Database](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver&logoColor=white)](#-database-and-data-management)
 
-**Repository:**
-[zwelakhedev/Skinner_Cafe_App_And_Website](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website)
+[**Download Android
+APK**](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/tag/v1.0.0)
+ •  [**View source
+code**](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website)  • 
+[**View
+releases**](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases)  •  [**▶️ Watch project demo**](https://youtu.be/WHEd1KEoX04)
 :::
 
 ------------------------------------------------------------------------
 
-## 📑 Contents
+## Table of contents
 
--   [1. Project Overview](#-1-project-overview)
--   [2. Problem Statement](#-2-problem-statement)
--   [3. Project Purpose and
-    Objectives](#-3-project-purpose-and-objectives)
--   [4. Target Audience and
-    Stakeholders](#-4-target-audience-and-stakeholders)
--   [5. Proposed Solution and Expected
-    Impact](#-5-proposed-solution-and-expected-impact)
--   [6. System Scope](#-6-system-scope)
--   [7. System Architecture](#-7-system-architecture)
--   [8. Technology Stack](#-8-technology-stack)
--   [9. Android Mobile Application](#-9-android-mobile-application)
--   [10. Website](#-10-website)
--   [11. Backend and System
-    Architecture](#-11-backend-and-system-architecture)
--   [12. Database](#-12-database)
--   [13. User Interface and Design
-    Considerations](#-13-user-interface-and-design-considerations)
--   [14. Security, Privacy and Data
-    Integrity](#-14-security-privacy-and-data-integrity)
--   [15. Repository Structure](#-15-repository-structure)
--   [16. Development Environment and
-    Setup](#-16-development-environment-and-setup)
--   [17. Running the Project](#-17-running-the-project)
--   [18. Testing and Quality
-    Assurance](#-18-testing-and-quality-assurance)
--   [19. GitHub, Version Control and
-    Collaboration](#-19-github-version-control-and-collaboration)
--   [20. GitHub Actions and Continuous
-    Integration](#-20-github-actions-and-continuous-integration)
--   [21. Screenshots and Interface
-    Evidence](#-21-screenshots-and-interface-evidence)
--   [22. Demonstration Video and
-    Presentation](#-22-demonstration-video-and-presentation)
--   [23. Release Notes and Prototype-to-Current
-    Development](#-23-release-notes-and-prototype-to-current-development)
--   [24. Publication and Release
-    Evidence](#-24-publication-and-release-evidence)
--   [25. Installation and User
-    Guidance](#-25-installation-and-user-guidance)
--   [26. Known Limitations and Future
-    Enhancements](#-26-known-limitations-and-future-enhancements)
--   [27. Project Status](#-27-project-status)
--   [28. Acknowledgements and
-    Attributions](#-28-acknowledgements-and-attributions)
--   [29. Responsible Use of AI-Assisted
-    Tools](#-29-responsible-use-of-ai-assisted-tools)
--   [30. Author and Project Links](#-30-author-and-project-links)
+1.  [Executive summary](#1-executive-summary)
+2.  [Background and problem
+    statement](#2-background-and-problem-statement)
+3.  [Purpose, aim and objectives](#3-purpose-aim-and-objectives)
+4.  [Target audience and
+    stakeholders](#4-target-audience-and-stakeholders)
+5.  [Proposed solution and system
+    scope](#5-proposed-solution-and-system-scope)
+6.  [Expected outcomes and impact](#6-expected-outcomes-and-impact)
+7.  [System architecture](#7-system-architecture)
+8.  [Technology stack](#8-technology-stack)
+9.  [Android mobile application](#9-android-mobile-application)
+10. [Website platform](#10-website-platform)
+11. [Backend and API](#11-backend-and-api)
+12. [Database and data management](#12-database-and-data-management)
+13. [Core business workflows](#13-core-business-workflows)
+14. [Security, privacy and
+    reliability](#14-security-privacy-and-reliability)
+15. [User interface and
+    accessibility](#15-user-interface-and-accessibility)
+16. [Repository structure](#16-repository-structure)
+17. [Development setup](#17-development-setup)
+18. [Running the system locally](#18-running-the-system-locally)
+19. [Build and release](#19-build-and-release)
+20. [Testing and quality assurance](#20-testing-and-quality-assurance)
+21. [Website screenshots](#21-website-screenshots)
+22. [Android application
+    screenshots](#22-android-application-screenshots)
+23. [Google Play Store listing and promotional
+    assets](#23-google-play-store-listing-and-promotional-assets)
+24. [Download and installation](#24-download-and-installation)
+25. [Demonstration and supporting
+    documentation](#25-demonstration-and-supporting-documentation)
+26. [Project outcomes and future
+    development](#26-project-outcomes-and-future-development)
+27. [Acknowledgements and responsible
+    development](#27-acknowledgements-and-responsible-development)
+28. [Author and project links](#28-author-and-project-links)
 
 ------------------------------------------------------------------------
 
-## ☕ 1. Project Overview
+## 1. 📋 Executive summary
 
-Skinner Cafe is a multi-platform café management and customer-engagement
-project. It is designed around two connected customer-facing
-channels---a responsive website and an Android mobile
-application---supported by a shared ASP.NET Core Web API and a central
-Microsoft SQL Server database.
+Skinner Cafe is an integrated digital platform designed to modernise the
+way a café presents its products, receives customer orders and
+coordinates the fulfilment of those orders. The solution brings together
+a responsive website, a native Android mobile application, a shared
+application programming interface (API) and a central Microsoft SQL
+Server database. Rather than treating the website and mobile application
+as separate products, the system uses a common backend and shared
+business rules so that customer and operational information is managed
+consistently.
 
-The project addresses the need for a convenient, consistent and
-digitally supported café experience. Customers should be able to
-discover the café's products, explore menu information and place orders
-through a familiar digital interface. The Android application provides a
-mobile-first experience, while the website provides an accessible
-browser-based channel. Both channels are intended to use the same
-backend services and business data so that information is not maintained
-independently in separate systems.
+The project addresses a practical service-delivery problem: customers
+increasingly expect to discover products, make selections and place
+orders through convenient digital channels, while café staff need a
+dependable way to receive, review and prepare those orders. A
+disconnected or predominantly manual process can create avoidable
+communication, inconsistent records and uncertainty about order
+progress. Skinner Cafe provides a structured digital workflow intended
+to reduce these points of friction.
 
-The wider solution is designed to support the café's operational
-processes as the project develops. Customer ordering and order-status
-communication form the core transaction workflow. A secure staff-facing
-website area is intended to support operational activities such as order
-handling and, as the system expands, inventory, supplier, staff,
-scheduling, attendance, events and reporting processes.
+The Android application focuses on the mobile customer experience. It
+provides access to the menu, product options, cart, checkout, customer
+account and order-history features. The website complements the
+application by providing a browser-based customer channel and the
+designated environment for authorised staff operations. Staff workflows
+are kept separate from the customer-facing mobile application. This
+division allows customers to use a straightforward ordering experience
+while staff work with the operational functions required to process
+orders.
 
-The system is being developed as a structured software project rather
-than as two unrelated interfaces. Its repository separates the Android
-client, web client, API, database resources, documentation and tests.
-This separation supports maintainability, traceability, testing and
-future enhancement.
+The backend is implemented with ASP.NET Core and exposes REST-style
+endpoints consumed by both clients. It is responsible for validating
+requests, applying business rules, enforcing access permissions and
+communicating with SQL Server through the application's data-access
+layer. The database provides a centralised relational store for
+customer, menu, product, order and payment-workflow information.
+Authentication, account protection, order validation and status-driven
+customer communication are treated as system-wide concerns rather than
+isolated interface features.
 
-> **Implementation note:** This README distinguishes features that have
-> been implemented or demonstrated in the development environment from
-> features that remain planned, require end-to-end verification, or
-> depend on deployment. A successful source-code build is not, by
-> itself, proof that every user journey is production-ready.
+The project is intended to demonstrate a complete, maintainable software
+solution: one that connects customer-facing applications to operational
+processes through a shared and structured architecture. Its expected
+value lies in improved ordering convenience, clearer communication,
+better order traceability and a foundation that can be extended as the
+café's digital and operational needs grow.
 
-## 🎯 2. Problem Statement
+> **Release and integration note:** The Android APK is distributed
+> through the GitHub Releases link above. The payment workflow described
+> in this project is a simulation and does not process real funds. A
+> Google Play Store listing and production service URLs should only be
+> added after the relevant publication and deployment steps have been
+> completed.
 
-Cafés commonly need to coordinate menu information, customer orders,
-payment outcomes and order preparation while serving customers through
-in-person and digital channels. When these activities rely heavily on
-manual communication or disconnected tools, several challenges can
-arise:
+## 2. 🔎 Background and problem statement
 
--   Customers may have limited visibility of menu information and
-    ordering options before visiting the café.
--   Orders may need to be captured or communicated manually, increasing
-    the possibility of mistakes, duplication or delays.
--   Customers may not know whether an order has been received, approved
-    or prepared for collection.
--   Separate website, mobile and operational records can lead to
-    inconsistent information.
--   Staff may spend time repeating administrative tasks that could be
-    supported by a centralized system.
--   A business may find it difficult to expand its digital services when
-    its software is built as a single tightly coupled application.
+### 2.1 Background
 
-Skinner Cafe responds to these challenges by developing a connected
-platform in which the website and Android application communicate with a
-shared API and database. The intended outcome is a clearer customer
-journey and a more consistent foundation for café operations.
+A café must coordinate several related activities during normal service:
+presenting an accurate menu, communicating product options, recording
+customer selections, receiving orders, determining payment outcomes,
+preparing products and informing customers when their orders are ready.
+These activities are closely connected. A weakness in one part of the
+process can affect the customer experience and the efficiency of the
+staff responsible for fulfilment.
 
-## 🎯 3. Project Purpose and Objectives
+Traditional in-person ordering remains important, but it does not always
+provide the flexibility expected by customers who prefer to browse or
+place orders before arriving. A website and mobile application can
+extend access to the café's services, but only if the channels are
+supported by dependable shared data and a coherent order process.
 
-### 3.1 Primary purpose
+### 2.2 Problem statement
 
-The primary purpose is to design, implement and document a connected
-digital platform that improves how customers interact with Skinner Cafe
-and establishes a foundation for more efficient café operations.
+When menu information, customer details and order records are maintained
+through disconnected interfaces or manual processes, a café can
+experience:
 
-### 3.2 Objectives
+-   **Limited customer access:** customers may need to visit or contact
+    the café to obtain information that could be presented digitally.
+-   **Order-entry errors:** manually relaying product selections,
+    variants or add-ons can introduce misunderstandings, omissions or
+    duplication.
+-   **Unclear order progress:** customers may not know whether an order
+    has been received, accepted, is being prepared or is ready for
+    collection.
+-   **Fragmented information:** separate systems can hold inconsistent
+    product, customer or order details.
+-   **Administrative pressure:** staff may spend time answering
+    repetitive status enquiries or transferring information between
+    tools.
+-   **Difficult expansion:** tightly coupled software can make it harder
+    to introduce additional channels or operational capabilities without
+    disrupting existing functionality.
 
-1.  **Improve customer convenience:** provide website and Android access
-    to café information and digital ordering.
-2.  **Support a consistent menu:** retrieve product and category
-    information through shared backend services.
-3.  **Digitize order capture:** submit customer orders with validated
-    product variants and applicable add-ons.
-4.  **Improve order visibility:** provide a customer-facing order
-    history and a foundation for meaningful order-status updates.
-5.  **Support secure accounts:** provide customer registration,
-    authentication, profile management and account settings.
-6.  **Centralize information:** use a shared relational database
-    accessed through the API.
-7.  **Separate responsibilities:** keep customer experiences distinct
-    from staff operational tools and enforce authorization at the
-    backend.
-8.  **Promote software quality:** use version control, structured
-    documentation, builds and automated/manual testing.
-9.  **Prepare for release:** establish the evidence, packaging, signing
-    and publication process required for a future Android release.
+The central problem addressed by Skinner Cafe is therefore the absence
+of a unified digital process that connects customer ordering with the
+information and actions required to fulfil an order. The solution must
+do more than provide attractive screens: it must validate transactions,
+preserve consistent records, protect customer information and
+communicate meaningful order-state changes.
 
-## 👥 4. Target Audience and Stakeholders
+### 2.3 Project response
+
+Skinner Cafe addresses this problem through a shared-service
+architecture. The website and Android application provide different
+access channels, while the ASP.NET Core API applies common validation
+and business rules and the SQL Server database maintains the system's
+persistent records. The staff-facing website workflow connects
+operational decisions---particularly order confirmation and preparation
+status---to the customer-facing order experience.
+
+## 3. 🎯 Purpose, aim and objectives
+
+### 3.1 Purpose
+
+The purpose of Skinner Cafe is to design and deliver an integrated café
+platform that improves the digital customer journey and supports the
+operational activities involved in managing customer orders. The project
+combines user-centred interface design with backend services, relational
+data management and controlled access to operational functions.
+
+### 3.2 Overall aim
+
+To provide a coherent, secure and maintainable digital environment
+through which customers can discover the café's menu and place orders
+using a website or Android application, while authorised staff can
+process those orders through a dedicated web-based operational
+interface.
+
+### 3.3 Specific objectives
+
+1.  **Provide multiple customer access channels:** offer a responsive
+    website and a native Android application so customers can use the
+    channel most convenient to them.
+2.  **Centralise menu information:** retrieve product, category, variant
+    and add-on information from shared backend services.
+3.  **Digitise order capture:** allow customers to build a cart and
+    submit structured orders without relying on staff to manually
+    re-enter each selection.
+4.  **Validate transactions:** verify product selections, quantities,
+    variants, add-ons and relevant business rules on the server.
+5.  **Improve order transparency:** provide customers with order
+    references, order history and meaningful status information.
+6.  **Connect customer and staff workflows:** allow authorised staff to
+    review and update orders, with customer-facing information
+    reflecting valid backend status changes.
+7.  **Support customer accounts:** provide registration, authentication,
+    account information and profile-management capabilities.
+8.  **Protect information:** apply authentication, authorisation, secure
+    credential handling, transport security and server-side validation.
+9.  **Maintain a shared data source:** use a relational database
+    accessed through the API rather than allowing client applications to
+    maintain separate authoritative records.
+10. **Support maintainability:** organise the solution into distinct
+    application, API, database and documentation components.
+11. **Demonstrate software quality:** use version control, repeatable
+    builds, testing and technical documentation to support reliable
+    development.
+12. **Provide a foundation for growth:** structure the platform so
+    additional operational and customer features can be introduced
+    without redesigning the entire solution.
+
+## 4. 👥 Target audience and stakeholders
 
   -----------------------------------------------------------------------
-  Audience / stakeholder              Needs addressed by the project
+  Audience                            Needs and value provided
   ----------------------------------- -----------------------------------
-  Café customers                      Browse products, create an account,
-                                      place orders, review previous
-                                      orders and receive relevant status
-                                      information.
+  New customers                       Discover the café, review available
+                                      products and understand the
+                                      ordering process before placing an
+                                      order.
 
-  Returning customers                 Access account-related information
-                                      and a more convenient repeat-use
-                                      experience.
+  Returning customers                 Access account information, repeat
+                                      the ordering process more
+                                      conveniently and review previous
+                                      orders.
 
-  Café staff                          Use a planned secure website
-                                      workflow to review and manage
-                                      customer orders.
+  Mobile-first customers              Use the Android application for a
+                                      focused experience on a compatible
+                                      Android device.
 
-  Café administrators / management    Oversee operational information
-                                      and, as the staff portal expands,
-                                      manage authorized business
-                                      functions.
+  Browser-based customers             Access the café through a desktop,
+                                      tablet or mobile browser without
+                                      installing the Android application.
 
-  Project owner / developer           Maintain a modular codebase,
-                                      demonstrate development progress
-                                      and provide clear technical
-                                      documentation.
+  Café staff                          Use an authorised website workspace
+                                      to review incoming orders and
+                                      manage fulfilment status.
+
+  Café administrators and management  Oversee authorised users and
+                                      operational information, subject to
+                                      the permissions provided by the
+                                      system.
+
+  Project owner and maintainers       Maintain the codebase, review
+                                      system behaviour, manage releases
+                                      and extend the platform.
   -----------------------------------------------------------------------
 
-The design prioritizes customers who use either a smartphone or a
-desktop/mobile browser. The system should remain understandable to users
-with different levels of technical confidence.
+The interface is intended to be understandable to people with different
+levels of technical confidence. Common customer tasks---finding a
+product, choosing options, reviewing a cart and checking an
+order---should be discoverable without requiring specialist knowledge.
 
-## 🌟 5. Proposed Solution and Expected Impact
+## 5. 💡 Proposed solution and system scope
 
-The solution consists of three main software layers:
+### 5.1 Solution overview
 
-1.  **Presentation layer:** the React website and Kotlin Android
-    application.
-2.  **Application layer:** the ASP.NET Core Web API, which validates
-    requests and applies business rules.
-3.  **Data layer:** the SQL Server database, which stores and relates
-    the system's persistent information.
+Skinner Cafe consists of four cooperating elements:
 
-This architecture is intended to provide the following benefits:
+1.  **Android application:** a native mobile interface for customers.
+2.  **Website:** a responsive browser interface for customers and an
+    authorised staff workspace for café operations.
+3.  **Backend API:** a shared service layer that validates requests,
+    enforces permissions and coordinates business operations.
+4.  **Relational database:** a central store for the information
+    required by the platform.
 
--   **Consistent information:** both clients use shared services rather
-    than maintaining separate menu and order databases.
--   **Improved customer experience:** customers can interact with the
-    café through the channel that best suits them.
--   **Better order traceability:** order identifiers, stored order
-    records and status transitions provide a basis for tracking.
--   **Reduced manual coordination:** digital order capture and
-    customer-facing status information can reduce repetitive
-    communication.
--   **Maintainability:** modular projects make it easier to change one
-    layer without unnecessarily rewriting the others.
--   **Extensibility:** future modules can build on the shared identity,
-    API and database foundation.
+The separation of these responsibilities is deliberate. The clients are
+responsible for presenting information and collecting user input. The
+API is responsible for determining whether an operation is valid and
+permitted. The database preserves the resulting records and
+relationships.
 
-These are expected benefits of the intended solution. Actual business
-impact---such as reduced waiting times or fewer order errors---must be
-evaluated through real usage and measured operational evidence.
+### 5.2 Functional scope
 
-## 🧭 6. System Scope
+The platform's end-to-end scope covers:
 
-### 6.1 In scope
-
--   Responsive customer-facing website.
--   Customer-facing Android application.
--   Shared ASP.NET Core REST API.
--   SQL Server database and database documentation.
--   Customer registration, login and profile-related functionality.
--   Menu and product browsing.
--   Cart and checkout experience.
--   Order creation and customer order history.
+-   Customer registration, authentication and account management.
+-   Menu categories, products and product information.
+-   Product variants and configurable add-ons.
+-   Cart management and checkout.
+-   Order creation and unique order references.
+-   Guest order access where supported by the ordering flow.
 -   Simulated payment outcomes for demonstration and workflow testing.
--   Customer-facing order-status experience and notification integration
-    as the order lifecycle is completed.
--   Secure staff-facing website functionality as a separate operational
-    area.
--   Automated builds, testing, technical documentation and release
-    preparation.
+-   Customer order history and status visibility.
+-   Staff review and processing of incoming orders through the website.
+-   Order confirmation and preparation/ready-for-collection status
+    changes.
+-   Customer-facing notifications associated with relevant order-status
+    changes.
+-   Role-controlled access to staff and administrative functions.
+-   Centralised storage, validation and retrieval of application data.
 
-### 6.2 Outside the current confirmed scope
+### 5.3 Separation of customer and staff responsibilities
 
--   A native iOS application.
--   A third-party delivery fleet or courier platform.
--   Live financial settlement through a real payment gateway in the
-    current simulated-payment implementation.
--   Claims of production deployment or Google Play publication before
-    evidence is added to this repository.
+The Android application is a customer application; it is not a staff
+portal. Customers use it to browse, order, manage their account and
+follow their orders. Staff-facing order processing belongs on the
+website, where authorised users can access the operational workspace.
+This separation keeps the mobile experience focused and ensures that
+staff-only actions are protected by backend permissions rather than
+merely hidden from the customer interface.
 
-### 6.3 Customer and staff responsibilities
+### 5.4 Payment scope
 
-The Android application is customer-facing. Staff order processing,
-order approval and preparation-status management belong in the website's
-staff-facing experience, not in an Android staff portal. The Android
-application is intended to display customer-relevant order information
-and notifications resulting from actual backend status changes.
+The project includes a simulated payment workflow to demonstrate the
+user experience and the handling of payment outcomes. It can represent
+success, failure and cancellation scenarios, including card,
+digital-wallet, bank-app and QR-style flows. These are demonstrations
+only: they do not charge a bank account, settle funds or replace a
+certified payment gateway. A live payment service would require a
+separately implemented and reviewed provider integration.
 
-## 🏗️ 7. System Architecture
+## 6. 🌟 Expected outcomes and impact
+
+The platform is designed to produce value for customers, staff and the
+café as an organisation.
+
+### 6.1 Customer experience
+
+-   **Greater convenience:** customers can access the menu and ordering
+    journey through a website or Android application.
+-   **More informed choices:** product details and supported options can
+    be presented before an order is submitted.
+-   **Clearer expectations:** order references and status information
+    give customers a more understandable view of progress.
+-   **Continuity:** account and order-history features provide a
+    consistent experience for returning customers.
+-   **Choice of channel:** customers are not required to install an
+    application if they prefer a browser.
+
+### 6.2 Operational support
+
+-   **Structured order capture:** standardised order data reduces
+    reliance on interpreting informal or manually transferred requests.
+-   **Improved traceability:** persistent order records and status
+    transitions provide a basis for reviewing what happened during
+    fulfilment.
+-   **Shared information:** staff and customers interact with
+    information derived from the same backend records.
+-   **Reduced repetitive communication:** timely status information can
+    reduce the need for customers to contact staff simply to ask whether
+    an order is ready.
+-   **Role separation:** staff operations are organised separately from
+    customer functionality.
+
+### 6.3 Technical and organisational value
+
+-   **Maintainability:** the separation of clients, API and database
+    makes responsibilities easier to understand and change.
+-   **Consistency:** shared business rules reduce the risk of the
+    website and Android application applying different transaction
+    logic.
+-   **Extensibility:** the architecture can support additional
+    reporting, inventory and operational capabilities as requirements
+    are established.
+-   **Data integrity:** server-side validation and relational
+    constraints help protect the accuracy of stored records.
+
+### 6.4 Evaluation of impact
+
+The benefits above are expected outcomes, not claims of measured
+business improvement. To evaluate actual impact after deployment, the
+café could monitor indicators such as order-entry corrections, average
+time between order submission and confirmation, average preparation
+time, customer status enquiries, order completion rates and customer
+feedback. A baseline should be recorded before comparing results over
+time.
+
+## 7. 🏗️ System architecture
+
+### 7.1 High-level architecture
 
 ``` mermaid
-flowchart TD
+flowchart TB
     Customer[Customer]
-    Staff[Authorised Staff]
-    Android[Android Application<br/>Kotlin + Jetpack Compose]
-    Website[Website<br/>React + Vite]
+    Staff[Authorised café staff]
+    Admin[Authorised administrator]
+
+    Android[Android application<br/>Kotlin + Jetpack Compose]
+    WebCustomer[Website customer experience<br/>React + Vite]
+    WebStaff[Website staff workspace<br/>React + Vite]
+
     API[ASP.NET Core Web API]
-    Auth[Authentication and Authorisation]
+    Identity[Authentication and authorisation]
+    Business[Business rules and validation]
+    DataAccess[Entity Framework Core]
     DB[(Microsoft SQL Server)]
-    CI[GitHub Actions<br/>Build and Test Automation]
+    Notifications[Firebase Cloud Messaging]
 
     Customer --> Android
-    Customer --> Website
-    Staff --> Website
-    Android --> API
-    Website --> API
-    API --> Auth
-    API --> DB
-    CI -. validates source changes .-> Android
-    CI -. validates source changes .-> Website
-    CI -. validates source changes .-> API
+    Customer --> WebCustomer
+    Staff --> WebStaff
+    Admin --> WebStaff
+
+    Android <--> API
+    WebCustomer <--> API
+    WebStaff <--> API
+
+    API --> Identity
+    API --> Business
+    Business --> DataAccess
+    DataAccess <--> DB
+    API --> Notifications
+    Notifications --> Android
 ```
 
-### 7.1 Request flow
-
-1.  A customer interacts with the website or Android application.
-2.  The client sends an HTTP request to the relevant API endpoint.
-3.  The API validates the request, checks authentication and
-    authorization where required, and applies business rules.
-4.  The API reads or updates the SQL Server database through the
-    application's data-access layer.
-5.  The API returns a structured response.
-6.  The client updates the interface to reflect the response.
-
-### 7.2 Architectural principles
-
--   **Separation of concerns:** UI code, API logic and persistent data
-    are kept in distinct projects.
--   **Single source of truth:** shared business records are maintained
-    by the backend and database.
--   **Validation at the boundary:** the API must validate incoming data
-    even when the client also performs input checks.
--   **Least privilege:** staff-only operations must be protected by
-    backend authorization, not merely hidden in the UI.
--   **Incremental development:** features are implemented and tested in
-    manageable steps.
-
-## 🧰 8. Technology Stack
+### 7.2 Architectural layers
 
   -----------------------------------------------------------------------
-  Area                    Technology              Role
+  Layer                   Components              Responsibility
   ----------------------- ----------------------- -----------------------
-  Android                 Kotlin                  Primary Android
-                                                  application language
+  Presentation            Android app and React   Display information,
+                          website                 collect input, provide
+                                                  navigation and
+                                                  communicate results to
+                                                  users.
 
-  Android UI              Jetpack Compose         Declarative mobile
-                                                  interface
+  Application services    ASP.NET Core API        Expose endpoints,
+                                                  coordinate workflows,
+                                                  validate requests and
+                                                  enforce access rules.
 
-  Android build           Gradle                  Dependency management
-                                                  and build automation
+  Domain/business logic   API services and domain Apply ordering,
+                          rules                   payment-simulation and
+                                                  status-transition rules
+                                                  consistently.
 
-  Website                 React                   Component-based web
-                                                  interface
+  Data access             Entity Framework Core   Map application
+                                                  entities to relational
+                                                  data and manage
+                                                  database operations.
 
-  Website tooling         Vite                    Development server and
-                                                  production bundling
+  Persistence             Microsoft SQL Server    Store users, products,
+                                                  categories, orders and
+                                                  related records.
 
-  Website styling         Tailwind CSS and UI     Responsive styling and
-                          components              reusable interface
-                                                  elements
+  Notifications           Firebase Cloud          Deliver customer-facing
+                          Messaging integration   push notifications for
+                                                  relevant events when
+                                                  configured and enabled.
+  -----------------------------------------------------------------------
 
-  Backend                 ASP.NET Core Web API    Shared REST services
-                                                  and business logic
+### 7.3 Typical request lifecycle
 
-  Backend language        C#                      API implementation
+1.  A customer or authorised staff member performs an action in a client
+    application.
+2.  The client sends a request to the appropriate API endpoint over the
+    configured connection.
+3.  The API identifies the caller where authentication is required and
+    checks the caller's permissions.
+4.  The API validates the submitted data and applies the relevant
+    business rules.
+5.  The data-access layer reads or updates the required database
+    records.
+6.  The API returns a structured response to the client.
+7.  The client presents the result and updates the interface.
+8.  Where an eligible order-status event occurs, the notification
+    workflow communicates the update to the customer.
 
-  Database                Microsoft SQL Server    Relational persistence
+### 7.4 Design principles
+
+-   Separation of concerns between user interfaces, business rules and
+    persistence.
+-   A shared source of truth for menu, account and order data.
+-   Server-side validation even when clients perform preliminary checks.
+-   Least-privilege access for staff and administrative operations.
+-   Explicit order-state transitions rather than arbitrary status
+    changes.
+-   Traceable changes and testable components.
+-   Secure configuration that keeps secrets outside source control.
+
+## 8. 🧰 Technology stack
+
+  -----------------------------------------------------------------------
+  Area                    Technology              Purpose
+  ----------------------- ----------------------- -----------------------
+  Android language        Kotlin                  Native Android
+                                                  application
+                                                  development.
+
+  Android interface       Jetpack Compose         Declarative,
+                                                  state-driven mobile UI.
+
+  Android build           Gradle                  Dependency management,
+                                                  compilation and
+                                                  packaging.
+
+  Website                 React                   Component-based browser
+                                                  interface.
+
+  Website tooling         Vite                    Local development
+                                                  server and production
+                                                  bundling.
+
+  Website styling         Tailwind CSS and        Responsive styling and
+                          reusable UI components  consistent interface
+                                                  patterns.
+
+  Backend                 ASP.NET Core Web API    Shared HTTP services
+                                                  and application logic.
+
+  Backend language        C#                      API and server-side
+                                                  implementation.
 
   Data access             Entity Framework Core   Object-relational
                                                   mapping and database
-                                                  access
+                                                  access.
 
-  API documentation       OpenAPI / Swagger       API exploration during
-                          tooling                 development
+  Database                Microsoft SQL Server    Relational data
+                                                  persistence.
 
-  Source control          Git and GitHub          Version history and
-                                                  remote repository
+  API documentation       OpenAPI / Swagger       Development-time
+                          tooling                 endpoint inspection and
+                                                  documentation.
 
-  CI                      GitHub Actions          Automated build and
-                                                  test workflows
+  Authentication          ASP.NET Core Identity   Account identity and
+                          and configured          access management.
+                          authentication flows    
 
-  Design and prototyping  Figma / Figma Make      Interface exploration
-                                                  and visual prototyping
+  Android sign-in         Google Credential       Google account sign-in
+                          Manager integration     experience.
 
-  Development tools       Android Studio, Visual  Coding, debugging and
-                          Studio, Visual Studio   database management
-                          Code, SQL Server tools  
+  Push notifications      Firebase Cloud          Customer notification
+                          Messaging               delivery.
+
+  Source control          Git and GitHub          Version history,
+                                                  collaboration and
+                                                  release hosting.
+
+  Automation              GitHub Actions          Configured build and
+                                                  test automation.
+
+  Design                  Figma / Figma Make      Interface exploration
+                                                  and prototyping.
   -----------------------------------------------------------------------
 
-> Tool and framework versions can change during development. Refer to
-> the relevant project configuration files and lockfiles for the exact
-> versions used by a particular commit.
+Exact tool and library versions are defined by the project files and
+lockfiles in the relevant commit.
 
-## 📱 9. Android Mobile Application
+## 9. 📱 Android mobile application
 
-The Android application is the mobile customer channel for Skinner Cafe.
-It is built with Kotlin and Jetpack Compose, with a focus on reusable
-composables, state-driven UI and a consistent application theme.
+The Android application is the mobile customer channel. It is built with
+Kotlin and Jetpack Compose and uses a state-driven interface to present
+the menu, ordering process and customer account features.
 
-### 9.1 Customer-facing functionality
+### 9.1 Customer features
 
-The current Android implementation includes work in the following areas:
+-   **Home and navigation:** provides access to the main customer areas
+    of the application.
+-   **Menu browsing:** retrieves available menu categories and products
+    through the shared API.
+-   **Product details:** presents product information and supported
+    variants or add-ons.
+-   **Cart:** allows customers to review selected products and adjust
+    their order before checkout.
+-   **Checkout:** collects the information required to submit an order.
+-   **Customer authentication:** supports account registration and
+    sign-in.
+-   **Google sign-in:** integrates the Google Credential Manager sign-in
+    experience.
+-   **My Orders:** provides access to customer order history and
+    relevant order information.
+-   **Guest order access:** supports access to an eligible guest order
+    through its order-access mechanism.
+-   **Profile management:** supports account information and
+    profile-picture handling.
+-   **Settings:** provides application preferences, including a
+    persistent light/dark appearance preference.
+-   **Push notifications:** integrates Firebase messaging for
+    customer-facing order updates.
 
--   **Home:** customer landing experience and navigation to key areas.
--   **Menu:** product and category browsing, with menu data retrieved
-    through the API.
--   **Product details:** product information and selection of available
-    options.
--   **Cart:** review and adjustment of selected items before checkout.
--   **Checkout:** customer/order details and submission of an order.
--   **Authentication:** customer registration and login flows.
--   **Account and settings:** account-related navigation and persistent
-    application preferences.
--   **My Orders:** customer order-history interface and order-related
-    state handling.
--   **Profile image handling:** profile-picture upload/removal support
-    in the account workflow.
--   **Theme preferences:** light/dark appearance preference persisted
-    through application preferences.
+### 9.2 Customer order journey
 
-The exact state of each feature should be confirmed through end-to-end
-testing on a device before a production release.
-
-### 9.2 Order journey
-
-The intended customer order journey is:
-
-1.  Browse the menu.
-2.  Select a product and any supported variant or add-on.
-3.  Add the item to the cart.
-4.  Review the cart.
-5.  Continue to checkout.
-6.  Submit the order to the API.
-7.  Receive an order reference and, where applicable, guest-access
+1.  Open the application and browse the menu.
+2.  Select a product and review its available options.
+3.  Choose a supported variant and any applicable add-ons.
+4.  Add the product to the cart.
+5.  Review quantities and the order summary.
+6.  Continue to checkout and provide the required details.
+7.  Submit the order to the API.
+8.  Receive the order reference and any applicable guest-access
     information.
-8.  View the order in the customer order-history experience.
-9.  Receive updates when staff change the order's status.
+9.  Review the order in My Orders or through the supported guest-access
+    flow.
+10. Receive relevant updates as the order progresses through staff
+    processing.
 
-Order creation, payment outcome and staff approval are separate business
-events. A successful simulated payment must not automatically be
-interpreted as staff approval.
+### 9.3 Account and session handling
 
-### 9.3 Payment demonstration
+Account-related operations are handled through the backend
+authentication system. The Android client maintains the session
+information required by its configured authentication flow and protects
+locally stored sensitive session material using Android security
+facilities. Account-specific information must remain scoped to the
+authenticated customer.
 
-The project includes a simulated payment workflow to demonstrate
-payment-related user journeys without processing real funds. The
-implementation has been exercised with payment methods and
-provider-style options such as card, digital wallet, bank-app and QR
-flows.
+### 9.4 Payment demonstration
 
-**Important:** these flows are simulations. They must not be represented
-as live payment integrations or real financial transactions. A
-production deployment would require an approved payment provider, secure
-server-side integration, reconciliation and appropriate compliance
-controls.
+The mobile checkout experience can demonstrate payment outcomes such as
+success, failure and cancellation. The application and API maintain
+payment outcome as a separate concept from staff approval and
+preparation status. A simulated successful payment must not be
+interpreted as proof that an order has been approved or prepared.
 
-### 9.4 Customer order notifications
+### 9.5 Android project location
 
-The required customer experience includes status updates when an order
-is approved/confirmed and when it is ready for collection. These
-notifications must be driven by real backend order-status changes. The
-staff approval action and payment result remain separate.
+The Android project is located in:
 
-### 9.5 Android source locations
+``` text
+Android/SkinnerCafe/
+```
 
-The Android project is located in `Android/SkinnerCafe/`. Main
-application code is under:
+Main application source:
 
-`Android/SkinnerCafe/app/src/main/java/za/co/skinnercafe/app/`
+``` text
+Android/SkinnerCafe/app/src/main/java/za/co/skinnercafe/app/
+```
 
-Important code areas include:
+## 10. 🌐 Website platform
 
--   `MainActivity.kt` --- main application UI and customer navigation
-    surfaces.
--   `CheckoutScreen.kt` --- checkout experience.
--   `navigation/` --- navigation structure.
--   `data/api/` --- API models and repositories.
--   `ui/auth/` --- authentication screens and view-model logic.
--   `ui/orders/` --- customer order-history UI and view-model logic.
--   `ui/settings/` --- preferences and settings.
--   `ui/theme/` --- application colours, typography and theme
-    definitions.
+The website is the browser-based access point for Skinner Cafe. It is
+developed with React and Vite and is intended to adapt to desktop,
+tablet and mobile browser layouts.
 
-## 🌐 10. Website
+### 10.1 Customer-facing website
 
-The website is the browser-based channel for Skinner Cafe. It is
-developed with React and Vite and is intended to provide a responsive
-experience across desktop and mobile browsers.
+The customer-facing website provides a browser alternative to the
+Android application. It presents the café's digital experience without
+requiring a customer to install a native application. Its integration
+with the shared API allows it to use the same authoritative menu and
+ordering data as the Android client.
 
-### 10.1 Customer-facing purpose
+Customer-facing website areas include:
 
-The website provides a complementary way for customers to discover the
-café and interact with its digital services without installing the
-Android application. It is intended to share menu, account and ordering
-capabilities through the common API.
+-   Café landing page and brand information.
+-   Menu and product discovery.
+-   Product information and supported options.
+-   Customer account and authentication experiences where enabled.
+-   Cart and checkout journey.
+-   Order-related information and customer support guidance.
 
-### 10.2 Staff-facing purpose
+### 10.2 Staff-facing website
 
-The website is also the designated home for staff-facing operational
-functionality. This separation keeps the Android application focused on
-customers while allowing authorized staff to use a browser-based
-workspace.
+The website is also the designated environment for authorised staff
+operations. Staff functions are deliberately not placed in the Android
+customer application.
 
-Planned staff workflows include:
+The operational workflow is centred on the order lifecycle:
 
--   Reviewing incoming orders.
--   Confirming or approving orders.
--   Updating preparation and ready-for-collection status.
--   Managing menu and inventory information.
--   Managing suppliers and relevant operational records.
--   Supporting staff, schedules and attendance.
--   Managing events and viewing reports.
+-   Review incoming customer orders.
+-   Inspect order details and selected product options.
+-   Confirm or approve an order according to the café's process.
+-   Update preparation progress and mark an order ready for collection.
+-   Ensure customer-facing order information reflects valid status
+    changes.
 
-These are project-scope capabilities; do not assume every listed staff
-module is already implemented. Only mark a module as complete after it
-is available in the codebase and verified.
+Administrative capabilities can be extended to authorised menu,
+inventory, supplier, staff and reporting functions as those modules are
+implemented and enabled. All staff and administrative operations must be
+protected by server-side role and permission checks.
 
-### 10.3 Website source location
+### 10.3 Website project location
 
-The website is located in the `Web/` directory. It has its own package
-configuration and should be installed and built from that directory.
+``` text
+Web/
+```
 
-## 🔌 11. Backend and System Architecture
+The website has its own package configuration and lockfile. Install
+dependencies and run its scripts from the repository's `Web` project.
 
-The backend is an ASP.NET Core Web API shared by the Android and web
-clients. It centralizes business rules and mediates access to the
-database.
+## 11. ⚙️ Backend and API
 
-### 11.1 API responsibilities
+The ASP.NET Core Web API is the shared application service used by the
+website and Android application. It provides a consistent interface to
+business operations and prevents the clients from connecting directly to
+the SQL Server database.
 
--   Customer authentication and account-related operations.
--   Menu and product retrieval.
--   Order validation and creation.
--   Customer order retrieval.
--   Payment simulation and payment-result handling.
--   Authorization of protected operations.
--   Consistent error and response handling.
--   Database access and transaction-related business logic.
+### 11.1 Main API responsibilities
 
-### 11.2 Main API areas
+-   Customer registration, authentication and session-related
+    operations.
+-   Current-user and profile-related information.
+-   Menu categories and product retrieval.
+-   Product variant and add-on validation.
+-   Order creation and customer order retrieval.
+-   Guest order access where supported.
+-   Simulated payment request and outcome handling.
+-   Authorisation of staff and administrative operations.
+-   Database access, data validation and consistent response handling.
+-   Order-status events used by customer-facing notification workflows.
 
-The API codebase includes controller areas for:
+### 11.2 Main controller areas
 
   -----------------------------------------------------------------------
-  Controller / area                   Responsibility
+  API area                            Responsibility
   ----------------------------------- -----------------------------------
   Auth                                Registration, login, logout,
                                       current-user information and
-                                      profile-related operations
+                                      profile operations.
 
-  Menu                                Menu categories and product
-                                      information
+  Menu                                Menu categories, products and
+                                      related product information.
 
-  Orders                              Order creation and customer
-                                      order-related operations
+  Orders                              Order creation, order validation
+                                      and customer order operations.
 
   Payments                            Simulated payment workflow and
-                                      outcome handling
+                                      payment outcome handling.
   -----------------------------------------------------------------------
 
-The API project is located in `API/SkinnerCafe.API/`.
+### 11.3 API project location
 
-### 11.3 API health and local development
+``` text
+API/SkinnerCafe.API/
+```
 
-A database health endpoint has been used during development to verify
-API-to-database connectivity. Local development has used HTTP/HTTPS
-profiles and a local SQL Server instance. Production hosting, public
-URLs and production certificates must be documented here once deployed.
+The API solution is maintained under:
 
-## 🗄️ 12. Database
+``` text
+API/SkinnerCafe.slnx
+```
 
-The system uses Microsoft SQL Server as its relational database. The
-database is shared by the web and Android clients through the API;
-clients should not connect directly to SQL Server.
+### 11.4 Environment configuration
 
-Database resources are maintained in the `Database/` directory.
-Supporting documentation includes database setup/restore guidance,
-schema information and an entity-relationship diagram.
+Local and deployed environments must use separate configuration. Local
+development can use .NET User Secrets or environment variables for
+sensitive values. A deployed environment requires a publicly reachable
+HTTPS endpoint, valid TLS certificates, secure database connectivity,
+appropriate logging and operational monitoring.
 
-The development database has been documented as containing 23 tables, 24
-foreign-key relationships and 203 indexes at the time of the recorded
-schema review. These figures describe that reviewed database snapshot
-and may change as the schema evolves.
+The Android emulator's special host address `10.0.2.2` is only suitable
+for reaching the development machine from an Android emulator. It is not
+a production API address and will not work as the API host for ordinary
+customer devices on the internet.
 
-### 12.1 Database design considerations
+## 12. 🗄️ Database and data management
 
--   Primary keys uniquely identify records.
--   Foreign keys maintain relationships between related entities.
--   Constraints and validation protect data consistency.
--   Indexes support common lookup and query patterns.
--   Sensitive credentials must never be stored as plaintext passwords.
--   Database changes should be versioned and documented.
+Microsoft SQL Server provides the relational persistence layer. Both
+clients access data through the API; neither client connects directly to
+the database.
 
-### 12.2 Backup and restore
+### 12.1 Data responsibilities
 
-A SQL Server backup has been maintained under the database project
-resources:
+The database supports the records and relationships required for:
 
-`Database/SkinnerCafe_Assessment.bak`
+-   Customer identity and profile information.
+-   Menu categories and products.
+-   Product variants and add-ons.
+-   Customer orders and order items.
+-   Payment simulation records and outcomes.
+-   Operational records associated with order processing and authorised
+    staff functions.
 
-Use the supplied restore documentation and scripts rather than assuming
-that a database backup can be restored unchanged on every SQL Server
-version or machine.
+### 12.2 Data integrity
 
-## 🎨 13. User Interface and Design Considerations
+The relational design uses primary keys, foreign keys, constraints and
+indexes to preserve relationships and support common queries. The API
+validates business rules before writing records. Transaction boundaries
+should be used where multiple related changes must succeed or fail
+together.
 
-The interface design aims to communicate the café's identity while
-keeping common customer tasks easy to discover.
+### 12.3 Database documentation and backup
 
-### 13.1 Design principles
+Database resources and supporting documentation are maintained in
+`Database/` and `docs/`. A development/assessment backup is available
+at:
 
--   **Clarity:** use recognizable labels and a clear visual hierarchy.
--   **Consistency:** maintain shared spacing, typography, colour and
-    component patterns.
--   **Responsive layout:** adapt website content to different screen
-    sizes.
--   **Mobile usability:** use touch-friendly controls and sensible
-    navigation on Android.
--   **Feedback:** show loading, success, validation and error states
-    where appropriate.
--   **Accessibility:** use readable contrast, meaningful labels,
-    scalable text and controls that are not dependent on colour alone.
--   **Error prevention:** validate user input and explain how to correct
-    invalid information.
--   **Brand identity:** use the Skinner Cafe logo and a coherent
-    café-inspired visual language.
+``` text
+Database/SkinnerCafe_Assessment.bak
+```
 
-### 13.2 Design evidence
+Use the repository's restore guidance and scripts when preparing a local
+database. A backup should be treated as a development artifact, not as a
+substitute for a tested production backup and recovery plan.
 
-The original Figma/Figma Make design reference should be linked here:
+## 13. 🔄 Core business workflows
 
--   **Design prototype:** \[Insert the original Figma / Figma Make URL\]
--   **Brand assets:** `docs/assets/`
--   **Website screenshots:** `docs/assets/screenshots/website/`
--   **Android screenshots:** `docs/assets/screenshots/android/`
+### 13.1 Customer ordering
 
-Screenshots should be captured from the actual running application, not
-substituted with mock-ups when the section is intended to prove
-implemented functionality.
+The customer selects products and supported options, reviews the cart
+and submits the order. The API validates the submitted product
+identifiers, variants, add-ons and quantities against authoritative data
+before creating the order. The server, rather than the client, is
+responsible for authoritative transaction validation and pricing rules.
 
-## 🔐 14. Security, Privacy and Data Integrity
+### 13.2 Order confirmation and preparation
 
-Security is considered across the clients, API and database.
+Order creation, payment outcome and staff approval are distinct business
+events. After an order is submitted, authorised staff review it through
+the website and apply the appropriate status transition. Staff can
+subsequently update preparation progress and mark the order ready for
+collection. The customer-facing application displays the resulting order
+information.
 
-Key principles include:
+### 13.3 Notifications
 
--   Passwords must be handled using an appropriate salted
-    password-hashing mechanism; never store plaintext passwords.
--   Use HTTPS for deployed client-to-API communication.
--   Validate all incoming API data on the server.
--   Require authentication for account-specific operations.
--   Enforce role-based authorization for staff and administrative
-    operations.
--   Do not allow public customer registration to assign staff or
-    administrator privileges.
--   Protect profile-image uploads with file-type, size and content
+Customer notifications are associated with meaningful backend events,
+particularly order confirmation and ready-for-collection status.
+Notifications should be generated from valid status changes, not merely
+from a client-side screen transition. Firebase Cloud Messaging provides
+the Android push-notification integration; the application should also
+present useful order information when the customer opens the
+order-history experience.
+
+### 13.4 Payment simulation
+
+The payment demonstration supports success, failure and cancellation
+paths so that the application can exercise different outcomes. Payment
+simulation remains separate from order approval and preparation. Real
+payment processing requires an approved payment provider and a
+separately secured production integration.
+
+## 14. 🔐 Security, privacy and reliability
+
+Security is a cross-cutting requirement across the Android application,
+website, API and database.
+
+### 14.1 Identity and access control
+
+-   Customer authentication is handled through the configured identity
+    and authentication services.
+-   Account-specific operations require an authenticated identity.
+-   Staff and administrative operations require appropriate server-side
+    authorization.
+-   Public customer registration must never grant staff or administrator
+    privileges.
+-   Staff accounts are provisioned through controlled administrative
+    processes.
+-   The system design protects the last active administrator from being
+    removed or demoted in a way that would leave the platform without an
+    administrator.
+
+### 14.2 Data and application security
+
+-   Passwords must be stored using a suitable password-hashing
+    mechanism, never as plaintext.
+-   Deployed client-to-API communication must use HTTPS.
+-   The API validates incoming data regardless of client-side
     validation.
--   Keep secrets, signing keys, certificates, tokens and connection
-    strings out of source control.
--   Avoid logging passwords, access tokens, payment credentials or other
-    sensitive information.
--   Use database constraints and transactions where needed to preserve
-    data integrity.
+-   File uploads must enforce appropriate size, type and content checks.
+-   Session tokens, passwords, connection strings, certificates and
+    signing keys must not be committed to source control.
+-   Logs must not expose passwords, tokens, payment credentials or
+    unnecessary personal information.
+-   Database access must use appropriately restricted credentials.
+-   Error responses should provide useful feedback without disclosing
+    internal implementation details.
 
-Staff account provisioning is intended to be controlled: an initial
-administrator is securely provisioned, and authorized administrators can
-create staff and additional administrator accounts. The system should
-prevent the last active administrator from being deleted, deactivated or
-demoted.
+### 14.3 Privacy
 
-A production security review is required before public release. The
-presence of authentication screens alone does not prove that all
-endpoints, secrets and deployment settings are secure.
+The platform should collect only information required to provide its
+services, explain how customer information is used, protect access to
+account data and provide an appropriate privacy policy before public
+distribution. Test screenshots and demonstrations must use sample
+accounts and must not expose real customer information.
 
-## 🗂️ 15. Repository Structure
+### 14.4 Production readiness
 
-The repository is organized as a monorepo so that related application
-components and project documentation can be maintained together.
+A production release requires a deployment-specific security review,
+tested backups, monitoring, a valid privacy policy, secure API
+configuration and end-to-end verification of the critical customer and
+staff workflows.
+
+## 15. 🎨 User interface and accessibility
+
+The design aims to express the Skinner Cafe brand while keeping frequent
+tasks clear and predictable.
+
+Design principles include:
+
+-   **Clarity:** understandable labels, readable content and a
+    consistent hierarchy.
+-   **Consistency:** reusable components, spacing, typography and colour
+    rules.
+-   **Responsive design:** layouts that adapt to desktop, tablet and
+    mobile browsers.
+-   **Mobile usability:** touch-friendly Android controls and
+    predictable navigation.
+-   **Feedback:** clear loading, validation, success, empty and error
+    states.
+-   **Accessibility:** readable contrast, meaningful labels, scalable
+    text and controls that do not rely on colour alone.
+-   **Error prevention:** validation and confirmation where mistakes
+    could affect an order.
+-   **Brand coherence:** consistent use of the Skinner Cafe logo and
+    visual identity.
+
+Design reference: **\[Add the Figma / Figma Make project URL here\]**.
+
+## 16. 🗂️ Repository structure
+
+The repository is organised as a monorepo so that the clients, API,
+database resources, tests and documentation can be maintained together.
 
 ``` text
 Skinner_Cafe_App_And_Website/
 │
 ├── .github/
-│   └── workflows/                 # GitHub Actions workflow definitions
+│   └── workflows/                  # GitHub Actions workflows
 │
 ├── Android/
-│   └── SkinnerCafe/
+│   └── SkinnerCafe/                # Native Android application
 │       ├── app/
-│       │   └── src/
-│       │       └── main/
-│       │           ├── java/
-│       │           │   └── za/co/skinnercafe/app/
-│       │           │       ├── data/api/
-│       │           │       ├── navigation/
-│       │           │       ├── ui/auth/
-│       │           │       ├── ui/orders/
-│       │           │       ├── ui/settings/
-│       │           │       ├── ui/theme/
-│       │           │       ├── CheckoutScreen.kt
-│       │           │       └── MainActivity.kt
-│       │           └── res/        # Android resources
 │       ├── build.gradle.kts
 │       ├── settings.gradle.kts
 │       └── gradlew / gradlew.bat
 │
 ├── API/
-│   └── SkinnerCafe.API/
-│       ├── Controllers/            # Auth, Menu, Orders, Payments
+│   └── SkinnerCafe.API/            # ASP.NET Core Web API
+│       ├── Controllers/
 │       ├── Properties/
 │       └── SkinnerCafe.API.csproj
 │
 ├── Database/
-│   ├── scripts/                    # Database scripts (where supplied)
-│   ├── documentation/              # Supporting database documentation (if present)
+│   ├── scripts/                    # Database scripts
 │   └── SkinnerCafe_Assessment.bak  # Development/assessment backup
 │
 ├── docs/
 │   ├── assets/
 │   │   ├── screenshots/
+│   │   │   ├── website/
 │   │   │   ├── android/
-│   │   │   └── website/
-│   │   └── skinner-cafe-logo.png
-│   ├── README.md                   # Additional project documentation (if present)
-│   ├── RESTORE_GUIDE.md             # Database restore guidance (if present)
-│   ├── schema / ERD documentation
-│   └── user guides and project evidence
+│   │   │   └── google-play/
+│   │   └── evidence/
+│   └── documentation and guides
 │
-├── tests/                          # Automated test projects and test resources
+├── tests/                          # Automated tests and test resources
 │
-├── Web/
+├── Web/                            # React + Vite website
 │   ├── src/
 │   ├── public/
 │   ├── package.json
-│   └── [package-manager lockfile]
+│   └── pnpm-lock.yaml
 │
 └── README.md                       # Main project documentation
 ```
 
-> **Structure note:** This is a documentation-oriented overview of the
-> repository, not a generated exhaustive file listing. Some subfolders
-> shown are expected locations for supporting resources; retain the
-> actual names present in the checked-out branch. Update this tree
-> whenever the repository structure changes.
+This is a high-level guide. Refer to the actual repository for the
+complete and current file listing.
 
-## 💻 16. Development Environment and Setup
+## 17. 🛠️ Development setup
 
-### 16.1 Prerequisites
+### 17.1 Prerequisites
 
-Install the tools required for the components you intend to run:
+Install the tools needed for the components you intend to run:
 
 -   Git.
--   Android Studio and a compatible JDK for Android development.
--   Android SDK and required SDK platform/build tools.
--   .NET SDK matching the API target framework in the project file.
--   Node.js and the package manager used by the `Web/` lockfile.
--   SQL Server Express/Developer or another compatible SQL Server
-    instance.
--   A SQL Server management tool such as SQL Server Management Studio or
-    Azure Data Studio.
--   A code editor such as Visual Studio Code or Visual Studio.
+-   Android Studio and a compatible JDK.
+-   Android SDK platform and build tools required by the Android
+    project.
+-   .NET SDK matching the API target framework.
+-   Node.js and pnpm.
+-   SQL Server Express, Developer Edition or another compatible SQL
+    Server instance.
+-   SQL Server Management Studio or another compatible database tool.
+-   Visual Studio Code or Visual Studio.
 
-### 16.2 Clone the repository
+### 17.2 Clone the repository
 
 ``` powershell
 git clone https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website.git
 cd Skinner_Cafe_App_And_Website
 ```
 
-### 16.3 Check the repository state
+### 17.3 Configure local services
 
-``` powershell
-git status
-git branch --show-current
-```
-
-Do not overwrite local changes when switching branches or updating the
-project. Commit or safely preserve work before performing operations
-that could replace files.
-
-## ▶️ 17. Running the Project
-
-The following commands are development examples. Confirm local
-connection strings, ports, SDK versions and environment variables before
-running them.
-
-### 17.1 Database
-
-1.  Install/start a compatible SQL Server instance.
-2.  Follow the database restore guide in `docs/` or the database
-    documentation.
-3.  Restore `Database/SkinnerCafe_Assessment.bak` if that is the
-    appropriate development backup.
-4.  Configure the API connection string using .NET User Secrets or
+1.  Start a compatible SQL Server instance.
+2.  Restore or create the development database using the repository's
+    database documentation.
+3.  Configure the API connection string using .NET User Secrets or
     another secure local configuration method.
-5.  Verify the database name and connection before starting the API.
+4.  Configure the local API URL for the website and Android development
+    build.
+5.  Keep local certificates, credentials, signing material and
+    environment-specific files out of Git.
 
-Never commit a real production connection string or password.
+Do not copy production credentials into local examples or commit secrets
+to the repository.
 
-### 17.2 Backend API
+## 18. 🚀 Running the system locally
+
+The database, API and website run as separate processes. The Android
+application can then be launched from Android Studio or installed on an
+emulator/device.
+
+### 18.1 Start the database
+
+Start the SQL Server instance and confirm that the `SkinnerCafe`
+development database is available. Use the restore guide in the
+repository if the database needs to be restored from the supplied
+backup.
+
+### 18.2 Run the backend API
 
 From the repository root:
 
 ``` powershell
 dotnet restore .\API\SkinnerCafe.slnx
 dotnet build .\API\SkinnerCafe.slnx
-```
-
-Run the API project:
-
-``` powershell
 dotnet run --project .\API\SkinnerCafe.API
 ```
 
-Use the launch profile and URLs configured in the local project. If
-Swagger/OpenAPI is enabled for the development environment, open the
-configured Swagger URL to inspect available endpoints.
+Use the configured local launch profile and verify that the API can
+connect to the database. If Swagger/OpenAPI is enabled in the
+development environment, use its configured local URL to inspect the
+endpoints.
 
-### 17.3 Website
+### 18.3 Run the website
 
-Open a separate terminal:
-
-``` powershell
-cd .\Web
-```
-
-Install dependencies using the package manager that matches the
-committed lockfile. For a pnpm-managed project:
+Open a second terminal from the repository root:
 
 ``` powershell
-pnpm install --frozen-lockfile
-pnpm run dev
+pnpm.cmd --dir .\Web install --frozen-lockfile
+pnpm.cmd --dir .\Web dev
 ```
 
-Create a production build:
+Vite displays the local development URL in the terminal, commonly:
+
+``` text
+http://localhost:5173/
+```
+
+Open the URL shown by Vite in a browser.
+
+To create a production website build:
 
 ``` powershell
-pnpm run build
+pnpm.cmd --dir .\Web build
 ```
 
-If the repository uses npm instead, use `npm ci` and the scripts defined
-in `Web/package.json`. Do not mix package managers or regenerate
-lockfiles unnecessarily.
-
-### 17.4 Android application
+### 18.4 Run the Android application
 
 Open `Android/SkinnerCafe/` in Android Studio, allow Gradle sync to
-complete, configure the development API base URL, and select an
-available emulator or connected Android device.
+complete and select an Android emulator or connected device. Confirm
+that the selected build configuration uses the correct API base URL.
 
-From PowerShell in the Android project directory:
+From PowerShell:
 
 ``` powershell
+cd .\Android\SkinnerCafe
 .\gradlew.bat :app:assembleDebug
 ```
 
-Compile the Kotlin source without assembling the APK:
+A debug APK is generated under:
 
-``` powershell
-.\gradlew.bat :app:clean :app:compileDebugKotlin
+``` text
+app/build/outputs/apk/debug/app-debug.apk
 ```
 
-A successful compile verifies compilation only. It does not replace
-device testing of authentication, API connectivity, ordering, payment
-simulation, settings or order history.
+The Android emulator's `10.0.2.2` address is a development-only route to
+the host computer. A physical device requires a reachable development
+network address and suitable certificate configuration, while a public
+release requires a deployed HTTPS API endpoint.
 
-## 🧪 18. Testing and Quality Assurance
+## 19. 📦 Build and release
 
-Testing should be performed at multiple levels.
+### 19.1 Android release artifacts
 
-  ------------------------------------------------------------------------------
+The Android project supports a signed release build. Signing credentials
+must be stored locally or in a protected build environment and excluded
+from version control.
+
+Generate a signed release APK:
+
+``` powershell
+cd .\Android\SkinnerCafe
+.\gradlew.bat assembleRelease
+```
+
+Generate an Android App Bundle for Google Play submission:
+
+``` powershell
+.\gradlew.bat bundleRelease
+```
+
+Expected output locations:
+
+  Artifact      Output
+  ------------- ----------------------------------------------------
+  Release APK   `app/build/outputs/apk/release/app-release.apk`
+  Release AAB   `app/build/outputs/bundle/release/app-release.aab`
+
+Verify the APK signature with Android's `apksigner` before distributing
+it. Keep a secure backup of the signing key and its credentials. Future
+updates must use the appropriate signing identity.
+
+### 19.2 GitHub Releases
+
+The Android APK is available through the project's GitHub release:
+
+[**Download Skinner Cafe Android APK ---
+v1.0.0**](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/tag/v1.0.0)
+
+The release page is the distribution point for the downloadable APK.
+Review the release notes and device requirements before installing.
+
+### 19.3 Google Play publication
+
+The Google Play Store listing is a separate publication channel. The
+store URL should be added below only after Google has approved and
+published the app:
+
+**Google Play Store:**
+`Add the public Google Play listing URL after publication`
+
+Do not use a guessed Play Store URL or describe the app as Play
+Store-published before the listing is live.
+
+## 20. 🧪 Testing and quality assurance
+
+Quality assurance covers individual components and the complete
+customer-to-staff workflow.
+
+  ---------------------------------------------------------------------------
   Test level              Purpose                     Example evidence
-  ----------------------- --------------------------- --------------------------
-  Unit tests              Verify isolated business    Test results and coverage
-                          logic and helper functions  
+  ----------------------- --------------------------- -----------------------
+  Unit testing            Verify isolated business    Test results and
+                          rules and helper logic.     assertions.
 
-  API tests               Verify endpoint validation, HTTP request/response
-                          responses and authorization results
+  API testing             Verify endpoint responses,  Request/response
+                          validation and permissions. records and test
+                                                      results.
 
-  Database tests          Verify relationships,       SQL validation and test
-                          constraints and persistence records
+  Database testing        Verify relationships,       Database checks and
+                          constraints and             test records.
+                          persistence.                
 
-  Android tests           Verify screen behaviour and Emulator/physical-device
-                          customer workflows          screenshots and test notes
+  Android testing         Verify screen behaviour and Emulator and
+                          mobile customer journeys.   physical-device test
+                                                      evidence.
 
-  Website tests           Verify responsive layout,   Browser test evidence
-                          forms and navigation        
+  Website testing         Verify navigation, forms    Browser test evidence.
+                          and responsive layouts.     
 
-  Integration tests       Verify                      End-to-end order journey
-                          client-to-API-to-database   
-                          workflows                   
+  Integration testing     Verify                      End-to-end workflow
+                          client-to-API-to-database   results.
+                          communication.              
 
-  Regression tests        Ensure new changes do not   Repeatable test checklist
-                          break existing              
-                          functionality               
-  ------------------------------------------------------------------------------
+  Regression testing      Check that changes do not   Repeatable regression
+                          break existing behaviour.   checklist.
 
-### 18.1 Important customer workflow checks
+  Security testing        Review authentication,      Security review
+                          authorisation and           findings and
+                          sensitive-data handling.    remediation records.
+  ---------------------------------------------------------------------------
 
--   Register a customer account and verify validation behaviour.
--   Log in and log out.
--   Verify that customer-only data is not exposed to another account.
--   Browse menu categories and products returned by the API.
--   Select valid variants and add-ons.
+### 20.1 Core acceptance scenarios
+
+-   Register a customer and validate the submitted information.
+-   Sign in, restore a valid session and sign out.
+-   Confirm that one customer cannot access another customer's protected
+    information.
+-   Browse menu categories and products from the API.
+-   Select valid product variants and add-ons.
 -   Add, update and remove cart items.
--   Submit an order and verify its stored details.
--   Test guest order access where supported.
--   Exercise simulated payment success, failure and cancellation paths.
+-   Submit an order and verify the persisted order details.
+-   Verify guest order access where enabled.
+-   Exercise simulated payment success, failure and cancellation.
 -   Confirm that payment outcome and staff approval remain separate.
--   Verify order history and status display.
--   Verify customer notification behaviour after staff-driven status
-    changes.
--   Change application settings and verify persistence.
--   Test invalid input, network failures and empty/loading states.
+-   Review an order through the staff website workflow.
+-   Confirm an order and update it to ready for collection.
+-   Verify that the customer's order view reflects the actual backend
+    status.
+-   Verify push-notification behaviour on a physical Android device.
+-   Test invalid input, unavailable network conditions and API errors.
+-   Verify light/dark appearance preferences and responsive website
+    layouts.
 
-### 18.2 Build evidence
+A successful build confirms that the relevant code compiled. It does
+not, by itself, prove that every acceptance scenario passed. Record test
+dates, application versions, device/browser details and results when
+carrying out formal verification.
 
-A development verification recorded on 18 November 2026 completed:
+## 21. 🖥️ Website screenshots
 
-``` powershell
-.\gradlew.bat :app:clean :app:compileDebugKotlin
-```
-
-with a successful Gradle build. This is evidence that the Android Kotlin
-sources compiled in that development environment at that point in time.
-It is not a claim that the complete application has passed final
-acceptance testing.
-
-The API solution and website production build have also been built
-successfully during development. Re-run all builds and tests against the
-final commit before release and attach current evidence.
-
-## 🌿 19. GitHub, Version Control and Collaboration
-
-GitHub is the central remote repository for source code, documentation
-and project history. Git provides local version control, while GitHub
-provides remote backup, review and project visibility.
-
-### 19.1 How GitHub is used
-
--   Store the Android, website, API, database documentation and tests in
-    one repository.
--   Track changes over time through commits.
--   Use branches to isolate feature development and fixes.
--   Use pull requests where review is appropriate.
--   Use issues or project boards to record defects, improvements and
-    outstanding work.
--   Use tags and GitHub Releases to identify stable versions.
--   Keep documentation alongside the code it describes.
--   Use `.gitignore` to exclude generated build output, local
-    configuration, secrets and machine-specific files.
-
-### 19.2 Suggested commit practices
-
-Use concise messages that explain the purpose of each change:
+Add screenshots captured from the running website. Store the image files
+in:
 
 ``` text
-feat(android): add customer order history
-fix(api): validate order item quantities
-docs: update project README
-test(orders): cover order creation validation
-build: update Android CI workflow
+docs/assets/screenshots/website/
 ```
 
-### 19.3 Suggested branch approach
+Use the spaces below for the actual screenshots and concise
+descriptions. Replace each placeholder with a Markdown image once the
+corresponding file has been added to the repository.
 
--   `main` --- stable, reviewed project state.
--   `feature/<short-description>` --- new functionality.
--   `fix/<short-description>` --- defect fixes.
--   `docs/<short-description>` --- documentation-only changes.
+### 21.1 Website landing page
 
-The actual branch strategy may vary; the important requirement is to
-keep changes traceable and avoid committing unrelated or unreviewed work
-directly to a release state.
+**Screenshot name:** `website-home.png`\
+**Description:** Introduce the Skinner Cafe brand, explain the website's
+purpose and show the main navigation and customer entry points.
 
-## ⚙️ 20. GitHub Actions and Continuous Integration
+```{=html}
+<!-- Add screenshot: ![Skinner Cafe website landing page](docs/assets/screenshots/website/website-home.png) -->
+```
+### 21.2 Website menu and product catalogue
 
-GitHub Actions provides automation that can build and test the project
-when code is pushed or a pull request is opened. Its purpose is to catch
-compilation and test failures consistently, rather than relying only on
-a developer's local machine.
+**Screenshot name:** `website-menu.png`\
+**Description:** Show the menu categories, product presentation and the
+way customers discover available items.
 
-### 20.1 Intended CI responsibilities
+```{=html}
+<!-- Add screenshot: ![Skinner Cafe website menu](docs/assets/screenshots/website/website-menu.png) -->
+```
+### 21.3 Website product details
 
-A suitable workflow for this multi-project repository can:
+**Screenshot name:** `website-product-details.png`\
+**Description:** Demonstrate product information and any supported
+variants or add-ons.
 
-1.  Check out the repository.
-2.  Install the required JDK and Android build environment.
-3.  Restore and build the Android project.
-4.  Run available Android unit tests.
-5.  Install the .NET SDK and restore/build the API solution.
-6.  Run available .NET tests.
-7.  Install the Node.js version required by the website.
-8.  Install dependencies from the committed lockfile.
-9.  Build the website and run available tests.
-10. Publish build/test results and, where configured, retain build
-    artifacts.
+```{=html}
+<!-- Add screenshot: ![Website product details](docs/assets/screenshots/website/website-product-details.png) -->
+```
+### 21.4 Website cart and checkout
 
-### 20.2 Workflow location
+**Screenshot name:** `website-checkout.png`\
+**Description:** Show how selected products are reviewed and how the
+customer proceeds through checkout.
 
-GitHub Actions workflow files are stored in:
+```{=html}
+<!-- Add screenshot: ![Website cart and checkout](docs/assets/screenshots/website/website-checkout.png) -->
+```
+### 21.5 Website customer authentication
+
+**Screenshot name:** `website-authentication.png`\
+**Description:** Show the customer registration and sign-in experience.
+
+```{=html}
+<!-- Add screenshot: ![Website customer authentication](docs/assets/screenshots/website/website-authentication.png) -->
+```
+### 21.6 Staff dashboard
+
+**Screenshot name:** `website-staff-dashboard.png`\
+**Description:** Show the authorised staff landing page and its
+operational navigation.
+
+```{=html}
+<!-- Add screenshot: ![Skinner Cafe staff dashboard](docs/assets/screenshots/website/website-staff-dashboard.png) -->
+```
+### 21.7 Staff order management
+
+**Screenshot name:** `website-order-management.png`\
+**Description:** Demonstrate how staff review orders, confirm them and
+update preparation or collection status.
+
+```{=html}
+<!-- Add screenshot: ![Website order management](docs/assets/screenshots/website/website-order-management.png) -->
+```
+## 22. 📸 Android application screenshots
+
+Add real screenshots from the running Android application. Store them
+in:
 
 ``` text
-.github/workflows/
+docs/assets/screenshots/android/
 ```
 
-Review the actual YAML files in this directory to determine which jobs
-and triggers are currently configured. Do not describe a workflow as
-active or passing unless the GitHub Actions tab shows a successful run
-for the relevant commit.
+Use the following subsections as named screenshot compartments. Add a
+short explanation of what each screen demonstrates.
 
-### 20.3 CI evidence to add
+### 22.1 App launch and home
 
--   **Actions page:** \[Insert link to the repository's GitHub Actions
-    page\]
--   **Successful workflow screenshot:**
-    `docs/assets/evidence/github-actions-success.png`
--   **Workflow file(s):** \[List the actual `.yml` files in
-    `.github/workflows/`\]
--   **Latest successful run:** \[Insert run date, commit and result\]
+**Screenshot name:** `android-home.png`\
+**Description:** Show the application launch experience, branding and
+customer home screen.
 
-### 20.4 Why CI matters
+```{=html}
+<!-- Add screenshot: ![Skinner Cafe Android home](docs/assets/screenshots/android/android-home.png) -->
+```
+### 22.2 Customer sign-in
 
-Automated builds improve reliability by checking whether the project can
-be compiled in a clean environment. Automated tests provide repeatable
-checks for important behaviour. Together, they reduce the risk of
-merging changes that only work on one developer's machine and support a
-more disciplined release process.
+**Screenshot name:** `android-login.png`\
+**Description:** Demonstrate the customer login interface and available
+sign-in options.
 
-## 🖼️ 21. Screenshots and Interface Evidence
+```{=html}
+<!-- Add screenshot: ![Android customer login](docs/assets/screenshots/android/android-login.png) -->
+```
+### 22.3 Customer registration
 
-Add clear screenshots from the running website and Android application.
-Use consistent dimensions where practical, crop unnecessary desktop
-space, and label every image with the feature it demonstrates.
+**Screenshot name:** `android-registration.png`\
+**Description:** Show the account creation form and its validation
+experience.
 
-### 21.1 Android application screenshots
+```{=html}
+<!-- Add screenshot: ![Android customer registration](docs/assets/screenshots/android/android-registration.png) -->
+```
+### 22.4 Menu browsing
 
-Store images in `docs/assets/screenshots/android/`.
+**Screenshot name:** `android-menu.png`\
+**Description:** Show product categories and the menu browsing
+experience.
 
-  -------------------------------------------------------------------------------
-  Screenshot              Suggested filename              What it should
-                                                          demonstrate
-  ----------------------- ------------------------------- -----------------------
-  Home                    `android-home.png`              Main landing screen and
-                                                          navigation
+```{=html}
+<!-- Add screenshot: ![Android menu](docs/assets/screenshots/android/android-menu.png) -->
+```
+### 22.5 Product details and options
 
-  Login                   `android-login.png`             Customer sign-in
-                                                          interface
+**Screenshot name:** `android-product-details.png`\
+**Description:** Demonstrate product information, variants and supported
+add-ons.
 
-  Registration            `android-registration.png`      Account creation and
-                                                          validation
+```{=html}
+<!-- Add screenshot: ![Android product details](docs/assets/screenshots/android/android-product-details.png) -->
+```
+### 22.6 Shopping cart
 
-  Menu                    `android-menu.png`              Product/category
-                                                          browsing
+**Screenshot name:** `android-cart.png`\
+**Description:** Show selected products, quantities and the order
+summary before checkout.
 
-  Product details         `android-product-details.png`   Product options and
-                                                          add-ons
+```{=html}
+<!-- Add screenshot: ![Android shopping cart](docs/assets/screenshots/android/android-cart.png) -->
+```
+### 22.7 Checkout
 
-  Cart                    `android-cart.png`              Selected products and
-                                                          order summary
+**Screenshot name:** `android-checkout.png`\
+**Description:** Demonstrate the customer checkout process and order
+submission details.
 
-  Checkout                `android-checkout.png`          Customer checkout flow
+```{=html}
+<!-- Add screenshot: ![Android checkout](docs/assets/screenshots/android/android-checkout.png) -->
+```
+### 22.8 Payment simulation result
 
-  Payment result          `android-payment-result.png`    Simulated payment
-                                                          outcome, clearly
-                                                          labelled as a
-                                                          simulation
+**Screenshot name:** `android-payment-result.png`\
+**Description:** Show a payment simulation outcome. Make it clear that
+the workflow is a demonstration and does not process real funds.
 
-  My Orders               `android-my-orders.png`         Customer order history
-                                                          and status
+```{=html}
+<!-- Add screenshot: ![Android simulated payment result](docs/assets/screenshots/android/android-payment-result.png) -->
+```
+### 22.9 My Orders
 
-  Settings                `android-settings.png`          Preferences, including
-                                                          appearance settings
+**Screenshot name:** `android-my-orders.png`\
+**Description:** Demonstrate customer order history, order references
+and status information.
 
-  Profile                 `android-profile.png`           Customer
-                                                          account/profile
-                                                          experience
-  -------------------------------------------------------------------------------
+```{=html}
+<!-- Add screenshot: ![Android My Orders](docs/assets/screenshots/android/android-my-orders.png) -->
+```
+### 22.10 Order notification
 
-Example Markdown image:
+**Screenshot name:** `android-order-notification.png`\
+**Description:** Show a customer-facing notification generated by a
+relevant order-status update.
 
-``` md
-![Android menu screen](docs/assets/screenshots/android/android-menu.png)
-*Figure 1: Skinner Cafe Android application — menu browsing.*
+```{=html}
+<!-- Add screenshot: ![Android order notification](docs/assets/screenshots/android/android-order-notification.png) -->
+```
+### 22.11 Profile and settings
+
+**Screenshot name:** `android-settings-profile.png`\
+**Description:** Show account/profile information and application
+preferences, including appearance settings.
+
+```{=html}
+<!-- Add screenshot: ![Android profile and settings](docs/assets/screenshots/android/android-settings-profile.png) -->
+```
+## 23. 🏪 Google Play Store listing and promotional assets
+
+This section is reserved for the store presentation of Skinner Cafe.
+Google Play graphics and screenshots should be captured from the final
+release build, use accurate feature descriptions and comply with the
+current Play Console asset requirements.
+
+### 23.1 Google Play app link
+
+**App name:** Skinner Cafe\
+**Android application ID:** `za.co.skinnercafe.app`\
+**Google Play listing:**
+`Add the public Google Play URL after the app has been approved and published.`
+
+**Direct APK download:** [Download Skinner Cafe APK from GitHub
+Releases](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/tag/v1.0.0)
+
+### 23.2 Store listing description
+
+**Short description --- draft**
+
+> Browse the Skinner Cafe menu, customise your order and follow its
+> progress from your Android device.
+
+**Full description --- draft**
+
+> Skinner Cafe makes it easier to connect with your café through a
+> convenient mobile ordering experience. Explore menu items, review
+> product options, add selections to your cart and submit an order from
+> your Android device.
+>
+> With customer account features and an order-history experience, you
+> can return to relevant order information and follow progress as the
+> café processes your order. The application is connected to the Skinner
+> Cafe platform, helping keep menu and order information consistent
+> across its digital channels.
+>
+> Skinner Cafe is designed to make the customer journey clearer and more
+> convenient---from discovering products to receiving updates about an
+> order.
+>
+> Payment options shown in demonstration builds may simulate payment
+> outcomes and should not be interpreted as live payment processing.
+
+Review this description against the exact functionality and policies of
+the submitted Play Store build before publication.
+
+### 23.3 Google Play promotional graphics
+
+Create a directory for the store assets:
+
+``` text
+docs/assets/screenshots/google-play/
 ```
 
-### 21.2 Website screenshots
+  ----------------------------------------------------------------------------------
+  Asset                   Suggested filename                 Space for description /
+                                                             purpose
+  ----------------------- ---------------------------------- -----------------------
+  App icon                `play-store-icon-512.png`          High-resolution Skinner
+                                                             Cafe app identity.
 
-Store images in `docs/assets/screenshots/website/`.
+  Feature graphic         `play-store-feature-graphic.png`   Main promotional image
+                                                             for the store listing.
 
-  --------------------------------------------------------------------------------
-  Screenshot              Suggested filename               What it should
-                                                           demonstrate
-  ----------------------- -------------------------------- -----------------------
-  Website home            `website-home.png`               Landing page and brand
-                                                           identity
+  Phone screenshot 1      `play-store-phone-01.png`          Main menu and product
+                                                             discovery.
 
-  Menu                    `website-menu.png`               Menu and product
-                                                           presentation
+  Phone screenshot 2      `play-store-phone-02.png`          Product details and
+                                                             customisation.
 
-  Product details         `website-product-details.png`    Product information
+  Phone screenshot 3      `play-store-phone-03.png`          Cart and checkout.
 
-  Cart / checkout         `website-checkout.png`           Customer ordering
-                                                           journey, if implemented
+  Phone screenshot 4      `play-store-phone-04.png`          Customer order history.
 
-  Login / registration    `website-authentication.png`     Customer account
-                                                           interface, if
-                                                           implemented
+  Phone screenshot 5      `play-store-phone-05.png`          Order status and
+                                                             customer notifications.
 
-  Staff dashboard         `website-staff-dashboard.png`    Authorized staff
-                                                           landing page, when
-                                                           implemented
+  Optional graphic        `play-store-promo-graphic.png`     Additional promotional
+                                                             material, if required.
+  ----------------------------------------------------------------------------------
 
-  Order management        `website-order-management.png`   Staff order workflow,
-                                                           when implemented
-  --------------------------------------------------------------------------------
+### 23.4 Google Play screenshot compartments
 
-Example:
+Add the actual store-ready screenshots below. Each image should be
+accompanied by a concise caption describing the feature shown.
 
-``` md
-![Website home page](docs/assets/screenshots/website/website-home.png)
-*Figure 2: Skinner Cafe website — customer landing page.*
+**Store screenshot 1 --- Menu discovery**\
+File: `play-store-phone-01.png`\
+Description: `Add a short description of the menu browsing experience.`
+
+```{=html}
+<!-- Add Google Play screenshot 1 here. -->
 ```
-
-> **Evidence requirement:** replace the filename examples with real
-> image files committed to the repository. Remove or mark any screenshot
-> row that does not apply to the current build. Never leave broken image
-> links in the final README.
-
-## 🎥 22. Demonstration Video and Presentation
-
-A narrated demonstration should show the application working and explain
-the purpose of each major feature. The recording should be clear,
-professional and focused on real functionality.
-
-### 22.1 Video links
-
--   **Full application demonstration:** \[Insert YouTube unlisted/public
-    video URL\]
--   **Website demonstration:** \[Insert URL, if separate\]
--   **Android demonstration:** \[Insert URL, if separate\]
--   **Presentation slides:** \[Insert link to presentation, if
-    available\]
-
-### 22.2 Suggested demonstration sequence
-
-1.  Introduce Skinner Cafe and explain the problem the system addresses.
-2.  Show the website and explain its customer-facing purpose.
-3.  Show the Android app and explain its mobile customer experience.
-4.  Demonstrate registration and login.
-5.  Browse menu items and select product options.
-6.  Add products to the cart and complete checkout.
-7.  Demonstrate the simulated payment result and explain that no real
-    funds are processed.
-8.  Show the order appearing in the customer order history.
-9.  Demonstrate the staff order workflow on the website when available.
-10. Show the customer-facing status update after staff approval and
-    again when the order is ready for collection, once implemented and
-    verified.
-11. Explain the shared API and database architecture.
-12. Show GitHub source control and a successful GitHub Actions run.
-13. Close with current limitations and future improvements.
-
-The video should include a voice-over, avoid exposing real passwords or
-private customer data, and use test accounts and sample records.
-
-## 📝 23. Release Notes and Prototype-to-Current Development
-
-This section records the evolution from the initial design/prototype
-toward the integrated implementation. The entries below summarize
-development changes recorded during the project. They are not a
-substitute for a tagged GitHub release or a verified commit-by-commit
-changelog.
-
-### Development release --- 18 November 2026
-
-`<sub>`{=html}Development snapshot · Not a public production
-release`</sub>`{=html}
-
-#### Android application and customer experience
-
--   Expanded the initial application structure into a multi-screen
-    Jetpack Compose experience.
--   Added customer authentication screens and account-related
-    navigation.
--   Added menu browsing connected to the shared menu API.
--   Added product details and selection of product variants/options.
--   Added cart functionality and a checkout flow.
--   Added order submission models and API integration.
--   Added guest order access support through an order access token where
-    applicable.
--   Added a customer-facing My Orders screen and supporting order
-    repository/view-model structure.
--   Added profile-picture upload/removal support in the account
-    workflow.
--   Added persistent application preferences and light/dark theme
-    support.
--   Continued refining navigation and the customer order journey.
-
-#### Backend, data and integration
-
--   Established a shared ASP.NET Core API for the web and Android
-    clients.
--   Added/expanded authentication, menu, orders and payments API areas.
--   Connected the API to the SQL Server database.
--   Added order validation for product variants and add-ons.
--   Added order references and order persistence.
--   Added a simulated payment workflow with success, failure and
-    cancellation outcomes.
--   Kept payment outcome separate from staff approval and order
-    preparation status.
--   Added database documentation and a restorable assessment/development
-    backup.
-
-#### Website and repository
-
--   Established the React/Vite website project within the shared
-    repository.
--   Organized the repository into Android, API, Database, Web, docs and
-    tests areas.
--   Added project documentation and database setup guidance.
--   Used Git and GitHub to preserve the development history and
-    coordinate changes across components.
-
-#### Innovative / distinguishing features in this development
-
--   **Connected multi-channel architecture:** website and Android app
-    are designed to use the same backend and central data store.
--   **Guest order access:** supports an order lookup/access path for
-    customers who place an order without relying exclusively on a
-    signed-in account, where enabled by the flow.
--   **Variant and add-on validation:** order submissions are checked
-    against supported product options rather than trusting client totals
-    or arbitrary values.
--   **Customer order history:** provides a dedicated place for customers
-    to review their orders.
--   **Persistent appearance preferences:** supports a user-selected
-    light/dark appearance across app sessions.
--   **Simulated payment outcomes:** supports demonstration of payment
-    success, failure and cancellation without claiming live payment
-    processing.
--   **Separated customer and staff workflows:** customer ordering
-    remains in Android/web customer experiences, while order approval
-    and preparation management are assigned to the staff website
-    workflow.
--   **Status-driven customer communication:** the target workflow
-    includes notifications after staff approval and when an order is
-    ready for collection; mark this feature complete only after the
-    backend events, delivery mechanism and device behaviour have been
-    tested end to end.
-
-### Earlier prototype stage --- design and foundation
-
--   Established the Skinner Cafe concept and initial interface direction
-    through design/prototyping work.
--   Defined the need for a website, Android application, shared API and
-    relational database.
--   Began structuring the codebase as a multi-component repository.
--   Progressively moved from prototype-oriented screens toward
-    API-connected application functionality.
-
-### How to maintain release notes
-
-For every future release, add:
-
--   Version number and release date.
--   Git tag and commit reference.
--   New features.
--   Improvements to existing features.
--   Bug fixes.
--   Breaking changes or migration notes.
--   Known issues.
--   Links to APK/AAB artifacts and release evidence, where applicable.
-
-Do not label a development snapshot as a stable release until the
-acceptance checks and release process are complete.
-
-## 📦 24. Publication and Release Evidence
-
-The Android application is being prepared for a future release. This
-section is intentionally structured to hold evidence when the signed
-build and store submission are completed.
-
-### 24.1 Android package evidence
-
-  ------------------------------------------------------------------------------------------
-  Evidence                Location / link                            Status
-  ----------------------- ------------------------------------------ -----------------------
-  Debug APK for internal  \[Add artifact path or release link\]      Development build only
-  development                                                        
-
-  Signed release APK      \[Add secure release artifact link\]       To be added after
-                                                                     signing
-
-  Android App Bundle      \[Add artifact link\]                      To be added if
-  (AAB), if required                                                 generated
-
-  APK installation        `docs/assets/evidence/apk-installed.png`   To be added
-  screenshot                                                         
-
-  App launch screenshot   `docs/assets/evidence/app-launch.png`      To be added
-  ------------------------------------------------------------------------------------------
-
-### 24.2 Google Play Console evidence
-
--   **Play Console app listing / dashboard:** \[Insert link or state
-    "Not yet created"\]
--   **Internal testing track:** \[Insert status and screenshot\]
--   **Store listing:** \[Insert screenshot when available\]
--   **Content rating / app details:** \[Insert status where applicable\]
--   **Publication status:** \[Not yet published / Internal testing /
-    Closed testing / Production --- update accurately\]
-
-Store evidence images in `docs/assets/evidence/`.
-
-### 24.3 Release-readiness checklist
-
--   [ ] All required customer journeys implemented.
--   [ ] API and database integration tested.
--   [ ] Staff order approval and ready-for-collection transitions
-    verified.
--   [ ] Customer notifications verified on a real device.
--   [ ] Authentication and authorization reviewed.
--   [ ] Invalid inputs and network failures tested.
--   [ ] Light and dark themes reviewed.
--   [ ] App icon, name and version details finalized.
--   [ ] Release build generated.
--   [ ] Release APK/AAB signed using a protected signing key.
--   [ ] Signing key securely backed up and excluded from Git.
--   [ ] Privacy policy and store listing prepared where required.
--   [ ] Google Play Console testing and policy requirements reviewed.
--   [ ] Screenshots and video evidence added.
--   [ ] Final Git tag and GitHub Release created.
--   [ ] Final README and documentation checked for accuracy.
-
-**Signing security:** never commit a keystore, private signing key,
-passwords or service-account credentials to the public repository. Use
-secure local storage or protected CI secrets.
-
-## 📖 25. Installation and User Guidance
-
-### Customer guidance
-
-1.  Open the website or install the Android application from the
-    approved distribution channel when available.
-2.  Browse the menu and select a product.
-3.  Choose any available options and add the product to the cart.
-4.  Review the cart before checkout.
-5.  Complete the required checkout information.
-6.  Submit the order.
-7.  Follow the displayed payment simulation instructions in the
-    development build.
-8.  Keep the order reference available and use the order-history feature
-    to review progress.
-
-### Staff guidance
-
-Staff instructions should be documented separately once the staff portal
-is available. Staff should sign in using an authorized account and only
-access functions permitted by their assigned role. Customer registration
-must never create a staff or administrator account.
-
-### Additional documentation
-
--   **Database restore guide:** \[Link to `docs/RESTORE_GUIDE.md` if
-    present\]
--   **API documentation:** \[Insert development Swagger/OpenAPI URL or
-    hosted API documentation\]
--   **User guide:** \[Insert link to a dedicated user guide\]
--   **Troubleshooting:** \[Insert link to troubleshooting
-    documentation\]
-
-## 🚧 26. Known Limitations and Future Enhancements
-
-The project is under active development. The following areas require
-completion, verification or future implementation as appropriate:
-
--   Complete and verify the full staff-facing website workflows.
--   Complete the customer order lifecycle, including staff-driven
-    approval and ready-for-collection status changes.
--   Complete and verify push/in-app notification delivery based on
-    actual status transitions.
--   Complete and verify Single Sign-On (SSO) integration.
--   Conduct full end-to-end testing on an emulator and physical Android
-    device.
--   Refine interface details based on actual device testing and user
-    feedback.
--   Complete security and privacy review for deployment.
--   Configure production hosting, domain, HTTPS, monitoring and backups.
--   Integrate a real payment provider only if required and after the
-    appropriate security and compliance work.
--   Complete signed release packaging and Google Play Console
-    preparation.
--   Expand automated test coverage for API, Android and website
-    workflows.
--   Add additional accessibility and responsive-layout checks.
-
-The roadmap is not a claim that these features are already available.
-Update this section as work is completed and verified.
-
-## 📊 27. Project Status
-
-  -----------------------------------------------------------------------
-  Component               Recorded development    Verification still
-                          status                  required
-  ----------------------- ----------------------- -----------------------
-  Android application     Core customer screens   Full emulator/device
-                          and API-connected       acceptance testing and
-                          workflows have been     final UI review.
-                          developed; clean Kotlin 
-                          compilation has         
-                          succeeded.              
-
-  Website                 React/Vite project      Verify each customer
-                          established and         and staff workflow in
-                          production build has    the current build.
-                          succeeded during        
-                          development.            
-
-  API                     ASP.NET Core API with   Full endpoint,
-                          authentication, menu,   authorization and
-                          orders and simulated    integration regression
-                          payment areas.          tests.
-
-  Database                SQL Server database,    Verify current
-                          backup and supporting   migrations/schema and
-                          documentation           deployment restore
-                          available.              procedure.
-
-  GitHub                  Repository and          Confirm all final
-                          component structure     changes are committed
-                          established.            and documented.
-
-  GitHub Actions          Workflow directory is   Verify actual workflow
-                          part of the repository  definitions and latest
-                          structure.              successful runs.
-
-  SSO                     Planned/in progress in  Complete integration
-                          the project work.       and test provider
-                                                  sign-in end to end.
-
-  Order notifications     Required workflow       Verify delivery on a
-                          defined around staff    real device after
-                          status transitions.     actual backend status
-                                                  changes.
-
-  Google Play release     Release preparation is  Signed artifact,
-                          part of project scope.  Console evidence and
-                                                  publication status.
-  -----------------------------------------------------------------------
-
-**Last documentation update:** 18 November 2026\
-**Overall project status:** Active development --- not to be interpreted
-as a production or Play Store release.
-
-## 🙏 28. Acknowledgements and Attributions
-
-The project uses a combination of original implementation, framework
-documentation, development tools and design resources.
-
--   **Figma / Figma Make:** used for interface design exploration and
-    prototyping. Add the original design link above.
--   **Android Developers:** Kotlin, Android and Jetpack Compose
-    documentation.
--   **Microsoft Learn:** .NET, ASP.NET Core, Entity Framework Core and
-    SQL Server documentation.
--   **React and Vite documentation:** web application development
-    references.
--   **GitHub documentation:** GitHub repositories, Actions and release
-    management.
--   **Third-party assets and libraries:** retain the relevant licence
-    and attribution notices in the repository. Refer to
-    `Web/ATTRIBUTIONS.md` where applicable.
-
-All third-party assets, templates and code examples should be
-acknowledged in accordance with their licences and the requirements of
-the project.
-
-## 🤖 29. Responsible Use of AI-Assisted Tools
-
-AI-assisted tools may be used as development support for activities such
-as:
-
--   Explaining unfamiliar framework concepts and architecture.
--   Suggesting implementation approaches and code structures.
--   Helping interpret compiler errors and debugging output.
--   Reviewing documentation for clarity and organization.
--   Supporting test-case planning and troubleshooting.
-
-AI-generated suggestions must be reviewed, adapted and tested by the
-developer. The developer remains responsible for understanding the
-submitted code, verifying its behaviour, checking security implications
-and ensuring that external sources and assets are correctly attributed.
-
-**Project-specific disclosure:** \[Complete this paragraph with the
-tools actually used, the tasks for which they were used, and how their
-output was reviewed. Cite tools/resources according to the applicable
-academic referencing requirements. Do not claim that AI wrote or tested
-work that was not actually produced or verified.\]
-
-## 👨‍💻 30. Author and Project Links
-
-  -------------------------------------------------------------------------------------------------
+**Store screenshot 2 --- Product customisation**\
+File: `play-store-phone-02.png`\
+Description:
+`Explain how customers view products and select available options.`
+
+```{=html}
+<!-- Add Google Play screenshot 2 here. -->
+```
+**Store screenshot 3 --- Cart and checkout**\
+File: `play-store-phone-03.png`\
+Description:
+`Explain how customers review selections and submit an order.`
+
+```{=html}
+<!-- Add Google Play screenshot 3 here. -->
+```
+**Store screenshot 4 --- My Orders**\
+File: `play-store-phone-04.png`\
+Description:
+`Explain how customers review their order history and references.`
+
+```{=html}
+<!-- Add Google Play screenshot 4 here. -->
+```
+**Store screenshot 5 --- Order updates**\
+File: `play-store-phone-05.png`\
+Description:
+`Explain how customers receive or view order-status updates.`
+
+```{=html}
+<!-- Add Google Play screenshot 5 here. -->
+```
+### 23.5 Publication evidence
+
+  Evidence                      Add link, screenshot or status
+  ----------------------------- ----------------------------------------
+  Play Console app dashboard    `Add Play Console link or screenshot.`
+  Store listing preview         `Add screenshot after listing setup.`
+  Internal testing              `Record testing track and result.`
+  Closed testing, if required   `Record test status and completion.`
+  Content rating                `Record completed declaration.`
+  Data safety                   `Record completed declaration.`
+  Privacy policy                `Add public privacy policy URL.`
+  Production review             `Record review outcome.`
+  Public Play Store listing     `Add URL after publication.`
+
+## 24. ⬇️ Download and installation
+
+### 24.1 Download the Android APK
+
+The signed Android APK is available from the project's GitHub Releases
+page:
+
+::: {align="center"}
+### [⬇️ Download Skinner Cafe for Android](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/tag/v1.0.0)
+
+**GitHub Release: `v1.0.0`**
+:::
+
+### 24.2 Installation instructions
+
+1.  Open the GitHub release link on the Android device.
+2.  Download the `app-release.apk` file from the release assets.
+3.  Open the downloaded APK.
+4.  If Android requests permission, allow installation from that source
+    in the device settings.
+5.  Return to the installer and complete installation.
+6.  Open Skinner Cafe.
+
+Only install APKs from a source you trust. Android may display a warning
+when installing an application outside Google Play.
+
+### 24.3 Device and service requirements
+
+-   A compatible Android device running Android 8.0 (API level 26) or
+    later.
+-   An internet connection for API-backed functionality.
+-   Access to the configured Skinner Cafe API service.
+-   A valid customer account for account-specific functionality.
+
+A locally built release APK is not independently connected to a public
+backend merely because it installs successfully. The release
+configuration must point to an accessible production API before general
+customer distribution.
+
+## 25. 🎬 Demonstration and supporting documentation
+
+Use this section to link to supporting material that explains and
+demonstrates the system.
+
+### ▶️ YouTube project demonstration
+
+Watch the Skinner Cafe project demonstration, covering the platform and
+its key customer and operational workflows:
+
+[**▶️ Watch the Skinner Cafe Demo on YouTube**](https://youtu.be/WHEd1KEoX04)
+
+
+  ---------------------------------------------------------------------------------------
   Resource                            Link
-  ----------------------------------- -------------------------------------------------------------
-  GitHub repository                   https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website
+  ----------------------------------- ---------------------------------------------------
+  Full system demonstration           [▶️ Watch the Skinner Cafe YouTube demo](https://youtu.be/WHEd1KEoX04)
 
-  Project owner / developer           \[Insert your preferred name or student identifier, if
-                                      required\]
+  Android application demonstration   [Watch the demo](https://youtu.be/WHEd1KEoX04)
 
-  Figma design                        \[Insert design URL\]
+  Website demonstration               [Watch the demo](https://youtu.be/WHEd1KEoX04)
 
-  Demonstration video                 \[Insert video URL\]
+  Staff workflow demonstration        [Watch the demo](https://youtu.be/WHEd1KEoX04)
 
-  Presentation                        \[Insert presentation URL\]
+  Design prototype                    `Add Figma / Figma Make URL.`
 
-  Project documentation               `docs/`
+  Database entity-relationship        `Add path or link to the ERD.`
+  diagram                             
 
-  Issues / improvements               \[Insert GitHub Issues URL\]
+  Database restore guide              `Add path to the restore guide.`
 
-  Releases                            \[Insert GitHub Releases URL\]
-  -------------------------------------------------------------------------------------------------
+  API documentation                   `Add hosted API documentation URL, if available.`
+
+  User guide                          `Add user guide path or URL.`
+
+  Technical report                    `Add report path or URL.`
+  ---------------------------------------------------------------------------------------
+
+A useful demonstration should introduce the problem, explain the
+architecture, show the customer journey on both channels, demonstrate
+the staff order workflow, and explain how the API and database connect
+the system. Use test accounts and sample records; do not expose real
+credentials or customer information.
+
+## 26. 🔭 Project outcomes and future development
+
+### 26.1 Intended project outcomes
+
+Skinner Cafe brings the customer-facing and operational sides of a café
+ordering process into one connected system. The Android application and
+website provide complementary access channels, while the shared API and
+database provide a consistent foundation for menu and order information.
+The separation of customer and staff responsibilities supports a clearer
+user experience and a more controlled operational workflow.
+
+The project also demonstrates the application of several software
+engineering principles: modular architecture, API-based integration,
+relational data modelling, authentication and authorisation, input
+validation, version control, build automation and structured technical
+documentation.
+
+### 26.2 Opportunities for future enhancement
+
+The architecture can be extended as business needs and operational
+evidence become clearer. Potential enhancements include:
+
+-   Integration with a certified payment provider for real transactions.
+-   More detailed inventory and stock-management workflows.
+-   Supplier and purchasing management.
+-   Advanced sales, order and operational reporting.
+-   Customer loyalty and rewards features.
+-   Promotional campaigns and customer notifications.
+-   Further accessibility improvements and usability testing.
+-   Expanded automated integration and end-to-end test coverage.
+-   Production monitoring, analytics and operational alerting.
+-   Additional platform support where justified by user demand.
+
+Future development should be prioritised according to customer value,
+operational need, security implications and maintainability.
+
+## 27. 🙏 Acknowledgements and responsible development
+
+### 27.1 Technologies and resources
+
+The project draws on the documentation and tooling ecosystems of:
+
+-   Android Developers --- Kotlin, Android and Jetpack Compose.
+-   Microsoft Learn --- .NET, ASP.NET Core, Entity Framework Core and
+    SQL Server.
+-   React and Vite --- browser application development.
+-   Firebase --- messaging and Android integration.
+-   GitHub --- source control, repository hosting and release
+    management.
+-   Figma / Figma Make --- interface design exploration and prototyping.
+
+Third-party libraries, icons, fonts, images and other assets must be
+used in accordance with their licences. Add any required notices or
+attributions to the repository.
+
+### 27.2 Responsible use of AI-assisted tools
+
+AI-assisted development tools may support learning, implementation
+planning, debugging, code review and documentation. Suggestions must be
+evaluated by the developer, tested against the project and reviewed for
+correctness, security and maintainability. The developer remains
+responsible for understanding the implementation and for ensuring that
+submitted work, citations and third-party resources are represented
+accurately.
+
+### 27.3 Data used in demonstrations
+
+Demonstrations should use test accounts and sample data. Do not publish
+customer passwords, access tokens, personal information, private
+certificates, signing keys or production connection strings in
+screenshots, source code or documentation.
+
+## 28. 🔗 Author and project links
+
+  ---------------------------------------------------------------------------------------------------------------------------------
+  Resource                            Link
+  ----------------------------------- ---------------------------------------------------------------------------------------------
+  GitHub repository                   [Skinner_Cafe_App_And_Website](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website)
+
+  Android APK release                 [Download
+                                      v1.0.0](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/tag/v1.0.0)
+
+  All GitHub releases                 [Releases](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases)
+
+  GitHub issues                       [Issues](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/issues)
+
+  Project owner / developer           `Add preferred name or professional profile link.`
+
+  LinkedIn                            `Add LinkedIn profile URL, if desired.`
+
+  Design prototype                    `Add Figma URL.`
+
+  Demonstration video                 `Add video URL.`
+
+  Google Play listing                 `Add public listing URL after publication.`
+  ---------------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 
 ::: {align="center"}
-**☕ Skinner Cafe --- Bringing the café experience together through
-connected technology.**
+**☕ Skinner Cafe**
 
-*Designed to make ordering more convenient for customers and to provide
-a foundation for smarter café operations.*
+*Connecting customers, café staff and digital services through one
+integrated platform.*
+
+Built with a focus on convenience, consistency, secure information
+handling and maintainable software architecture.
 :::
