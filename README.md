@@ -1184,90 +1184,74 @@ carrying out formal verification.
 <img width="1342" height="604" alt="Screenshot 2026-11-22 181416" src="https://github.com/user-attachments/assets/e9360a2f-fcf2-46b4-be08-e3339addd00e" />
 
 **Screenshot name:** `Home Page.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
-
-### 21.1 Website landing page
+**Description:** Introduces Skinner Cafe, showcasing its brand, offerings and key information.
 
 <img width="1345" height="601" alt="Screenshot 2026-11-22 181355" src="https://github.com/user-attachments/assets/51a4ff6a-af1a-4ee0-a213-5ebebf8d849e" />
 
 **Screenshot name:** `Menu Page.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Displays available food and beverages for customers to explore and select.
 
 <img width="1354" height="596" alt="Screenshot 2026-11-22 181339" src="https://github.com/user-attachments/assets/43174cb3-19b8-4024-b37a-2079258986b6" />
 
 **Screenshot name:** `Cart Page.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Allows customers to review selected items, adjust quantities and check their order total.
 
 <img width="1339" height="599" alt="Screenshot 2026-11-22 181322" src="https://github.com/user-attachments/assets/f145776a-0a77-4f4e-b5f2-22f96158f627" />
 
 **Screenshot name:** `Login Page.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Enables registered customers to securely access their accounts.
 
 <img width="1344" height="600" alt="Screenshot 2026-11-22 181306" src="https://github.com/user-attachments/assets/5ce0a5a2-1aa3-4fb9-b4f4-0cc0fcd2ce72" />
 
 **Screenshot name:** `Register Page.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Allows new customers to create an account and access personalised features.
 
 <img width="1350" height="599" alt="Screenshot 2026-11-22 180903" src="https://github.com/user-attachments/assets/d8732771-63f0-48c4-90c4-bed0a42e78f2" />
 
 **Screenshot name:** `Events Page.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Showcases upcoming café events and activities.
 
 <img width="1359" height="601" alt="Screenshot 2026-11-22 180327" src="https://github.com/user-attachments/assets/7179a6a1-5819-457a-9a79-a8fec0326333" />
 
 **Screenshot name:** `Customer Dashboard.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Provides customers with an overview of their account, orders and relevant information.
 
 ## 22. 📸 Android application screenshots
 
 <img width="275" height="596" alt="Screenshot 2026-11-22 165359" src="https://github.com/user-attachments/assets/4f89f8a6-bbee-41d1-9974-9025e1b20557" />
 
 **Screenshot name:** `Register Screen.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Allows new customers to create a Skinner Cafe account.
 
 <img width="270" height="590" alt="Screenshot 2026-11-22 165331" src="https://github.com/user-attachments/assets/ef0c0d60-442d-4ad8-a79b-4f1531b13c3d" />
 
 **Screenshot name:** `Login Screen.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Provides secure access to existing customer accounts.
 
 <img width="274" height="600" alt="Screenshot 2026-11-22 165807" src="https://github.com/user-attachments/assets/05f70458-e935-4972-8fc5-56e8f3bc00a9" />
 
 **Screenshot name:** `SSO Screen.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Introduces Google Single Sign-On for convenient authentication.
 
 <img width="272" height="596" alt="Screenshot 2026-11-22 171319" src="https://github.com/user-attachments/assets/c2983855-3af3-468f-90e3-1137eb395d72" />
 
 **Screenshot name:** `SSO Screen (Continued).png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Allows customers to select their Google account to continue signing in.
 
 <img width="267" height="579" alt="Screenshot 2026-11-22 171847" src="https://github.com/user-attachments/assets/6d6f2622-b956-4b11-b13a-c482d9729a65" />
 
 **Screenshot name:** `Home Screen *.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Welcomes customers and provides access to the app's main features.
 
 <img width="282" height="594" alt="Screenshot 2026-11-22 172040" src="https://github.com/user-attachments/assets/cb218305-42bd-4b1a-8029-78da8bfa6a63" />
 
 **Screenshot name:** `Menu Screen.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Displays available menu items for browsing and selection.
 
 <img width="282" height="602" alt="Screenshot 2026-11-22 172102" src="https://github.com/user-attachments/assets/33ab5ce4-cbe6-4d3e-ab90-19cc56225014" />
 
 **Screenshot name:** `Cart Screen.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
+**Description:** Displays selected products and allows customers to review their order.
 
 ## 23. 🏪 Google Play Store listing and promotional assets
 
