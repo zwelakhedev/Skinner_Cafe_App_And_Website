@@ -1227,15 +1227,6 @@ purpose and show the main navigation and customer entry points.
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
-```{=html}
-<!-- Add screenshot: ![Skinner Cafe website landing page](docs/assets/screenshots/website/website-home.png) -->
-```
-### 21.2 Website menu and product catalogue
-
-**Screenshot name:** `website-menu.png`\
-**Description:** Show the menu categories, product presentation and the
-way customers discover available items.
-
 ## 22. 📸 Android application screenshots
 
 <img width="275" height="596" alt="Screenshot 2026-11-22 165359" src="https://github.com/user-attachments/assets/4f89f8a6-bbee-41d1-9974-9025e1b20557" />
