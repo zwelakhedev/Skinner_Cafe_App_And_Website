@@ -1498,33 +1498,6 @@ File: `play-store-phone-02.png`\
 Description:
 `Explain how customers view products and select available options.`
 
-```{=html}
-<!-- Add Google Play screenshot 2 here. -->
-```
-**Store screenshot 3 --- Cart and checkout**\
-File: `play-store-phone-03.png`\
-Description:
-`Explain how customers review selections and submit an order.`
-
-```{=html}
-<!-- Add Google Play screenshot 3 here. -->
-```
-**Store screenshot 4 --- My Orders**\
-File: `play-store-phone-04.png`\
-Description:
-`Explain how customers review their order history and references.`
-
-```{=html}
-<!-- Add Google Play screenshot 4 here. -->
-```
-**Store screenshot 5 --- Order updates**\
-File: `play-store-phone-05.png`\
-Description:
-`Explain how customers receive or view order-status updates.`
-
-```{=html}
-<!-- Add Google Play screenshot 5 here. -->
-```
 ### 23.5 Publication evidence
 
   Evidence                      status
