@@ -1116,18 +1116,6 @@ v1.0.0**](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/t
 The release page is the distribution point for the downloadable APK.
 Review the release notes and device requirements before installing.
 
-### 19.3 Google Play publication
-
-The Google Play Store listing is a separate publication channel. The
-store URL should be added below only after Google has approved and
-published the app:
-
-**Google Play Store:**
-`Add the public Google Play listing URL after publication`
-
-Do not use a guessed Play Store URL or describe the app as Play
-Store-published before the listing is live.
-
 ## 20. 🧪 Testing and quality assurance
 
 Quality assurance covers individual components and the complete
@@ -1217,7 +1205,6 @@ purpose and show the main navigation and customer entry points.
 <img width="1359" height="601" alt="Screenshot 2026-11-22 180327" src="https://github.com/user-attachments/assets/7179a6a1-5819-457a-9a79-a8fec0326333" />
 
 
-
 ```{=html}
 <!-- Add screenshot: ![Skinner Cafe website landing page](docs/assets/screenshots/website/website-home.png) -->
 ```
@@ -1236,44 +1223,6 @@ way customers discover available items.
 **Description:** Demonstrate product information and any supported
 variants or add-ons.
 
-```{=html}
-<!-- Add screenshot: ![Website product details](docs/assets/screenshots/website/website-product-details.png) -->
-```
-### 21.4 Website cart and checkout
-
-**Screenshot name:** `website-checkout.png`\
-**Description:** Show how selected products are reviewed and how the
-customer proceeds through checkout.
-
-```{=html}
-<!-- Add screenshot: ![Website cart and checkout](docs/assets/screenshots/website/website-checkout.png) -->
-```
-### 21.5 Website customer authentication
-
-**Screenshot name:** `website-authentication.png`\
-**Description:** Show the customer registration and sign-in experience.
-
-```{=html}
-<!-- Add screenshot: ![Website customer authentication](docs/assets/screenshots/website/website-authentication.png) -->
-```
-### 21.6 Staff dashboard
-
-**Screenshot name:** `website-staff-dashboard.png`\
-**Description:** Show the authorised staff landing page and its
-operational navigation.
-
-```{=html}
-<!-- Add screenshot: ![Skinner Cafe staff dashboard](docs/assets/screenshots/website/website-staff-dashboard.png) -->
-```
-### 21.7 Staff order management
-
-**Screenshot name:** `website-order-management.png`\
-**Description:** Demonstrate how staff review orders, confirm them and
-update preparation or collection status.
-
-```{=html}
-<!-- Add screenshot: ![Website order management](docs/assets/screenshots/website/website-order-management.png) -->
-```
 ## 22. 📸 Android application screenshots
 
 <img width="275" height="596" alt="Screenshot 2026-11-22 165359" src="https://github.com/user-attachments/assets/4f89f8a6-bbee-41d1-9974-9025e1b20557" />
@@ -1296,106 +1245,6 @@ update preparation or collection status.
 
 <img width="316" height="600" alt="Screenshot 2026-11-22 171956" src="https://github.com/user-attachments/assets/a8c72558-28d1-4ba2-873f-fc1e0628e778" />
 
-
-### 22.1 App launch and home
-
-**Screenshot name:** `android-home.png`\
-**Description:** Show the application launch experience, branding and
-customer home screen.
-
-```{=html}
-<!-- Add screenshot: ![Skinner Cafe Android home](docs/assets/screenshots/android/android-home.png) -->
-```
-### 22.2 Customer sign-in
-
-**Screenshot name:** `android-login.png`\
-**Description:** Demonstrate the customer login interface and available
-sign-in options.
-
-```{=html}
-<!-- Add screenshot: ![Android customer login](docs/assets/screenshots/android/android-login.png) -->
-```
-### 22.3 Customer registration
-
-**Screenshot name:** `android-registration.png`\
-**Description:** Show the account creation form and its validation
-experience.
-
-```{=html}
-<!-- Add screenshot: ![Android customer registration](docs/assets/screenshots/android/android-registration.png) -->
-```
-### 22.4 Menu browsing
-
-**Screenshot name:** `android-menu.png`\
-**Description:** Show product categories and the menu browsing
-experience.
-
-```{=html}
-<!-- Add screenshot: ![Android menu](docs/assets/screenshots/android/android-menu.png) -->
-```
-### 22.5 Product details and options
-
-**Screenshot name:** `android-product-details.png`\
-**Description:** Demonstrate product information, variants and supported
-add-ons.
-
-```{=html}
-<!-- Add screenshot: ![Android product details](docs/assets/screenshots/android/android-product-details.png) -->
-```
-### 22.6 Shopping cart
-
-**Screenshot name:** `android-cart.png`\
-**Description:** Show selected products, quantities and the order
-summary before checkout.
-
-```{=html}
-<!-- Add screenshot: ![Android shopping cart](docs/assets/screenshots/android/android-cart.png) -->
-```
-### 22.7 Checkout
-
-**Screenshot name:** `android-checkout.png`\
-**Description:** Demonstrate the customer checkout process and order
-submission details.
-
-```{=html}
-<!-- Add screenshot: ![Android checkout](docs/assets/screenshots/android/android-checkout.png) -->
-```
-### 22.8 Payment simulation result
-
-**Screenshot name:** `android-payment-result.png`\
-**Description:** Show a payment simulation outcome. Make it clear that
-the workflow is a demonstration and does not process real funds.
-
-```{=html}
-<!-- Add screenshot: ![Android simulated payment result](docs/assets/screenshots/android/android-payment-result.png) -->
-```
-### 22.9 My Orders
-
-**Screenshot name:** `android-my-orders.png`\
-**Description:** Demonstrate customer order history, order references
-and status information.
-
-```{=html}
-<!-- Add screenshot: ![Android My Orders](docs/assets/screenshots/android/android-my-orders.png) -->
-```
-### 22.10 Order notification
-
-**Screenshot name:** `android-order-notification.png`\
-**Description:** Show a customer-facing notification generated by a
-relevant order-status update.
-
-```{=html}
-<!-- Add screenshot: ![Android order notification](docs/assets/screenshots/android/android-order-notification.png) -->
-```
-### 22.11 Profile and settings
-
-**Screenshot name:** `android-settings-profile.png`\
-**Description:** Show account/profile information and application
-preferences, including appearance settings.
-
-```{=html}
-<!-- Add screenshot: ![Android profile and settings](docs/assets/screenshots/android/android-settings-profile.png) -->
-```
 ## 23. 🏪 Google Play Store listing and promotional assets
 
 ### 23.1 Google Play app link
@@ -1403,7 +1252,7 @@ preferences, including appearance settings.
 **App name:** Skinner Cafe\
 **Android application ID:** `za.co.skinnercafe.app`\
 **Google Play listing:**
-`Add the public Google Play URL after the app has been approved and published.`
+N/A
 
 **Direct APK download:** [Download Skinner Cafe APK from GitHub
 Releases](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/tag/v1.0.0)
@@ -1438,42 +1287,7 @@ Releases](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/releases/t
 Review this description against the exact functionality and policies of
 the submitted Play Store build before publication.
 
-### 23.3 Google Play promotional graphics
-
-Create a directory for the store assets:
-
-``` text
-docs/assets/screenshots/google-play/
-```
-
-  ----------------------------------------------------------------------------------
-  Asset                   Suggested filename                 Space for description /
-                                                             purpose
-  ----------------------- ---------------------------------- -----------------------
-  App icon                `play-store-icon-512.png`          High-resolution Skinner
-                                                             Cafe app identity.
-
-  Feature graphic         `play-store-feature-graphic.png`   Main promotional image
-                                                             for the store listing.
-
-  Phone screenshot 1      `play-store-phone-01.png`          Main menu and product
-                                                             discovery.
-
-  Phone screenshot 2      `play-store-phone-02.png`          Product details and
-                                                             customisation.
-
-  Phone screenshot 3      `play-store-phone-03.png`          Cart and checkout.
-
-  Phone screenshot 4      `play-store-phone-04.png`          Customer order history.
-
-  Phone screenshot 5      `play-store-phone-05.png`          Order status and
-                                                             customer notifications.
-
-  Optional graphic        `play-store-promo-graphic.png`     Additional promotional
-                                                             material, if required.
-  ----------------------------------------------------------------------------------
-
-### 23.4 Google Play screenshot compartments
+### 23.43Google Play screenshot compartments
 
 Add the actual store-ready screenshots below. Each image should be
 accompanied by a concise caption describing the feature shown.
