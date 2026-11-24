@@ -1,11 +1,6 @@
-::: {align="center"}
 # ☕ Skinner Cafe
 
-`<img
-  width="760"
-  alt="Skinner Cafe logo"
-  src="https://github.com/user-attachments/assets/2069363d-ec1e-4900-a85a-7feff6d5bdbe"
-/>`{=html}
+<img width="1345" height="601" alt="Screenshot 2026-04-27 141839" src="https://github.com/user-attachments/assets/a1a5947e-c4d3-440f-9fe9-aee8aaf7c7a7" />
 
 ### Integrated Café Website, Android Application and Management Platform
 
@@ -1403,19 +1398,6 @@ preferences, including appearance settings.
 ```
 ## 23. 🏪 Google Play Store listing and promotional assets
 
-This section is reserved for the store presentation of Skinner Cafe.
-Google Play graphics and screenshots should be captured from the final
-release build, use accurate feature descriptions and comply with the
-current Play Console asset requirements.
-
-<img width="267" height="579" alt="Screenshot 2026-11-22 171847" src="https://github.com/user-attachments/assets/49329417-13e0-4726-a7be-eeacea1f8908" />
-
-<img width="290" height="611" alt="Screenshot 2026-11-22 172117" src="https://github.com/user-attachments/assets/d57f695f-302e-4989-af08-b1cb5ba5d556" />
-
-<img width="282" height="602" alt="Screenshot 2026-11-22 172102" src="https://github.com/user-attachments/assets/d7ba1947-4554-4caa-be1f-4c68a11fdc2c" />
-
-
-
 ### 23.1 Google Play app link
 
 **App name:** Skinner Cafe\
@@ -1496,6 +1478,14 @@ docs/assets/screenshots/google-play/
 Add the actual store-ready screenshots below. Each image should be
 accompanied by a concise caption describing the feature shown.
 
+
+<img width="267" height="579" alt="Screenshot 2026-11-22 171847" src="https://github.com/user-attachments/assets/49329417-13e0-4726-a7be-eeacea1f8908" />
+
+<img width="290" height="611" alt="Screenshot 2026-11-22 172117" src="https://github.com/user-attachments/assets/d57f695f-302e-4989-af08-b1cb5ba5d556" />
+
+<img width="282" height="602" alt="Screenshot 2026-11-22 172102" src="https://github.com/user-attachments/assets/d7ba1947-4554-4caa-be1f-4c68a11fdc2c" />
+
+
 **Store screenshot 1 --- Menu discovery**\
 File: `play-store-phone-01.png`\
 Description: `Add a short description of the menu browsing experience.`
@@ -1537,17 +1527,19 @@ Description:
 ```
 ### 23.5 Publication evidence
 
-  Evidence                      Add link, screenshot or status
+  Evidence                      status
   ----------------------------- ----------------------------------------
-  Play Console app dashboard    `Add Play Console link or screenshot.`
-  Store listing preview         `Add screenshot after listing setup.`
-  Internal testing              `Record testing track and result.`
-  Closed testing, if required   `Record test status and completion.`
-  Content rating                `Record completed declaration.`
-  Data safety                   `Record completed declaration.`
-  Privacy policy                `Add public privacy policy URL.`
-  Production review             `Record review outcome.`
-  Public Play Store listing     `Add URL after publication.`
+  Play Console app dashboard     N/A
+  Store listing preview          N/A
+  Internal testing               N/A
+  Closed testing, if required    N/A
+  Content rating                 N/A
+  Data safety                    N/A
+  Privacy policy                 N/A
+  Production review              N/A
+  Public Play Store Listing      N/A
+
+The Application Was Unfortunately Unable to Be Published on Google Play store and on Google Play Console Due To Financial Constraints
 
 ## 24. ⬇️ Download and installation
 
@@ -1588,49 +1580,12 @@ backend merely because it installs successfully. The release
 configuration must point to an accessible production API before general
 customer distribution.
 
-## 25. 🎬 Demonstration and supporting documentation
-
-Use this section to link to supporting material that explains and
-demonstrates the system.
-
 ### ▶️ YouTube project demonstration
 
 Watch the Skinner Cafe project demonstration, covering the platform and
 its key customer and operational workflows:
 
 [**▶️ Watch the Skinner Cafe Demo on YouTube**](https://youtu.be/WHEd1KEoX04)
-
-
-  ---------------------------------------------------------------------------------------
-  Resource                            Link
-  ----------------------------------- ---------------------------------------------------
-  Full system demonstration           [▶️ Watch the Skinner Cafe YouTube demo](https://youtu.be/WHEd1KEoX04)
-
-  Android application demonstration   [Watch the demo](https://youtu.be/WHEd1KEoX04)
-
-  Website demonstration               [Watch the demo](https://youtu.be/WHEd1KEoX04)
-
-  Staff workflow demonstration        [Watch the demo](https://youtu.be/WHEd1KEoX04)
-
-  Design prototype                    `Add Figma / Figma Make URL.`
-
-  Database entity-relationship        `Add path or link to the ERD.`
-  diagram                             
-
-  Database restore guide              `Add path to the restore guide.`
-
-  API documentation                   `Add hosted API documentation URL, if available.`
-
-  User guide                          `Add user guide path or URL.`
-
-  Technical report                    `Add report path or URL.`
-  ---------------------------------------------------------------------------------------
-
-A useful demonstration should introduce the problem, explain the
-architecture, show the customer journey on both channels, demonstrate
-the staff order workflow, and explain how the API and database connect
-the system. Use test accounts and sample records; do not expose real
-credentials or customer information.
 
 ## 26. 🔭 Project outcomes and future development
 
@@ -1683,26 +1638,10 @@ The project draws on the documentation and tooling ecosystems of:
     management.
 -   Figma / Figma Make --- interface design exploration and prototyping.
 
-Third-party libraries, icons, fonts, images and other assets must be
-used in accordance with their licences. Add any required notices or
-attributions to the repository.
-
 ### 27.2 Responsible use of AI-assisted tools
 
-AI-assisted development tools may support learning, implementation
-planning, debugging, code review and documentation. Suggestions must be
-evaluated by the developer, tested against the project and reviewed for
-correctness, security and maintainability. The developer remains
-responsible for understanding the implementation and for ensuring that
-submitted work, citations and third-party resources are represented
-accurately.
-
-### 27.3 Data used in demonstrations
-
-Demonstrations should use test accounts and sample data. Do not publish
-customer passwords, access tokens, personal information, private
-certificates, signing keys or production connection strings in
-screenshots, source code or documentation.
+AI Tools Were Used for The debugging of Both The website and the application as well
+and for the assistance of building particular functions within the app and the website.
 
 ## 28. 🔗 Author and project links
 
@@ -1718,25 +1657,19 @@ screenshots, source code or documentation.
 
   GitHub issues                       [Issues](https://github.com/zwelakhedev/Skinner_Cafe_App_And_Website/issues)
 
-  Project owner / developer           `Add preferred name or professional profile link.`
+  Project owner / developer           Fezile Jam-Jam (zwelakhedev)
 
   LinkedIn                            `Add LinkedIn profile URL, if desired.`
 
-  Design prototype                    `Add Figma URL.`
-
   Demonstration video                 `Add video URL.`
 
-  Google Play listing                 `Add public listing URL after publication.`
+  Google Play listing                 N/A Due To Financial Constraints
   ---------------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
-
-::: {align="center"}
-**☕ Skinner Cafe**
 
 *Connecting customers, café staff and digital services through one
 integrated platform.*
 
 Built with a focus on convenience, consistency, secure information
 handling and maintainable software architecture.
-:::
