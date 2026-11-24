@@ -1183,7 +1183,7 @@ carrying out formal verification.
 
 <img width="1342" height="604" alt="Screenshot 2026-11-22 181416" src="https://github.com/user-attachments/assets/e9360a2f-fcf2-46b4-be08-e3339addd00e" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Home Page.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
@@ -1191,37 +1191,37 @@ purpose and show the main navigation and customer entry points.
 
 <img width="1345" height="601" alt="Screenshot 2026-11-22 181355" src="https://github.com/user-attachments/assets/51a4ff6a-af1a-4ee0-a213-5ebebf8d849e" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Menu Page.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="1354" height="596" alt="Screenshot 2026-11-22 181339" src="https://github.com/user-attachments/assets/43174cb3-19b8-4024-b37a-2079258986b6" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Cart Page.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="1339" height="599" alt="Screenshot 2026-11-22 181322" src="https://github.com/user-attachments/assets/f145776a-0a77-4f4e-b5f2-22f96158f627" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Login Page.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="1344" height="600" alt="Screenshot 2026-11-22 181306" src="https://github.com/user-attachments/assets/5ce0a5a2-1aa3-4fb9-b4f4-0cc0fcd2ce72" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Register Page.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="1350" height="599" alt="Screenshot 2026-11-22 180903" src="https://github.com/user-attachments/assets/d8732771-63f0-48c4-90c4-bed0a42e78f2" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Events Page.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="1359" height="601" alt="Screenshot 2026-11-22 180327" src="https://github.com/user-attachments/assets/7179a6a1-5819-457a-9a79-a8fec0326333" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Customer Dashboard.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
@@ -1229,61 +1229,43 @@ purpose and show the main navigation and customer entry points.
 
 <img width="275" height="596" alt="Screenshot 2026-11-22 165359" src="https://github.com/user-attachments/assets/4f89f8a6-bbee-41d1-9974-9025e1b20557" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Register Screen.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="270" height="590" alt="Screenshot 2026-11-22 165331" src="https://github.com/user-attachments/assets/ef0c0d60-442d-4ad8-a79b-4f1531b13c3d" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Login Screen.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="274" height="600" alt="Screenshot 2026-11-22 165807" src="https://github.com/user-attachments/assets/05f70458-e935-4972-8fc5-56e8f3bc00a9" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `SSO Screen.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="272" height="596" alt="Screenshot 2026-11-22 171319" src="https://github.com/user-attachments/assets/c2983855-3af3-468f-90e3-1137eb395d72" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `SSO Screen (Continued).png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="267" height="579" alt="Screenshot 2026-11-22 171847" src="https://github.com/user-attachments/assets/6d6f2622-b956-4b11-b13a-c482d9729a65" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Home Screen *.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="282" height="594" alt="Screenshot 2026-11-22 172040" src="https://github.com/user-attachments/assets/cb218305-42bd-4b1a-8029-78da8bfa6a63" />
 
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Menu Screen.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
 <img width="282" height="602" alt="Screenshot 2026-11-22 172102" src="https://github.com/user-attachments/assets/33ab5ce4-cbe6-4d3e-ab90-19cc56225014" />
 
-**Screenshot name:** `website-home.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
-
-<img width="290" height="611" alt="Screenshot 2026-11-22 172117" src="https://github.com/user-attachments/assets/e65f8422-74f2-413a-9e1d-4d6cfdbb6631" />
-
-**Screenshot name:** `website-home.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
-
-<img width="275" height="585" alt="Screenshot 2026-11-22 171937" src="https://github.com/user-attachments/assets/b2051cfc-ed99-4be7-8113-55179fbd7824" />
-
-**Screenshot name:** `website-home.png`\
-**Description:** Introduce the Skinner Cafe brand, explain the website's
-purpose and show the main navigation and customer entry points.
-
-<img width="316" height="600" alt="Screenshot 2026-11-22 171956" src="https://github.com/user-attachments/assets/a8c72558-28d1-4ba2-873f-fc1e0628e778" />
-
-**Screenshot name:** `website-home.png`\
+**Screenshot name:** `Cart Screen.png`\
 **Description:** Introduce the Skinner Cafe brand, explain the website's
 purpose and show the main navigation and customer entry points.
 
@@ -1333,24 +1315,9 @@ the submitted Play Store build before publication.
 
 <img width="267" height="579" alt="Screenshot 2026-11-22 171847" src="https://github.com/user-attachments/assets/49329417-13e0-4726-a7be-eeacea1f8908" />
 
-**Store screenshot 2 --- Product customisation**\
-File: `play-store-phone-02.png`\
-Description:
-`Explain how customers view products and select available options.`
-
 <img width="290" height="611" alt="Screenshot 2026-11-22 172117" src="https://github.com/user-attachments/assets/d57f695f-302e-4989-af08-b1cb5ba5d556" />
 
-**Store screenshot 2 --- Product customisation**\
-File: `play-store-phone-02.png`\
-Description:
-`Explain how customers view products and select available options.`
-
 <img width="282" height="602" alt="Screenshot 2026-11-22 172102" src="https://github.com/user-attachments/assets/d7ba1947-4554-4caa-be1f-4c68a11fdc2c" />
-
-**Store screenshot 2 --- Product customisation**\
-File: `play-store-phone-02.png`\
-Description:
-`Explain how customers view products and select available options.`
 
 ### 23.4 Publication evidence
 
